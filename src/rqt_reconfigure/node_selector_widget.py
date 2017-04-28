@@ -39,7 +39,7 @@ import os
 import time
 
 import dynamic_reconfigure as dyn_reconf
-from python_qt_binding import loadUi
+from python_qt_binding import loadUi, QT_BINDING_VERSION
 from python_qt_binding.QtCore import Qt, Signal
 try:
     from python_qt_binding.QtCore import QItemSelectionModel  # Qt 5
@@ -117,7 +117,9 @@ class NodeSelectorWidget(QWidget):
         # isn't available in .ui file.
         # Ref. http://stackoverflow.com/a/6648906/577001
         try:
-            self._node_selector_view.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Qt5
+            # setSectionResizeMode() is known to crash at least until QT 5.5.1
+            if QT_BINDING_VERSION >= "5.7":
+                self._node_selector_view.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Qt5
         except AttributeError:
             self._node_selector_view.header().setResizeMode(0, QHeaderView.ResizeToContents)  # Qt4
 
