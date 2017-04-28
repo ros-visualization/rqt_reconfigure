@@ -117,12 +117,9 @@ class NodeSelectorWidget(QWidget):
         # isn't available in .ui file.
         # Ref. http://stackoverflow.com/a/6648906/577001
         try:
-            self._node_selector_view.header().setResizeMode(
-                0, QHeaderView.ResizeToContents)  # Qt4
+            self._node_selector_view.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Qt5
         except AttributeError:
-            # TODO QHeaderView.setSectionResizeMode() is currently segfaulting
-            # using Qt 5 with both bindings PyQt as well as PySide
-            pass
+            self._node_selector_view.header().setResizeMode(0, QHeaderView.ResizeToContents)  # Qt4
 
         # Setting slot for when user clicks on QTreeView.
         self.selectionModel = self._node_selector_view.selectionModel()
