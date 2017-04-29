@@ -116,12 +116,11 @@ class NodeSelectorWidget(QWidget):
         # This 1 line is needed to enable horizontal scrollbar. This setting
         # isn't available in .ui file.
         # Ref. http://stackoverflow.com/a/6648906/577001
-        try:
-            # setSectionResizeMode() is known to crash at least until QT 5.5.1
-            if QT_BINDING_VERSION >= "5.7":
-                self._node_selector_view.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Qt5
-        except AttributeError:
+        if QT_BINDING_VERSION[:2] == "4.":
             self._node_selector_view.header().setResizeMode(0, QHeaderView.ResizeToContents)  # Qt4
+        elif QT_BINDING_VERSION >= "5.7":
+            # setSectionResizeMode() is known to crash at least until QT 5.5.1
+            self._node_selector_view.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Qt5
 
         # Setting slot for when user clicks on QTreeView.
         self.selectionModel = self._node_selector_view.selectionModel()
