@@ -42,7 +42,8 @@ from .param_editors import EditorWidget
 from .param_groups import GroupWidget, find_cfg
 from .param_updater import ParamUpdater
 
-from dynamic_reconfigure import DynamicReconfigureParameterException
+from dynamic_reconfigure import (DynamicReconfigureParameterException,
+                                 DynamicReconfigureCallbackException)
 from rospy.service import ServiceException
 
 import yaml
@@ -147,6 +148,8 @@ class DynreconfClientWidget(GroupWidget):
         except ServiceException as e:
             rospy.logwarn('Call for reconfiguration wasn\'t successful because: %s', e.message)
         except DynamicReconfigureParameterException as e:
+            rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
+        except DynamicReconfigureCallbackException as e:
             rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
 
     def close(self):
