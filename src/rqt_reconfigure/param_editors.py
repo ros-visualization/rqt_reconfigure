@@ -123,7 +123,6 @@ class EditorWidget(QWidget):
         self._paramname_label.setText(self.param_name)
 #        label_paramname = QLabel(self.param_name)
 #        label_paramname.setWordWrap(True)
-        self._paramname_label.setMinimumWidth(100)
         grid.addRow(self._paramname_label, self)
         self.setToolTip(self.param_description)
         self._paramname_label.setToolTip(self.param_description)
