@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.9 (2018-01-30)
+------------------
+* Added error handling for dynamic_reconfigure exceptions (`#10 <https://github.com/ros-visualization/rqt_reconfigure/pull/10>`_)
+* Fix left pane tree view resizing (`#11 <https://github.com/ros-visualization/rqt_reconfigure/pull/11>`_)
+
 0.4.8 (2017-04-24)
 ------------------
 
