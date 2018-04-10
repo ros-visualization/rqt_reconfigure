@@ -36,7 +36,7 @@ import math
 import os
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import Signal
+from python_qt_binding.QtCore import Signal, QLocale
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QLabel, QMenu, QWidget
 from decimal import Decimal
@@ -315,9 +315,9 @@ class DoubleEditor(EditorWidget):
         # Set ranges
         self._slider_horizontal.setRange(self._get_value_slider(self._min),
                                          self._get_value_slider(self._max))
-        self._paramval_lineEdit.setValidator(QDoubleValidator(
-                                                    self._min, self._max,
-                                                    8, self))
+        validator = QDoubleValidator(self._min, self._max, 8, self)
+        validator.setLocale(QLocale(QLocale.C))
+        self._paramval_lineEdit.setValidator(validator)
 
         # Initialize to defaults
         self._paramval_lineEdit.setText(str(config['default']))
