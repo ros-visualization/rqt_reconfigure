@@ -2,6 +2,14 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.10 (2018-04-19)
+-------------------
+* Lazy load dynamic_reconfigure client for each node
+  Fixes `#20 <https://github.com/ros-visualization/rqt_reconfigure/issues/20>`_
+* Use English locale in QDoubleValidator
+  Fixes `#21 <https://github.com/ros-visualization/rqt_reconfigure/issues/21>`_
+* Contributors: Arkady Shapkin, Yuki Furuta
+
 0.4.9 (2018-01-30)
 ------------------
 * Added error handling for dynamic_reconfigure exceptions (`#10 <https://github.com/ros-visualization/rqt_reconfigure/pull/10>`_)
