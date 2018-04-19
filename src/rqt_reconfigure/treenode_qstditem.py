@@ -94,7 +94,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
         self._is_rosnode = False
 
-        self._lock = None
+        self._lock = threading.Lock()
         self._paramserver_connect_thread = None
 
         try:
@@ -176,26 +176,29 @@ class TreenodeQstdItem(ReadonlyItem):
         @raise ROSException:
         """
         # If the treenode doesn't represent ROS Node, return None.
-        if not self._is_rosnode:
-            rospy.logerr('connect_param_server failed due to missing ' +
-                         'ROS Node. Return with nothing.')
-            return
+        with self._lock:
+            if not self._is_rosnode:
+                rospy.logerr('connect_param_server failed due to missing ' +
+                             'ROS Node. Return with nothing.')
+                return
 
-        if not self._dynreconf_client:
-            if self._paramserver_connect_thread:
-                self.disconnect_param_server()
-            self._paramserver_connect_thread = ParamserverConnectThread(
-                                       self, self._param_name_raw)
-            self._paramserver_connect_thread.start()
+            if not self._dynreconf_client:
+                if self._paramserver_connect_thread:
+                    if self._paramserver_connect_thread.isAlive():
+                        self._paramserver_connect_thread.join(1)
+                self._paramserver_connect_thread = ParamserverConnectThread(
+                                           self, self._param_name_raw)
+                self._paramserver_connect_thread.start()
 
     def disconnect_param_server(self):
-        if self._paramserver_connect_thread:
-            # Try to stop the thread
-            if self._paramserver_connect_thread.isAlive():
-              self._paramserver_connect_thread.join(1)
-            del self._paramserver_connect_thread
-            self._paramserver_connect_thread = None
-        self.clear_dynreconf_client()
+        with self._lock:
+            if self._paramserver_connect_thread:
+                # Try to stop the thread
+                if self._paramserver_connect_thread.isAlive():
+                  self._paramserver_connect_thread.join(1)
+                del self._paramserver_connect_thread
+                self._paramserver_connect_thread = None
+            self.clear_dynreconf_client()
 
     def enable_param_items(self):
         """

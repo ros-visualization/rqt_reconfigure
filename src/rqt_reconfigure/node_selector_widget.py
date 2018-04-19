@@ -332,14 +332,6 @@ class NodeSelectorWidget(QWidget):
                                 node_name_grn, TreenodeQstdItem.NODE_FULLPATH)
                 _treenode_names = treenodeitem_toplevel.get_treenode_names()
 
-                try:
-                    treenodeitem_toplevel.connect_param_server()
-                except rospy.exceptions.ROSException as e:
-                    rospy.logerr(e.message)
-                    #Skip item that fails to connect to its node.
-                    continue
-                    #TODO: Needs to show err msg on GUI too.
-
                 # Using OrderedDict here is a workaround for StdItemModel
                 # not returning corresponding item to index.
                 self._nodeitems[node_name_grn] = treenodeitem_toplevel
