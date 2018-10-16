@@ -107,23 +107,23 @@ class FilterChildrenModel(QSortFilterProxyModel):
         pos_hit = regex.indexIn(text_filter_target)
         if pos_hit >= 0:  # Query hit.
             rospy.logdebug('curr data={} row={} col={}'.format(
-                                                        curr_qmindex.data(),
-                                                        curr_qmindex.row(),
-                                                        curr_qmindex.column()))
+                curr_qmindex.data(),
+                curr_qmindex.row(),
+                curr_qmindex.column()))
 
             # Set all subsequent treenodes True
             rospy.logdebug(' FCModel.filterAcceptsRow src_row={}'.format(
-                            src_row) +
-                           ' parent row={} data={}'.format(
-                              src_parent_qmindex.row(),
-                              src_parent_qmindex.data()) +
-                           ' filterRegExp={}'.format(regex))
+                src_row) +
+                ' parent row={} data={}'.format(
+                src_parent_qmindex.row(),
+                src_parent_qmindex.data()) +
+                ' filterRegExp={}'.format(regex))
 
             # If the index is the terminal treenode, parameters that hit
             # the query are displayed at the root tree.
             _child_index = curr_qmindex.child(0, 0)
             if ((not _child_index.isValid()) and
-                (isinstance(curr_qitem, TreenodeQstdItem))):
+                    (isinstance(curr_qitem, TreenodeQstdItem))):
                 self._show_params_view(src_row, curr_qitem)
 
             # Once we find a treenode that hits the query, no need to further
@@ -154,7 +154,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
         """
 
         rospy.logdebug('_show_params_view data={}'.format(
-                                  curr_qitem.data(Qt.DisplayRole)))
+            curr_qitem.data(Qt.DisplayRole)))
         curr_qitem.enable_param_items()
 
     def _get_toplevel_parent_recur(self, qmindex):

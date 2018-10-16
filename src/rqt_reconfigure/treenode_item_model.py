@@ -64,7 +64,7 @@ class TreenodeItemModel(QStandardItemModel):
                 found.
         """
         rospy.logdebug('get_index_from_grn all item={}'.format(
-                                                               self._indexes))
+            self._indexes))
         return self._indexes.get(grn)
 
     def set_item_from_index(self, grn, qpindex):
@@ -73,5 +73,5 @@ class TreenodeItemModel(QStandardItemModel):
         :type qpindex: QPersistentModelIndex
         """
         rospy.logdebug('set_item_from_index grn={} qpindex={}'.format(
-                                                               grn, qpindex))
+            grn, qpindex))
         self._indexes[grn] = qpindex

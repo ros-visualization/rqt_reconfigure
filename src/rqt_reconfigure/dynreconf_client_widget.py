@@ -96,7 +96,7 @@ class DynreconfClientWidget(GroupWidget):
 
     def config_callback(self, config):
 
-        #TODO: Think about replacing callback architecture with signals.
+        # TODO: Think about replacing callback architecture with signals.
 
         if config:
             # TODO: should use config.keys but this method doesnt exist
@@ -119,15 +119,15 @@ class DynreconfClientWidget(GroupWidget):
 
     def _handle_load_clicked(self):
         filename = QFileDialog.getOpenFileName(
-                self, self.tr('Load from File'), '.',
-                self.tr('YAML file {.yaml} (*.yaml)'))
+            self, self.tr('Load from File'), '.',
+            self.tr('YAML file {.yaml} (*.yaml)'))
         if filename[0] != '':
             self.load_param(filename[0])
 
     def _handle_save_clicked(self):
         filename = QFileDialog.getSaveFileName(
-                self, self.tr('Save parameters to file...'), '.',
-                self.tr('YAML files {.yaml} (*.yaml)'))
+            self, self.tr('Save parameters to file...'), '.',
+            self.tr('YAML files {.yaml} (*.yaml)'))
         if filename[0] != '':
             self.save_param(filename[0])
 
@@ -162,5 +162,5 @@ class DynreconfClientWidget(GroupWidget):
         self.deleteLater()
 
     def filter_param(self, filter_key):
-        #TODO impl
+        # TODO impl
         pass

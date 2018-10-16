@@ -68,7 +68,7 @@ class ParameditWidget(QWidget):
         # Adding the list of Items
         self.vlayout = QVBoxLayout(self.scrollarea_holder_widget)
 
-        #self._set_index_widgets(self.listview, paramitems_dict) # causes error
+        # self._set_index_widgets(self.listview, paramitems_dict) # causes error
         self.destroyed.connect(self.close)
 
     def _set_index_widgets(self, view, paramitems_dict):
@@ -97,14 +97,14 @@ class ParameditWidget(QWidget):
             self._dynreconf_clients.__setitem__(node_grn, dynreconf_widget)
             self.vlayout.addWidget(dynreconf_widget)
             dynreconf_widget.sig_node_disabled_selected.connect(
-                                                           self._node_disabled)
+                self._node_disabled)
 
         else:  # If there has one already existed, remove it.
             self._remove_node(node_grn)
-            #LayoutUtil.clear_layout(self.vlayout)
+            # LayoutUtil.clear_layout(self.vlayout)
 
             # Re-add the rest of existing items to layout.
-            #for k, v in self._dynreconf_clients.items():
+            # for k, v in self._dynreconf_clients.items():
             #    rospy.loginfo('added to layout k={} v={}'.format(k, v))
             #    self.vlayout.addWidget(v)
 
@@ -127,9 +127,9 @@ class ParameditWidget(QWidget):
         :type filter_key:
         """
 
-        #TODO Pick nodes that match filter_key.
+        # TODO Pick nodes that match filter_key.
 
-        #TODO For the nodes that are kept in previous step, call
+        # TODO For the nodes that are kept in previous step, call
         #     DynreconfWidget.filter_param for all of its existing
         #     instances.
         pass
@@ -151,11 +151,11 @@ class ParameditWidget(QWidget):
 
         item = self.vlayout.itemAt(i)
         if isinstance(item, QWidgetItem):
-                item.widget().close()
+            item.widget().close()
         w = self._dynreconf_clients.pop(node_grn)
 
         rospy.logdebug('popped={} Len of left clients={}'.format(
-                                            w, len(self._dynreconf_clients)))
+            w, len(self._dynreconf_clients)))
 
     def _node_disabled(self, node_grn):
         rospy.logdebug('paramedit_w _node_disabled grn={}'.format(node_grn))

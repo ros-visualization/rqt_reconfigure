@@ -46,7 +46,7 @@ class ParamUpdater(threading.Thread):
     This class works for a single element in a single parameter.
     '''
 
-    #TODO: Modify variable names to the ones that's more intuitive.
+    # TODO: Modify variable names to the ones that's more intuitive.
 
     def __init__(self, reconf):
         """
@@ -68,10 +68,10 @@ class ParamUpdater(threading.Thread):
 
         while not self._stop_flag:
             if _timestamp_last_commit >= self._timestamp_last_pending:
-                    with self._condition_variable:
-                        rospy.logdebug(' ParamUpdater loop 1.1')
-                        self._condition_variable.wait()
-                        rospy.logdebug(' ParamUpdater loop 1.2')
+                with self._condition_variable:
+                    rospy.logdebug(' ParamUpdater loop 1.1')
+                    self._condition_variable.wait()
+                    rospy.logdebug(' ParamUpdater loop 1.2')
             rospy.logdebug(' ParamUpdater loop 2')
 
             if self._stop_flag:
@@ -82,13 +82,13 @@ class ParamUpdater(threading.Thread):
             self._configs_pending = {}
 
             rospy.logdebug('  run last_commit={}, last_pend={}'.format(
-                         _timestamp_last_commit, self._timestamp_last_pending))
+                _timestamp_last_commit, self._timestamp_last_pending))
 
             try:
                 self._reconf.update_configuration(configs_tobe_updated)
             except rospy.ServiceException as ex:
                 rospy.logdebug('Could not update configs due to {}'.format(
-                                                                     ex.value))
+                    ex.value))
             except Exception as exc:
                 raise exc
 

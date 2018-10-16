@@ -47,6 +47,7 @@ from rqt_reconfigure.text_filter import TextFilter
 from rqt_reconfigure.text_filter_widget import TextFilterWidget
 import rospy
 
+
 class ParamWidget(QWidget):
     _TITLE_PLUGIN = 'Dynamic Reconfigure'
 
@@ -76,7 +77,7 @@ class ParamWidget(QWidget):
 
         rp = rospkg.RosPack()
 
-        #TODO: .ui file needs to replace the GUI components declaration
+        # TODO: .ui file needs to replace the GUI components declaration
         #            below. For unknown reason, referring to another .ui files
         #            from a .ui that is used in this class failed. So for now,
         #            I decided not use .ui in this class.
@@ -114,10 +115,10 @@ class ParamWidget(QWidget):
 
         # Signal from paramedit widget to node selector widget.
         reconf_widget.sig_node_disabled_selected.connect(
-                                       self._nodesel_widget.node_deselected)
+            self._nodesel_widget.node_deselected)
         # Pass name of node to editor widget
         self._nodesel_widget.sig_node_selected.connect(
-                                                     reconf_widget.show_reconf)
+            reconf_widget.show_reconf)
 
         if not node:
             title = self._TITLE_PLUGIN
@@ -125,9 +126,9 @@ class ParamWidget(QWidget):
             title = self._TITLE_PLUGIN + ' %s' % node
         self.setObjectName(title)
 
-        #Connect filter signal-slots.
+        # Connect filter signal-slots.
         self._text_filter.filter_changed_signal.connect(
-                                            self._filter_key_changed)
+            self._filter_key_changed)
 
         # Open any clients indicated from command line
         self.sig_selected.connect(self._nodesel_widget.node_selected)
@@ -138,7 +139,7 @@ class ParamWidget(QWidget):
                 rospy.logwarn('Could not find a dynamic reconfigure client named \'%s\'', str(rn))
 
     def shutdown(self):
-        #TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch
+        # TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch
         #            subscriber.
         pass
 
@@ -160,7 +161,7 @@ class ParamWidget(QWidget):
     def _filter_key_changed(self):
         self._nodesel_widget.set_filter(self._text_filter)
 
-    #TODO: This method should be integrated into common architecture. I just
+    # TODO: This method should be integrated into common architecture. I just
     # can't think of how to do so within current design.
     def emit_sysmsg(self, msg_str):
         self.sig_sysmsg.emit(msg_str)

@@ -192,7 +192,7 @@ class StringEditor(EditorWidget):
 
     def edit_finished(self):
         rospy.logdebug('StringEditor edit_finished val={}'.format(
-                                              self._paramval_lineedit.text()))
+            self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -243,7 +243,7 @@ class IntegerEditor(EditorWidget):
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText(str(
-                                self._slider_horizontal.sliderPosition()))
+            self._slider_horizontal.sliderPosition()))
 
     def _text_changed(self):
         # This is a final change - update param server
@@ -322,7 +322,7 @@ class DoubleEditor(EditorWidget):
         # Initialize to defaults
         self._paramval_lineEdit.setText(str(config['default']))
         self._slider_horizontal.setValue(
-                                     self._get_value_slider(config['default']))
+            self._get_value_slider(config['default']))
 
         # Make slider update text (locally)
         self._slider_horizontal.sliderMoved.connect(self._slider_moved)
@@ -346,7 +346,7 @@ class DoubleEditor(EditorWidget):
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(
-                                                self._get_value_textfield()))))
+            self._get_value_textfield()))))
 
     def _text_changed(self):
         # This is a final change - update param server
@@ -361,7 +361,7 @@ class DoubleEditor(EditorWidget):
     def _get_value_textfield(self):
         '''@return: Current value in text field.'''
         return self._ifunc(self._slider_horizontal.sliderPosition() /
-                                        self.scale) if self.scale else 0
+                           self.scale) if self.scale else 0
 
     def _get_value_slider(self, value):
         '''
@@ -443,4 +443,3 @@ class EnumEditor(EditorWidget):
         self._combobox.blockSignals(True)
         self._combobox.setCurrentIndex(idx)
         self._combobox.blockSignals(False)
-

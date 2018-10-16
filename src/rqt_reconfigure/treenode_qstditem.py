@@ -57,14 +57,14 @@ class ParamserverConnectThread(threading.Thread):
         dynreconf_client = None
         try:
             dynreconf_client = dynamic_reconfigure.client.Client(
-                                       str(self._param_name_raw), timeout=5.0)
-            rospy.logdebug('ParamserverConnectThread dynreconf_client={}'. \
-                          format(dynreconf_client))
+                str(self._param_name_raw), timeout=5.0)
+            rospy.logdebug('ParamserverConnectThread dynreconf_client={}'.
+                           format(dynreconf_client))
             self._parent.set_dynreconf_client(dynreconf_client)
         except rospy.exceptions.ROSException as e:
             raise type(e)(e.message +
                           "TreenodeQstdItem. Couldn't connect to {}".format(
-                                                         self._param_name_raw))
+                              self._param_name_raw))
 
 
 class TreenodeQstdItem(ReadonlyItem):
@@ -101,7 +101,7 @@ class TreenodeQstdItem(ReadonlyItem):
             if args[1]:
                 self._is_rosnode = True
         except IndexError:  # tuple index out of range etc.
-                rospy.logerr('TreenodeQstdItem IndexError')
+            rospy.logerr('TreenodeQstdItem IndexError')
 
     def set_dynreconf_client(self, dynreconf_client):
         """
@@ -109,8 +109,8 @@ class TreenodeQstdItem(ReadonlyItem):
         """
         self._dynreconf_client = dynreconf_client
         rospy.logdebug('Qitem set dynreconf_client={} param={}'.format(
-                                                       self._dynreconf_client,
-                                                       self._param_name_raw))
+            self._dynreconf_client,
+            self._param_name_raw))
 
     def clear_dynreconf_client(self):
         if self._dynreconf_client is not None:
@@ -127,7 +127,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
         if not self._dynreconfclient_widget:
             rospy.logdebug('get dynreconf_client={}'.format(
-                                                       self._dynreconf_client))
+                self._dynreconf_client))
             rospy.logdebug('In get_dynreconf_widget 1')
             if not self._dynreconf_client:
                 self.connect_param_server()
@@ -138,9 +138,9 @@ class TreenodeQstdItem(ReadonlyItem):
             # Loop until _dynreconf_client is set. self._dynreconf_client gets
             # set from different thread (in ParamserverConnectThread).
             while self._dynreconf_client == None:
-                #Avoid deadlock
+                # Avoid deadlock
                 if timeout < loop:
-                    #Make itself unclickable
+                    # Make itself unclickable
                     self.setEnabled(False)
                     raise ROSException('dynreconf client failed')
 
@@ -150,8 +150,8 @@ class TreenodeQstdItem(ReadonlyItem):
 
             rospy.logdebug('In get_dynreconf_widget 4')
             self._dynreconfclient_widget = DynreconfClientWidget(
-                                                       self._dynreconf_client,
-                                                       self._param_name_raw)
+                self._dynreconf_client,
+                self._param_name_raw)
             # Creating the DynreconfClientWidget transfers ownership of the _dynreconf_client
             # to it. If it is destroyed from Qt, we need to clear our reference to it and
             # stop the param server thread we had.
@@ -187,7 +187,7 @@ class TreenodeQstdItem(ReadonlyItem):
                     if self._paramserver_connect_thread.isAlive():
                         self._paramserver_connect_thread.join(1)
                 self._paramserver_connect_thread = ParamserverConnectThread(
-                                           self, self._param_name_raw)
+                    self, self._param_name_raw)
                 self._paramserver_connect_thread.start()
 
     def disconnect_param_server(self):
@@ -195,7 +195,7 @@ class TreenodeQstdItem(ReadonlyItem):
             if self._paramserver_connect_thread:
                 # Try to stop the thread
                 if self._paramserver_connect_thread.isAlive():
-                  self._paramserver_connect_thread.join(1)
+                    self._paramserver_connect_thread.join(1)
                 del self._paramserver_connect_thread
                 self._paramserver_connect_thread = None
             self.clear_dynreconf_client()
@@ -215,7 +215,7 @@ class TreenodeQstdItem(ReadonlyItem):
             item.setBackground(brush)
             paramnames_items.append(item)
         rospy.logdebug('enable_param_items len of paramnames={}'.format(
-                                                        len(paramnames_items)))
+            len(paramnames_items)))
         self.appendColumn(paramnames_items)
 
     def _set_param_name(self, param_name):
@@ -253,7 +253,7 @@ class TreenodeQstdItem(ReadonlyItem):
         :rtype: List of string. Null if param
         """
 
-        #TODO: what if self._list_treenode_names is empty or null?
+        # TODO: what if self._list_treenode_names is empty or null?
         return self._list_treenode_names
 
     def get_node_name(self):

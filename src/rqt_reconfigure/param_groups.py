@@ -44,8 +44,8 @@ import rospy
 # *Editor classes that are not explicitly used within this .py file still need
 # to be imported. They are invoked implicitly during runtime.
 from .param_editors import BooleanEditor, DoubleEditor, EditorWidget, \
-                           EDITOR_TYPES, EnumEditor, IntegerEditor, \
-                           StringEditor
+    EDITOR_TYPES, EnumEditor, IntegerEditor, \
+    StringEditor
 
 _GROUP_TYPES = {
     '': 'BoxGroup',
@@ -156,7 +156,7 @@ class GroupWidget(QWidget):
 
         # Labels should not stretch
         #self.grid.setColumnStretch(1, 1)
-        #self.setLayout(self.grid)
+        # self.setLayout(self.grid)
 
     def collect_paramnames(self, config):
         pass
@@ -188,7 +188,7 @@ class GroupWidget(QWidget):
             end = time.time() * 1000
             time_elap = end - begin
             rospy.logdebug('ParamG editor={} loop=#{} Time={}msec'.format(
-                                              editor_type, i_debug, time_elap))
+                editor_type, i_debug, time_elap))
             i_debug += 1
 
         for name, group in config['groups'].items():

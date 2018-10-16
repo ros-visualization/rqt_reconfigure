@@ -41,6 +41,7 @@ class TextFilterWidget(QWidget):
     Taken from rqt_console.TextFilterWidget. Only modification from it is .ui
     file in use that takes more generic form (only textfiedl).
     """
+
     def __init__(self, parentfilter, rospack, display_list_args=None):
         """
         Widget for displaying interactive data related to text filtering.
