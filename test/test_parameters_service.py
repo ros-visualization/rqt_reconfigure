@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2012, Willow Garage, Inc.
+# Copyright (c) 2019, Gonzalo de Pedro
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,10 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Isaac Saito
 
 import unittest
-
-from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
+import rclpy
+from rqt_reconfigure.parameters_services import ParametersServices
 
 
 class TestTreenodeQstdItem(unittest.TestCase):
@@ -51,18 +50,21 @@ class TestTreenodeQstdItem(unittest.TestCase):
         unittest.TestCase.setUp(self)
         #self._item = TreenodeQstdItem(self._nodename_raw, 0) # For unknown reason
                                                         #this stops operation.
-        self._item = TreenodeQstdItem(self._nodename_raw)
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
-        del self._item
 
-    def test_get_node_name(self):
-        self.assertEqual(self._item.get_node_name(),
-                         self._nodename_extracted)
 
-#    def test_get_node_name(self):
-#        self.assertEqual(self._item.get_widget().show())
+    def test_find_reconfigure_services(self):
+        context = rclpy.context.Context()
+        rclpy.init(context=cls.context)
+        node = rclpy.create_node('TestGroupDescritionClient', context=context)
+
+        ps = ParametersServices(node)
+        print("Call to get_group_description :" + json.dumps(ps.find_reconfigure_services()))
+
+        cls.node.destroy_node()
+        rclpy.shutdown(context=cls.context)
 
 
 if __name__ == '__main__':

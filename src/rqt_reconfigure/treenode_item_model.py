@@ -36,7 +36,7 @@ from __future__ import division
 
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtGui import QStandardItemModel
-import rospy
+#import rospy
 
 
 class TreenodeItemModel(QStandardItemModel):
@@ -63,8 +63,8 @@ class TreenodeItemModel(QStandardItemModel):
         :rtype: QPersistentModelIndex. None if the corresponding item isn't
                 found.
         """
-        rospy.logdebug('get_index_from_grn all item={}'.format(
-                                                               self._indexes))
+#        rospy.logdebug('get_index_from_grn all item={}'.format(
+#                                                               self._indexes))
         return self._indexes.get(grn)
 
     def set_item_from_index(self, grn, qpindex):
@@ -72,6 +72,6 @@ class TreenodeItemModel(QStandardItemModel):
         :type grn: str
         :type qpindex: QPersistentModelIndex
         """
-        rospy.logdebug('set_item_from_index grn={} qpindex={}'.format(
-                                                               grn, qpindex))
+#        rospy.logdebug('set_item_from_index grn={} qpindex={}'.format(
+#                                                               grn, qpindex))
         self._indexes[grn] = qpindex

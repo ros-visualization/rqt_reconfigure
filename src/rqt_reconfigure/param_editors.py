@@ -39,28 +39,29 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Signal, QLocale
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QLabel, QMenu, QWidget
+from qt_gui.ros_package_helper import get_package_path
 from decimal import Decimal
-import rospkg
-import rospy
+#import rospkg
+#import rospy
 
 EDITOR_TYPES = {
-    'bool': 'BooleanEditor',
-    'str': 'StringEditor',
-    'int': 'IntegerEditor',
-    'double': 'DoubleEditor',
+    1: 'BooleanEditor',
+    4: 'StringEditor',
+    2: 'IntegerEditor',
+    3: 'DoubleEditor',
 }
 
 # These .ui files are frequently loaded multiple times. Since file access
 # costs a lot, only load each file once.
-rp = rospkg.RosPack()
-ui_bool = os.path.join(rp.get_path('rqt_reconfigure'), 'resource',
+package_path = get_package_path('rqt_reconfigure')
+ui_bool = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                        'editor_bool.ui')
-ui_str = os.path.join(rp.get_path('rqt_reconfigure'), 'resource',
+ui_str = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                       'editor_string.ui')
-ui_num = os.path.join(rp.get_path('rqt_reconfigure'), 'resource',
+ui_num = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                       'editor_number.ui')
 ui_int = ui_num
-ui_enum = os.path.join(rp.get_path('rqt_reconfigure'), 'resource',
+ui_enum = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                        'editor_enum.ui')
 
 
@@ -82,9 +83,10 @@ class EditorWidget(QWidget):
         super(EditorWidget, self).__init__()
 
         self._updater = updater
-        self.param_name = config['name']
-        self.param_default = config['default']
-        self.param_description = config['description']
+        self.param_name = config.name
+
+        #self.param_default = config['default'] #TODO get default (gonzo)
+        self.param_description = "Test description" #config['description']
 
         self.old_value = None
 
@@ -150,7 +152,8 @@ class BooleanEditor(EditorWidget):
         loadUi(ui_bool, self)
 
         # Initialize to default
-        self.update_value(config['default'])
+        #self.update_value(config['default'])
+        self.update_value(0)
 
         # Make checkbox update param server
         self._checkbox.stateChanged.connect(self._box_checked)
@@ -187,12 +190,12 @@ class StringEditor(EditorWidget):
 
     def update_value(self, value):
         super(StringEditor, self).update_value(value)
-        rospy.logdebug('StringEditor update_value={}'.format(value))
+#        rospy.logdebug('StringEditor update_value={}'.format(value))
         self._update_signal.emit(value)
 
     def edit_finished(self):
-        rospy.logdebug('StringEditor edit_finished val={}'.format(
-                                              self._paramval_lineedit.text()))
+#        rospy.logdebug('StringEditor edit_finished val={}'.format(
+#                                              self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -443,4 +446,3 @@ class EnumEditor(EditorWidget):
         self._combobox.blockSignals(True)
         self._combobox.setCurrentIndex(idx)
         self._combobox.blockSignals(False)
-

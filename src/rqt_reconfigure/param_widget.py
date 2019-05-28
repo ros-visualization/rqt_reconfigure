@@ -34,7 +34,7 @@
 
 from __future__ import division
 
-import rospkg
+from qt_gui.ros_package_helper import get_package_path
 import sys
 
 from python_qt_binding.QtCore import Signal, QMargins
@@ -45,7 +45,8 @@ from rqt_reconfigure.node_selector_widget import NodeSelectorWidget
 from rqt_reconfigure.paramedit_widget import ParameditWidget
 from rqt_reconfigure.text_filter import TextFilter
 from rqt_reconfigure.text_filter_widget import TextFilterWidget
-import rospy
+
+from rqt_reconfigure.parameters_services import ParametersServices
 
 class ParamWidget(QWidget):
     _TITLE_PLUGIN = 'Dynamic Reconfigure'
@@ -74,7 +75,9 @@ class ParamWidget(QWidget):
         self.setObjectName(self._TITLE_PLUGIN)
         self.setWindowTitle(self._TITLE_PLUGIN)
 
-        rp = rospkg.RosPack()
+        package_path = get_package_path('rqt_reconfigure')
+
+        parameters_service = ParametersServices(context.node)
 
         #TODO: .ui file needs to replace the GUI components declaration
         #            below. For unknown reason, referring to another .ui files
@@ -91,19 +94,19 @@ class ParamWidget(QWidget):
         _hlayout_filter_widget = QWidget(self)
         _hlayout_filter = QHBoxLayout()
         self._text_filter = TextFilter()
-        self.filter_lineedit = TextFilterWidget(self._text_filter, rp)
+        self.filter_lineedit = TextFilterWidget(self._text_filter, package_path)
         self.filterkey_label = QLabel("&Filter key:")
         self.filterkey_label.setBuddy(self.filter_lineedit)
         _hlayout_filter.addWidget(self.filterkey_label)
         _hlayout_filter.addWidget(self.filter_lineedit)
         _hlayout_filter_widget.setLayout(_hlayout_filter)
-        self._nodesel_widget = NodeSelectorWidget(self, rp, self.sig_sysmsg)
+        self._nodesel_widget = NodeSelectorWidget(self, package_path, parameters_service, self.sig_sysmsg)
         _vlayout_nodesel_side.addWidget(_hlayout_filter_widget)
         _vlayout_nodesel_side.addWidget(self._nodesel_widget)
         _vlayout_nodesel_side.setSpacing(1)
         _vlayout_nodesel_widget.setLayout(_vlayout_nodesel_side)
 
-        reconf_widget = ParameditWidget(rp)
+        reconf_widget = ParameditWidget(package_path)
 
         self._splitter.insertWidget(0, _vlayout_nodesel_widget)
         self._splitter.insertWidget(1, reconf_widget)
@@ -130,12 +133,12 @@ class ParamWidget(QWidget):
                                             self._filter_key_changed)
 
         # Open any clients indicated from command line
-        self.sig_selected.connect(self._nodesel_widget.node_selected)
-        for rn in [rospy.resolve_name(c) for c in context.argv()]:
-            if rn in self._nodesel_widget.get_paramitems():
-                self.sig_selected.emit(rn)
-            else:
-                rospy.logwarn('Could not find a dynamic reconfigure client named \'%s\'', str(rn))
+#        self.sig_selected.connect(self._nodesel_widget.node_selected)
+#        for rn in [rospy.resolve_name(c) for c in context.argv()]:
+#            if rn in self._nodesel_widget.get_paramitems():
+#                self.sig_selected.emit(rn)
+#            else:
+#                rospy.logwarn('Could not find a dynamic reconfigure client named \'%s\'', str(rn))
 
     def shutdown(self):
         #TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch

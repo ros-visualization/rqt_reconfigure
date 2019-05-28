@@ -35,8 +35,6 @@
 import threading
 import time
 
-import rospy
-
 
 class ParamUpdater(threading.Thread):
     '''
@@ -58,21 +56,21 @@ class ParamUpdater(threading.Thread):
         self._reconf = reconf
         self._condition_variable = threading.Condition()
         self._configs_pending = {}
-        self._timestamp_last_pending = None
+        self._timestamp_last_pending = 0
         self._stop_flag = False
 
     def run(self):
-        _timestamp_last_commit = None
+        _timestamp_last_commit = 0
 
-        rospy.logdebug(' ParamUpdater started')
+#        rospy.logdebug(' ParamUpdater started')
 
         while not self._stop_flag:
             if _timestamp_last_commit >= self._timestamp_last_pending:
                     with self._condition_variable:
-                        rospy.logdebug(' ParamUpdater loop 1.1')
+#                        rospy.logdebug(' ParamUpdater loop 1.1')
                         self._condition_variable.wait()
-                        rospy.logdebug(' ParamUpdater loop 1.2')
-            rospy.logdebug(' ParamUpdater loop 2')
+#                        rospy.logdebug(' ParamUpdater loop 1.2')
+#            rospy.logdebug(' ParamUpdater loop 2')
 
             if self._stop_flag:
                 return
@@ -81,14 +79,16 @@ class ParamUpdater(threading.Thread):
             configs_tobe_updated = self._configs_pending.copy()
             self._configs_pending = {}
 
-            rospy.logdebug('  run last_commit={}, last_pend={}'.format(
-                         _timestamp_last_commit, self._timestamp_last_pending))
+#            rospy.logdebug('  run last_commit={}, last_pend={}'.format(
+#                         _timestamp_last_commit, self._timestamp_last_pending))
 
             try:
                 self._reconf.update_configuration(configs_tobe_updated)
-            except rospy.ServiceException as ex:
-                rospy.logdebug('Could not update configs due to {}'.format(
-                                                                     ex.value))
+#            except rospy.ServiceException as ex:
+            except Exception as ex:
+#                rospy.logdebug('Could not update configs due to {}'.format(
+#                                                                     ex.value))
+                pass
             except Exception as exc:
                 raise exc
 
