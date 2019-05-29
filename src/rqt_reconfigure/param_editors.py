@@ -87,12 +87,12 @@ class EditorWidget(QWidget):
         #self.param_default = config['default']
         self.param_default = config['value']
         self.param_description = config['descr'].description
+        self.read_only = config['descr'].read_only
         self.param_type = config['type']
 
         self.old_value = None
 
         self.cmenu = QMenu()
-        self.cmenu.addAction(self.tr('Set to Default')).triggered.connect(self._set_to_default)
 
     def _update_paramserver(self, value):
         '''
@@ -140,9 +140,6 @@ class EditorWidget(QWidget):
         '''
         pass
 
-    def _set_to_default(self):
-        self._update_paramserver(self.param_default)
-
     def contextMenuEvent(self, e):
         self.cmenu.exec_(e.globalPos())
 
@@ -164,6 +161,9 @@ class BooleanEditor(EditorWidget):
 
         # Make param server update checkbox
         self._update_signal.connect(self._checkbox.setChecked)
+
+        if self.read_only:
+            self._checbox.setEnabled(False)
 
     def _box_checked(self, value):
         self._update_paramserver(bool(value))
@@ -196,14 +196,18 @@ class StringEditor(EditorWidget):
         # Add special menu items
         self.cmenu.addAction(self.tr('Set to Empty String')).triggered.connect(self._set_to_empty)
 
+        if self.read_only:
+            self._paramval_lineedit.setEnabled(False)
+            self.cmenu.setEnabled(False)
+
     def update_value(self, value):
         super(StringEditor, self).update_value(value)
         rospy.logdebug('StringEditor update_value={}'.format(value))
         self._update_signal.emit(value)
 
     def edit_finished(self):
-        rospy.logdebug('StringEditor edit_finished val={}'.format(
-                                              self._paramval_lineedit.text()))
+#        rospy.logdebug('StringEditor edit_finished val={}'.format(
+#                                              self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -222,7 +226,13 @@ class IntegerEditor(EditorWidget):
         self._max = int(config['descr'].integer_range[0].to_value)
         self._min_val_label.setText(str(self._min))
         self._max_val_label.setText(str(self._max))
+
+        self._step = int(config['descr'].integer_range[0].step)
+        self._slider_horizontal.setSingleStep(self._step)
+        self._slider_horizontal.setTickInterval(self._step)
+        self._slider_horizontal.setPageStep(self._step)
         self._slider_horizontal.setRange(self._min, self._max)
+
 
         # TODO: Fix that the naming of _paramval_lineEdit instance is not
         #       consistent among Editor's subclasses.
@@ -244,6 +254,7 @@ class IntegerEditor(EditorWidget):
         self._slider_horizontal.setTracking(False)
         self._slider_horizontal.valueChanged.connect(self._slider_changed)
 
+
         # Make the param server update selection
         self._update_signal.connect(self._update_gui)
 
@@ -251,24 +262,36 @@ class IntegerEditor(EditorWidget):
         self.cmenu.addAction(self.tr('Set to Maximum')).triggered.connect(self._set_to_max)
         self.cmenu.addAction(self.tr('Set to Minimum')).triggered.connect(self._set_to_min)
 
+        if self.read_only:
+            self._paramval_lineEdit.setEnabled(False)
+            self._slider_horizontal.setEnabled(False)
+            self.cmenu.setEnabled(False)
+
     def _slider_moved(self):
         # This is a "local" edit - only change the text
+        print("INTEGER - Slider moved")
         self._paramval_lineEdit.setText(str(
                                 self._slider_horizontal.sliderPosition()))
 
     def _text_changed(self):
         # This is a final change - update param server
         # No need to update slider... update_value() will
+        print("INTEGER - Text changed")
+        self._slider_horizontal.setValue(int(self._paramval_lineEdit.text()))
         self._update_paramserver(int(self._paramval_lineEdit.text()))
 
     def _slider_changed(self):
         # This is a final change - update param server
         # No need to update text... update_value() will
+        print("INTEGER - Slider changed")
+        self._paramval_lineEdit.setText(str(
+                                self._slider_horizontal.sliderPosition()))
         self._update_paramserver(self._slider_horizontal.value())
 
     def update_value(self, value):
         super(IntegerEditor, self).update_value(value)
         self._update_signal.emit(int(value))
+        self._update_gui(int(value))
 
     def _update_gui(self, value):
         # Block all signals so we don't loop
@@ -280,9 +303,11 @@ class IntegerEditor(EditorWidget):
         self._slider_horizontal.blockSignals(False)
 
     def _set_to_max(self):
+        self.update_value(self._max)
         self._update_paramserver(self._max)
 
     def _set_to_min(self):
+        self.update_value(self._min)
         self._update_paramserver(self._min)
 
 
@@ -293,6 +318,13 @@ class DoubleEditor(EditorWidget):
     def __init__(self, updater, config):
         super(DoubleEditor, self).__init__(updater, config)
         loadUi(ui_num, self)
+
+        #config step
+        self._step = float(config['descr'].floating_point_range[0].step)
+        print("STEP : " + str(self._step))
+        self._slider_horizontal.setSingleStep(self._step)
+        self._slider_horizontal.setTickInterval(self._step)
+        self._slider_horizontal.setPageStep(self._step)
 
         # Handle unbounded doubles nicely
         if config['descr'].floating_point_range[0].from_value != -float('inf'):
@@ -353,7 +385,11 @@ class DoubleEditor(EditorWidget):
         # Add special menu items
         self.cmenu.addAction(self.tr('Set to Maximum')).triggered.connect(self._set_to_max)
         self.cmenu.addAction(self.tr('Set to Minimum')).triggered.connect(self._set_to_min)
-        self.cmenu.addAction(self.tr('Set to NaN')).triggered.connect(self._set_to_nan)
+
+        if self.read_only:
+            self._paramval_lineEdit.setEnabled(False)
+            self._slider_horizontal.setEnabled(False)
+            self.cmenu.setEnabled(False)
 
     def _slider_moved(self):
         # This is a "local" edit - only change the text
@@ -363,11 +399,14 @@ class DoubleEditor(EditorWidget):
     def _text_changed(self):
         # This is a final change - update param server
         # No need to update slider... update_value() will
+        self._update_gui(float(self._paramval_lineEdit.text()))
         self._update_paramserver(float(self._paramval_lineEdit.text()))
 
     def _slider_changed(self):
         # This is a final change - update param server
         # No need to update text... update_value() will
+        self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(
+                                                    self._get_value_textfield()))))
         self._update_paramserver(self._get_value_textfield())
 
     def _get_value_textfield(self):
