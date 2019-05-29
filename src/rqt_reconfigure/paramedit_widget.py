@@ -80,15 +80,13 @@ class ParameditWidget(QWidget):
             view.setIndexWidget(i, p)
             i += 1
 
-    def show_reconf(self, param_widget):
+    def show_reconf(self, dynreconf_widget):
         """
         Callback when user chooses a node.
 
         @param dynreconf_widget:
         """
-
-        print("SHOW RECONF")
-        node_grn = param_widget.get_node_grn()
+        node_grn = dynreconf_widget.get_node_grn()
 #        rospy.logdebug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
 
         if not node_grn in self._dynreconf_clients.keys():
@@ -96,9 +94,9 @@ class ParameditWidget(QWidget):
 
             # Client gets renewed every time different node_grn was clicked.
 
-            self._dynreconf_clients.__setitem__(node_grn, param_widget)
-            self.vlayout.addWidget(param_widget)
-            param_widget.sig_node_disabled_selected.connect(
+            self._dynreconf_clients.__setitem__(node_grn, dynreconf_widget)
+            self.vlayout.addWidget(dynreconf_widget)
+            dynreconf_widget.sig_node_disabled_selected.connect(
                                                            self._node_disabled)
 
         else:  # If there has one already existed, remove it.
@@ -138,8 +136,7 @@ class ParameditWidget(QWidget):
 
     def _remove_node(self, node_grn):
         try:
-            #i = self._dynreconf_clients.keys().index(node_grn)
-            item = self._dynreconf_clients.__getitem__(node_grn)
+            i = list(self._dynreconf_clients.keys()).index(node_grn)
         except ValueError:
             # ValueError occurring here means that the specified key is not
             # found, most likely already removed, which is possible in the
@@ -152,16 +149,16 @@ class ParameditWidget(QWidget):
             #     ParameditWidget's slot. Thus reaches this method again.
             return
 
-        #item = self.vlayout.itemAt(i)
+        item = self.vlayout.itemAt(i)
         if isinstance(item, QWidgetItem):
                 item.widget().close()
         w = self._dynreconf_clients.pop(node_grn)
 
-#        rospy.logdebug('popped={} Len of left clients={}'.format(
-#                                            w, len(self._dynreconf_clients)))
+    #    rospy.logdebug('popped={} Len of left clients={}'.format(
+    #                                        w, len(self._dynreconf_clients)))
 
     def _node_disabled(self, node_grn):
-#        rospy.logdebug('paramedit_w _node_disabled grn={}'.format(node_grn))
+        #rospy.logdebug('paramedit_w _node_disabled grn={}'.format(node_grn))
 
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.

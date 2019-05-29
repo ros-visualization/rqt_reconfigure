@@ -98,18 +98,16 @@ class GroupWidget(QWidget):
         :type config: Dictionary? defined in dynamic_reconfigure.client.Client
         :type nodename: str
         '''
-
         print("GROUP")
 
         super(GroupWidget, self).__init__()
+        print("Param_groups - INIT ..   0")
         #self.state = config['state']
-        #self.param_name = config['name']
-        #self._toplevel_treenode_name = nodename
-        self.state = True
-        self.param_name = "Group"
+        print("Param_groups - INIT name: ")
+        self.param_name = nodename
+        print("Param_groups - INIT ..   0.01")
         self._toplevel_treenode_name = nodename
-
-
+        print("Param_groups - INIT ..   0.02")
         # TODO: .ui file needs to be back into usage in later phase.
 #        ui_file = os.path.join(rp.get_path('rqt_reconfigure'),
 #                               'resource', 'singlenode_parameditor.ui')
@@ -155,9 +153,13 @@ class GroupWidget(QWidget):
         self.editor_widgets = []
         self._param_names = []
 
+        print("Param_groups - INIT ..   1")
+        print(":: CONFIG : " + str(config))
         self._create_node_widgets(config)
 
-#        rospy.logdebug('Groups node name={}'.format(nodename))
+        print("Param_groups - INIT ..   2")
+
+        #rospy.logdebug('Groups node name={}'.format(nodename))
         self.nodename_qlabel.setText(nodename)
 
         # Labels should not stretch
@@ -172,23 +174,28 @@ class GroupWidget(QWidget):
         :type config: Dict?
         '''
         i_debug = 0
-#        for param in config['parameters']:
-
         for param in config:
             begin = time.time() * 1000
             editor_type = '(none)'
-
-            #if param['edit_method']:  #TODO this should go away (Gonzo)
-            #    widget = EnumEditor(self.updater, param)
-            if param.type in EDITOR_TYPES:
+            print("Param_groups - create_node_widgets ..   2")
+#            if param['edit_method']:
+#                widget = EnumEditor(self.updater, param)
+#            elif param['type'] in EDITOR_TYPES:
+            if param['type'] in EDITOR_TYPES:
 #                rospy.logdebug('GroupWidget i_debug=%d param type =%s',
 #                               i_debug,
 #                               param['type'])
-                editor_type = EDITOR_TYPES[param.type]
+                print("Param_groups - create_node_widgets ..   3")
+                print("::: PARAM NAME : " + param['name'])
+                editor_type = EDITOR_TYPES[param['type']]
+                print("Param_groups - create_node_widgets ..   4")
                 widget = eval(editor_type)(self.updater, param)
 
+            print("Param_groups - create_node_widgets ..   5")
             self.editor_widgets.append(widget)
-            self._param_names.append(param.name)
+            print("Param_groups - create_node_widgets ..   6")
+            self._param_names.append(param['name'])
+            print("Param_groups - create_node_widgets ..   7")
 
 #            rospy.logdebug('groups._create_node_widgets num editors=%d',
 #                           i_debug)
@@ -201,13 +208,13 @@ class GroupWidget(QWidget):
 
 #        for name, group in config['groups'].items():
 #            if group['type'] == 'tab':
-        #        widget = TabGroup(self, self.updater, group, self._toplevel_treenode_name)
+#                widget = TabGroup(self, self.updater, group, self._toplevel_treenode_name)
 #            elif group['type'] in _GROUP_TYPES.keys():
 #                widget = eval(_GROUP_TYPES[group['type']])(self.updater, group, self._toplevel_treenode_name)
 #            else:
 #                widget = eval(_GROUP_TYPES[''])(self.updater, group, self._toplevel_treenode_name)
-            widget = TabGroup(self, self.updater, param, self._toplevel_treenode_name)
-            self.editor_widgets.append(widget)
+
+#            self.editor_widgets.append(widget)
 #            rospy.logdebug('groups._create_node_widgets ' +
 #                           'name=%s',
 #                           name)
@@ -249,7 +256,7 @@ class GroupWidget(QWidget):
         return self._param_names
 
     def _node_disable_bt_clicked(self):
-#        rospy.logdebug('param_gs _node_disable_bt_clicked')
+        #rospy.logdebug('param_gs _node_disable_bt_clicked')
         self.sig_node_disabled_selected.emit(self._toplevel_treenode_name)
 
 
@@ -290,8 +297,7 @@ class HideGroup(BoxGroup):
 
 class TabGroup(GroupWidget):
     def __init__(self, parent, updater, config, nodename):
-        configs = [] #TODO fix (Gonzo)
-        super(TabGroup, self).__init__(updater, configs, nodename)
+        super(TabGroup, self).__init__(updater, config, nodename)
         self.parent = parent
 
         if not self.parent.tab_bar:

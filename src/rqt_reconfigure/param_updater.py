@@ -88,8 +88,10 @@ class ParamUpdater(threading.Thread):
             except Exception as ex:
 #                rospy.logdebug('Could not update configs due to {}'.format(
 #                                                                     ex.value))
+                print("ParamUpdater : " + str(ex))
                 pass
             except Exception as exc:
+                print("ParamUpdater : " + str(exc))
                 raise exc
 
     def update(self, config):

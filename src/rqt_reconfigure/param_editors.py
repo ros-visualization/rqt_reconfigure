@@ -41,14 +41,13 @@ from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QLabel, QMenu, QWidget
 from qt_gui.ros_package_helper import get_package_path
 from decimal import Decimal
-#import rospkg
-#import rospy
+
 
 EDITOR_TYPES = {
     1: 'BooleanEditor',
-    4: 'StringEditor',
     2: 'IntegerEditor',
     3: 'DoubleEditor',
+    4: 'StringEditor',
 }
 
 # These .ui files are frequently loaded multiple times. Since file access
@@ -63,6 +62,7 @@ ui_num = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
 ui_int = ui_num
 ui_enum = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                        'editor_enum.ui')
+
 
 
 class EditorWidget(QWidget):
@@ -83,10 +83,11 @@ class EditorWidget(QWidget):
         super(EditorWidget, self).__init__()
 
         self._updater = updater
-        self.param_name = config.name
-
-        #self.param_default = config['default'] #TODO get default (gonzo)
-        self.param_description = "Test description" #config['description']
+        self.param_name = config['name']
+        #self.param_default = config['default']
+        self.param_default = config['value']
+        self.param_description = config['descr'].description
+        self.param_type = config['type']
 
         self.old_value = None
 
@@ -114,7 +115,9 @@ class EditorWidget(QWidget):
         self.old_value = value
 
     def update_configuration(self, value):
-        self._updater.update({self.param_name: value})
+        print("Updated : " + str(value))
+        #self._updater.update({self.param_name: value})
+        self._updater.update({self.param_name: {'value' : value, 'type' : self.param_type}})
 
     def display(self, grid):
         '''
@@ -153,7 +156,8 @@ class BooleanEditor(EditorWidget):
 
         # Initialize to default
         #self.update_value(config['default'])
-        self.update_value(0)
+        print("Value : " + str(config['value']))
+        self.update_value(config['value'])
 
         # Make checkbox update param server
         self._checkbox.stateChanged.connect(self._box_checked)
@@ -166,7 +170,11 @@ class BooleanEditor(EditorWidget):
 
     def update_value(self, value):
         super(BooleanEditor, self).update_value(value)
+        print("update value")
         self._update_signal.emit(value)
+        self._checkbox.setChecked(value) #TODO siganl doesn't work (Gonzo)
+        print("updated value")
+
 
 
 class StringEditor(EditorWidget):
@@ -176,7 +184,7 @@ class StringEditor(EditorWidget):
         super(StringEditor, self).__init__(updater, config)
         loadUi(ui_str, self)
 
-        self._paramval_lineedit.setText(config['default'])
+        self._paramval_lineedit.setText(config['value'])
 
         # Update param server when cursor leaves the text field
         # or enter is pressed.
@@ -190,12 +198,12 @@ class StringEditor(EditorWidget):
 
     def update_value(self, value):
         super(StringEditor, self).update_value(value)
-#        rospy.logdebug('StringEditor update_value={}'.format(value))
+        rospy.logdebug('StringEditor update_value={}'.format(value))
         self._update_signal.emit(value)
 
     def edit_finished(self):
-#        rospy.logdebug('StringEditor edit_finished val={}'.format(
-#                                              self._paramval_lineedit.text()))
+        rospy.logdebug('StringEditor edit_finished val={}'.format(
+                                              self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -210,8 +218,8 @@ class IntegerEditor(EditorWidget):
         loadUi(ui_int, self)
 
         # Set ranges
-        self._min = int(config['min'])
-        self._max = int(config['max'])
+        self._min = int(config['descr'].integer_range[0].from_value)
+        self._max = int(config['descr'].integer_range[0].to_value)
         self._min_val_label.setText(str(self._min))
         self._max_val_label.setText(str(self._max))
         self._slider_horizontal.setRange(self._min, self._max)
@@ -222,8 +230,8 @@ class IntegerEditor(EditorWidget):
                                                            self._max, self))
 
         # Initialize to default
-        self._paramval_lineEdit.setText(str(config['default']))
-        self._slider_horizontal.setValue(int(config['default']))
+        self._paramval_lineEdit.setText(str(config['value']))
+        self._slider_horizontal.setValue(int(config['value']))
 
         # Make slider update text (locally)
         self._slider_horizontal.sliderMoved.connect(self._slider_moved)
@@ -278,6 +286,7 @@ class IntegerEditor(EditorWidget):
         self._update_paramserver(self._min)
 
 
+
 class DoubleEditor(EditorWidget):
     _update_signal = Signal(float)
 
@@ -286,21 +295,21 @@ class DoubleEditor(EditorWidget):
         loadUi(ui_num, self)
 
         # Handle unbounded doubles nicely
-        if config['min'] != -float('inf'):
-            self._min = float(config['min'])
+        if config['descr'].floating_point_range[0].from_value != -float('inf'):
+            self._min = float(config['descr'].floating_point_range[0].from_value)
             self._min_val_label.setText(str(self._min))
         else:
             self._min = -1e10000
             self._min_val_label.setText('-inf')
 
-        if config['max'] != float('inf'):
-            self._max = float(config['max'])
+        if config['descr'].floating_point_range[0].to_value != float('inf'):
+            self._max = float(config['descr'].floating_point_range[0].to_value)
             self._max_val_label.setText(str(self._max))
         else:
             self._max = 1e10000
             self._max_val_label.setText('inf')
 
-        if config['min'] != -float('inf') and config['max'] != float('inf'):
+        if config['descr'].floating_point_range[0].from_value != -float('inf') and config['descr'].floating_point_range[0].to_value != float('inf'):
             self._func = lambda x: x
             self._ifunc = self._func
         else:
@@ -323,9 +332,9 @@ class DoubleEditor(EditorWidget):
         self._paramval_lineEdit.setValidator(validator)
 
         # Initialize to defaults
-        self._paramval_lineEdit.setText(str(config['default']))
+        self._paramval_lineEdit.setText(str(config['value']))
         self._slider_horizontal.setValue(
-                                     self._get_value_slider(config['default']))
+                                     self._get_value_slider(config['value']))
 
         # Make slider update text (locally)
         self._slider_horizontal.sliderMoved.connect(self._slider_moved)

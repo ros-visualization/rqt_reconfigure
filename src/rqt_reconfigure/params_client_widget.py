@@ -32,62 +32,40 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-import time
 
-from python_qt_binding.QtCore import QMargins, QSize, Qt, Signal
-from python_qt_binding.QtGui import QIcon, QFont
+
+from python_qt_binding.QtCore import QMargins
+from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
-                                         QPushButton, QWidget, QFormLayout,
-                                         QGroupBox, QLabel, QPushButton,
-                                         QTabWidget, QVBoxLayout )
-from .param_editors import BooleanEditor, DoubleEditor, EditorWidget, \
-                           EDITOR_TYPES, EnumEditor, IntegerEditor, \
-                           StringEditor
+                                         QPushButton, QWidget)
+from .param_editors import EditorWidget
 from .param_groups import GroupWidget, find_cfg
 from .param_updater import ParamUpdater
+
 
 import yaml
 
 
-#class ParamsClientWidget(GroupWidget):
-class ParamsClientWidget(QWidget):
+class ParamsClientWidget(GroupWidget):
     """
     A wrapper of dynamic_reconfigure.client instance.
     Represents a widget where users can view and modify ROS params.
     """
-
-    # public signal
-    sig_node_disabled_selected = Signal(str)
-    sig_node_state_change = Signal(bool)
 
     def __init__(self, reconf, node_name):
         """
         :type reconf: dynamic_reconfigure.client
         :type node_name: str
         """
-
+        print("ParamsClientWidget - __init__ -- 0")
+        #group_desc = reconf.get_group_descriptions()
         config = reconf.get_group_descriptions()
-
-        #TODO get Parameters
-        # client = node.create_client(
-        #     ListParameters,
-        #     '{node_name.full_name}/list_parameters'.format_map(locals()))
-        # request = ListParameters.Request()
-        # response = client.call(request);
-        # config.parameters = response.result.names
-
- #        config['state']
-#         config['name']
-#         config['parameters']
-#         config['groups']
+        print("ParamsClientWidget - __init__ -- 0.1 " + str(config))
 
         #rospy.logdebug('DynreconfClientWidget.group_desc=%s', group_desc)
-#        super(ParamsClientWidget, self).__init__(ParamUpdater(reconf),
-#                                                    group_desc, node_name)
-        super(ParamsClientWidget, self).__init__(),
-
-        self.updater = ParamUpdater(reconf)
-
+        super(ParamsClientWidget, self).__init__(ParamUpdater(reconf),
+                                                    config, node_name)
+        print("ParamsClientWidget - __init__ -- 1")
         # Save and load buttons
         self.button_widget = QWidget(self)
         self.button_header = QHBoxLayout(self.button_widget)
@@ -108,93 +86,11 @@ class ParamsClientWidget(QWidget):
         self.setMinimumWidth(150)
 
         self.reconf = reconf
+        print("ParamsClientWidget - __init__ -- 2")
         self.updater.start()
         self.reconf.config_callback = self.config_callback
         self._node_grn = node_name
-
-        verticalLayout = QVBoxLayout(self)
-        verticalLayout.setContentsMargins(QMargins(0, 0, 0, 0))
-
-        _widget_nodeheader = QWidget()
-        _h_layout_nodeheader = QHBoxLayout(_widget_nodeheader)
-        _h_layout_nodeheader.setContentsMargins(QMargins(0, 0, 0, 0))
-
-        self.nodename_qlabel = QLabel(self)
-        font = QFont('Trebuchet MS, Bold')
-        font.setUnderline(True)
-        font.setBold(True)
-
-        # Button to close a node.
-        _icon_disable_node = QIcon.fromTheme('window-close')
-        _bt_disable_node = QPushButton(_icon_disable_node, '', self)
-        _bt_disable_node.setToolTip('Hide this node')
-        _bt_disable_node_size = QSize(36, 24)
-        _bt_disable_node.setFixedSize(_bt_disable_node_size)
-        _bt_disable_node.pressed.connect(self._node_disable_bt_clicked)
-
-        _h_layout_nodeheader.addWidget(self.nodename_qlabel)
-        _h_layout_nodeheader.addWidget(_bt_disable_node)
-
-        self.nodename_qlabel.setAlignment(Qt.AlignCenter)
-        font.setPointSize(10)
-        self.nodename_qlabel.setFont(font)
-        grid_widget = QWidget(self)
-        self.grid = QFormLayout(grid_widget)
-        verticalLayout.addWidget(_widget_nodeheader)
-        verticalLayout.addWidget(grid_widget, 1)
-        # Again, these UI operation above needs to happen in .ui file.
-
-        self.tab_bar = None  # Every group can have one tab bar
-        self.tab_bar_shown = False
-
-        self.editor_widgets = []
-        self._param_names = []
-
-        self._create_node_widgets(config)
-
-#        rospy.logdebug('Groups node name={}'.format(nodename))
-        self.nodename_qlabel.setText(node_name)
-
-    def _create_node_widgets(self, config):
-        '''
-        :type config: Dict?
-        '''
-        i_debug = 0
-#        for param in config['parameters']:
-
-        for param in config:
-            begin = time.time() * 1000
-            editor_type = '(none)'
-
-            #if param['edit_method']:  #TODO this should go away (Gonzo)
-            #    widget = EnumEditor(self.updater, param)
-            if param.type in EDITOR_TYPES:
-#                rospy.logdebug('GroupWidget i_debug=%d param type =%s',
-#                               i_debug,
-#                               param['type'])
-                editor_type = EDITOR_TYPES[param.type]
-                widget = eval(editor_type)(self.updater, param)
-
-            self.editor_widgets.append(widget)
-            self._param_names.append(param.name)
-
-#            rospy.logdebug('groups._create_node_widgets num editors=%d',
-#                           i_debug)
-
-            end = time.time() * 1000
-            time_elap = end - begin
-#            rospy.logdebug('ParamG editor={} loop=#{} Time={}msec'.format(
-#                                              editor_type, i_debug, time_elap))
-            i_debug += 1
-
-        for i, ed in enumerate(self.editor_widgets):
-            ed.display(self.grid)
-
-#        rospy.logdebug('GroupWdgt._create_node_widgets len(editor_widgets)=%d',
-#                       len(self.editor_widgets))
-
-    def display(self, grid):
-        grid.addRow(self)
+        print("ParamsClientWidget - __init__ -- 3")
 
     def get_node_grn(self):
 
@@ -209,13 +105,13 @@ class ParamsClientWidget(QWidget):
 
             names = [name for name, v in config.items()]
             # v isn't used but necessary to get key and put it into dict.
-        #    rospy.logdebug('config_callback name={} v={}'.format(name, v))
+            rospy.logdebug('config_callback name={} v={}'.format(name, v))
 
             for widget in self.editor_widgets:
                 if isinstance(widget, EditorWidget):
                     if widget.param_name in names:
-                        rospy.logdebug('EDITOR widget.param_name=%s',
-                                       widget.param_name)
+#                        rospy.logdebug('EDITOR widget.param_name=%s',
+#                                       widget.param_name)
                         widget.update_value(config[widget.param_name])
                 elif isinstance(widget, GroupWidget):
                     cfg = find_cfg(config, widget.param_name)
@@ -252,18 +148,14 @@ class ParamsClientWidget(QWidget):
         try:
             self.reconf.update_configuration(configuration)
         except ServiceException as e:
-        #    rospy.logwarn('Call for reconfiguration wasn\'t successful because: %s', e.message)
+#            rospy.logwarn('Call for reconfiguration wasn\'t successful because: %s', e.message)
             pass
         except DynamicReconfigureParameterException as e:
-        #    rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
+#            rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
             pass
         except DynamicReconfigureCallbackException as e:
-        #    rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
+#            rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
             pass
-
-    def _node_disable_bt_clicked(self):
-#        rospy.logdebug('param_gs _node_disable_bt_clicked')
-        self.sig_node_disabled_selected.emit(self._toplevel_treenode_name)
 
     def close(self):
         self.reconf.close()

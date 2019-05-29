@@ -114,6 +114,7 @@ class TreenodeQstdItem(ReadonlyItem):
         """
         @param params_client:
         """
+        print("SET PARAMETERS CLIENT")
         self._params_client = params_client
 #        rospy.logdebug('Qitem set params_client={} param={}'.format(
 #                                                       self._params_client,
@@ -131,39 +132,48 @@ class TreenodeQstdItem(ReadonlyItem):
         @return: None if dynreconf_client is not yet generated.
         @raise ROSException:
         """
-
+        print("get_params_widget 1")
         if not self._paramsclient_widget:
 #            rospy.logdebug('get params_client={}'.format(
 #                                                       self._params_client))
 #            rospy.logdebug('In get_params_widget 1')
+            print("get_params_widget 2")
             if not self._params_client:
+                print("get_params_widget 3")
                 self.connect_param_server()
 #            rospy.logdebug('In get_dynreconf_widget 2')
-
+            print("get_params_widget 4")
             timeout = 3 * 100
             loop = 0
             # Loop until _dynreconf_client is set. self._dynreconf_client gets
             # set from different thread (in ParamserverConnectThread).
+            print("get_params_widget 5")
             while self._params_client == None:
                 #Avoid deadlock
                 if timeout < loop:
                     #Make itself unclickable
+                    print("get_params_widget 6")
                     self.setEnabled(False)
                     raise Exception('params client failed')
 
+                print("get_params_widget 7")
                 time.sleep(0.01)
                 loop += 1
 #                rospy.logdebug('In get_params_widget loop#{}'.format(loop))
-
+            print("get_params_widget 9")
 #            rospy.logdebug('In get_dynreconf_widget 4')
             self._paramsclient_widget = ParamsClientWidget(
                                                        self._params_client,
                                                        self._param_name_raw)
+
+            print("get_params_widget 10")
             # Creating the DynreconfClientWidget transfers ownership of the _dynreconf_client
             # to it. If it is destroyed from Qt, we need to clear our reference to it and
             # stop the param server thread we had.
             self._paramsclient_widget.destroyed.connect(self.clear_paramsclient_widget)
+            print("get_params_widget 11")
             self._paramsclient_widget.destroyed.connect(self.disconnect_param_server)
+            print("get_params_widget 12")
 #            rospy.logdebug('In get_dynreconf_widget 5')
 
         else:

@@ -36,6 +36,7 @@ from rcl_interfaces.srv import ListParameters
 from rcl_interfaces.srv import GetParameters
 from rcl_interfaces.srv import SetParameters
 from rcl_interfaces.srv import DescribeParameters
+from rcl_interfaces.msg import Parameter
 import json
 
 
@@ -76,21 +77,79 @@ class ParametersServiceClient(object):
 
     def get_group_descriptions(self):
         resp = self._list_params_client.call(ListParameters.Request())
-        print("names: " + json.dumps(resp.result.names))
         req = DescribeParameters.Request()
         req.names = resp.result.names
+        print(":: NAMES : " + str(req.names))
         resp = self._describe_params_client.call(req)
-        return resp.descriptors
+        print(":: RESP : " + str(resp))
+
+        config = []
+        i = 0
+        val_req = GetParameters.Request()
+
+        for name, descr in zip(req.names, resp.descriptors):
+            param = {}
+            param['name'] = name
+            param['descr'] = descr
+            print("**************NAME : " + str(param['name']))
+            print("**************DESCR : " + str(param['descr']))
+            if param['descr'].type >= 1 and param['descr'].type <= 4 :
+                val_req.names.append(param['name'])
+                config.append(param)
+
+        val_resp = self._get_params_client.call(val_req)
+        for param, val in zip( config, val_resp.values):
+            print("Values    asdfsdf : " + str(val))
+            if val.type == 1:
+                print("bool_value : " + str(val.bool_value) )
+                param['value']=bool(val.bool_value)
+            if val.type == 2:
+                param['value']=val.integer_value
+            if val.type == 3:
+                param['value']=val.double_value
+            if val.type == 4:
+                param['value']=val.string_value
+            param['type'] = val.type
+
+        for conf in config:
+            print("Config : " + param['name'] + " " +  str(param['descr']) + " " + str(param['type']) )
+
+        return config
 
     def get_configuration(self):
         return self._node.call().response
 
     def update_configuration(self, configuration):
+        print("Update configuration called : " + str(configuration.items()))
         req = SetParameters.Request()
+        for name, vals in configuration.items():
+            param = Parameter()
+            if vals['type'] == 1:
+                print("type  boolean")
+                param.name = name
+                param.value.type = 1
+                param.value.bool_value = vals['value']
+                req.parameters.append(param)
+            if vals['type'] == 2:
+                param.name = name
+                param.value.type = 2
+                param.value.integer_value = vals['value']
+                req.parameters.append(param)
+            if vals['type'] == 3:
+                param.name = name
+                param.value.type = 3
+                param.value.double_value = vals['value']
+                req.parameters.append(param)
+            if vals['type'] == 4:
+                param.name = name
+                param.value.type = 4
+                param.value.string_value = vals['value']
+                req.parameters.append(param)
+
+        print("calling with : " + str(req))
         #todo, set parameters in terms of Parameter from service
-        req.parameters=configuration
-        self._set_params_client.call()
-        return self._node.call(configuration).response
+        return self._set_params_client.call(req)
+
 
     def close(self):
         pass

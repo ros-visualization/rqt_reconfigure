@@ -205,6 +205,7 @@ class NodeSelectorWidget(QWidget):
         # Determine if it's terminal treenode.
         found_node = False
         for nodeitem in self._nodeitems.values():
+            print("SELECTING   1 ")
             name_nodeitem = nodeitem.data(Qt.DisplayRole)
             name_rosnode_leaf = rosnode_name_selected[
                        rosnode_name_selected.rfind(RqtRosGraph.DELIM_GRN) + 1:]
@@ -214,23 +215,25 @@ class NodeSelectorWidget(QWidget):
             if ((name_nodeitem == rosnode_name_selected) and
                 (name_nodeitem[name_nodeitem.rfind(RqtRosGraph.DELIM_GRN) + 1:]
                  == name_rosnode_leaf)):
-
+                print("SELECTING   2 ")
 #                rospy.logdebug('terminal str {} MATCH {}'.format(
 #                                             name_nodeitem, name_rosnode_leaf))
                 found_node = True
                 break
         if not found_node:  # Only when it's NOT a terminal we deselect it.
+            print("SELECTING   3 ")
             self.selectionModel.select(index_current,
                                        QItemSelectionModel.Deselect)
             return
 
         # Only when it's a terminal we move forward.
-
+        print("SELECTING   4 ")
         item_child = self._nodeitems[rosnode_name_selected]
         item_widget = None
         try:
             item_widget = item_child.get_params_widget()
         except Exception as e:
+            print("SELECTING   5  Exception : " + repr(e))
             raise e
 #        rospy.logdebug('item_selected={} child={} widget={}'.format(
 #                       index_current, item_child, item_widget))
@@ -289,7 +292,7 @@ class NodeSelectorWidget(QWidget):
                 self._selection_selected(index_current, rosnode_name_selected)
             except Exception as e:
                 #TODO: print to sysmsg pane
-                err_msg = e.message + '. Connection to node=' + \
+                err_msg = '. Connection to node=' + \
                           format(rosnode_name_selected) + ' failed'
                 self._signal_msg.emit(err_msg)
 #                rospy.logerr(err_msg)
@@ -432,8 +435,8 @@ class NodeSelectorWidget(QWidget):
 
     def _prune_nodetree_pernode(self):
         try:
-            nodes = dyn_reconf.find_reconfigure_services()
-        except rosservice.ROSServiceIOException as e:
+            nodes = self._parameters_services.find_reconfigure_services()
+        except Exception as e:
 #            rospy.logerr("Reconfigure GUI cannot connect to master.")
             raise e  # TODO Make sure 'raise' here returns or finalizes func.
 
