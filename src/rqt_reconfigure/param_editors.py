@@ -131,6 +131,9 @@ class BooleanEditor(EditorWidget):
         )
         loadUi(ui_bool, self)
 
+        #Set inital value
+        self._checkbox.setChecked(self.parameter.value)
+
         # Make checkbox update param server
         self._checkbox.stateChanged.connect(self._box_checked)
 
@@ -145,7 +148,7 @@ class BooleanEditor(EditorWidget):
     def update_local(self, value):
         super(BooleanEditor, self).update_local(value)
         self._update_signal.emit(value)
-        # self._checkbox.setChecked(value) #TODO siganl doesn't work (Gonzo)
+        #self._checkbox.setChecked(value) #TODO siganl doesn't work (Gonzo)
 
 
 class StringEditor(EditorWidget):
@@ -171,18 +174,14 @@ class StringEditor(EditorWidget):
         self.cmenu.addAction(self.tr('Set to Empty String')).triggered.connect(self._set_to_empty)
 
         if self.descriptor.read_only:
-            self._paramval_lineedit.setEnabled(False)
+            self._paramval_lineedit.setReadOnly(True)
             self.cmenu.setEnabled(False)
 
     def update_local(self, value):
         super(StringEditor, self).update_local(value)
-        self._logger.debug('StringEditor update_value={}'.format(value))
         self._update_signal.emit(value)
 
     def edit_finished(self):
-        self._logger.debug('StringEditor edit_finished val={}'.format(
-            self._paramval_lineedit.text()
-        ))
         self.update(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
