@@ -35,13 +35,15 @@ import os
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 
+from qt_gui.ros_package_helper import get_package_path
+
 
 class TextFilterWidget(QWidget):
     """
     Taken from rqt_console.TextFilterWidget. Only modification from it is .ui
     file in use that takes more generic form (only textfiedl).
     """
-    def __init__(self, parentfilter, package_path, display_list_args=None):
+    def __init__(self, parentfilter, display_list_args=None):
         """
         Widget for displaying interactive data related to text filtering.
 
@@ -53,8 +55,10 @@ class TextFilterWidget(QWidget):
         :param display_list_args: empty list, ''list''
         """
         super(TextFilterWidget, self).__init__()
-        ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
-                               'text_filter_widget.ui')
+        ui_file = os.path.join(
+            get_package_path('rqt_reconfigure'), 'share', 'rqt_reconfigure', 'resource',
+            'text_filter_widget.ui'
+        )
         loadUi(ui_file, self)
         self.setObjectName('TextFilterWidget')
         # When data is changed it is stored in the parent filter

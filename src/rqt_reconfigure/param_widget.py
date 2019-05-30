@@ -34,22 +34,22 @@
 
 from __future__ import division
 
-from qt_gui.ros_package_helper import get_package_path
+
 import sys
 
 from python_qt_binding.QtCore import Signal, QMargins
-from python_qt_binding.QtWidgets import (QLabel, QHBoxLayout, QSplitter,
-                                         QVBoxLayout, QWidget)
+from python_qt_binding.QtWidgets import (
+    QLabel, QHBoxLayout, QSplitter, QVBoxLayout, QWidget
+)
 
 from rqt_reconfigure.node_selector_widget import NodeSelectorWidget
 from rqt_reconfigure.paramedit_widget import ParameditWidget
 from rqt_reconfigure.text_filter import TextFilter
 from rqt_reconfigure.text_filter_widget import TextFilterWidget
 
-from rqt_reconfigure.parameters_services import ParametersServices
 
 class ParamWidget(QWidget):
-    _TITLE_PLUGIN = 'Dynamic Reconfigure'
+    _TITLE_PLUGIN = 'Parameter Reconfigure'
 
     # To be connected to PluginContainerWidget
     sig_sysmsg = Signal(str)
@@ -70,57 +70,56 @@ class ParamWidget(QWidget):
         reflect the available functionality, file & class names remain
         'param', expecting all the parameters will become handle-able.
         """
-
         super(ParamWidget, self).__init__()
         self.setObjectName(self._TITLE_PLUGIN)
         self.setWindowTitle(self._TITLE_PLUGIN)
-
-        package_path = get_package_path('rqt_reconfigure')
-
-        parameters_service = ParametersServices(context.node)
 
         #TODO: .ui file needs to replace the GUI components declaration
         #            below. For unknown reason, referring to another .ui files
         #            from a .ui that is used in this class failed. So for now,
         #            I decided not use .ui in this class.
         #            If someone can tackle this I'd appreciate.
-        _hlayout_top = QHBoxLayout(self)
-        _hlayout_top.setContentsMargins(QMargins(0, 0, 0, 0))
+        hlayout_top = QHBoxLayout(self)
+        hlayout_top.setContentsMargins(QMargins(0, 0, 0, 0))
         self._splitter = QSplitter(self)
-        _hlayout_top.addWidget(self._splitter)
+        hlayout_top.addWidget(self._splitter)
 
-        _vlayout_nodesel_widget = QWidget()
-        _vlayout_nodesel_side = QVBoxLayout()
-        _hlayout_filter_widget = QWidget(self)
-        _hlayout_filter = QHBoxLayout()
+        vlayout_nodesel_widget = QWidget()
+        vlayout_nodesel_side = QVBoxLayout()
+        hlayout_filter_widget = QWidget(self)
+        hlayout_filter = QHBoxLayout()
         self._text_filter = TextFilter()
-        self.filter_lineedit = TextFilterWidget(self._text_filter, package_path)
+        self.filter_lineedit = TextFilterWidget(self._text_filter)
         self.filterkey_label = QLabel("&Filter key:")
         self.filterkey_label.setBuddy(self.filter_lineedit)
-        _hlayout_filter.addWidget(self.filterkey_label)
-        _hlayout_filter.addWidget(self.filter_lineedit)
-        _hlayout_filter_widget.setLayout(_hlayout_filter)
-        self._nodesel_widget = NodeSelectorWidget(self, package_path, parameters_service, self.sig_sysmsg)
-        _vlayout_nodesel_side.addWidget(_hlayout_filter_widget)
-        _vlayout_nodesel_side.addWidget(self._nodesel_widget)
-        _vlayout_nodesel_side.setSpacing(1)
-        _vlayout_nodesel_widget.setLayout(_vlayout_nodesel_side)
+        hlayout_filter.addWidget(self.filterkey_label)
+        hlayout_filter.addWidget(self.filter_lineedit)
+        hlayout_filter_widget.setLayout(hlayout_filter)
+        self._nodesel_widget = NodeSelectorWidget(
+            self, context, self.sig_sysmsg
+        )
+        vlayout_nodesel_side.addWidget(hlayout_filter_widget)
+        vlayout_nodesel_side.addWidget(self._nodesel_widget)
+        vlayout_nodesel_side.setSpacing(1)
+        vlayout_nodesel_widget.setLayout(vlayout_nodesel_side)
 
-        reconf_widget = ParameditWidget(package_path)
+        param_edit_widget = ParameditWidget()
 
-        self._splitter.insertWidget(0, _vlayout_nodesel_widget)
-        self._splitter.insertWidget(1, reconf_widget)
+        self._splitter.insertWidget(0, vlayout_nodesel_widget)
+        self._splitter.insertWidget(1, param_edit_widget)
         # 1st column, _vlayout_nodesel_widget, to minimize width.
         # 2nd col to keep the possible max width.
         self._splitter.setStretchFactor(0, 0)
         self._splitter.setStretchFactor(1, 1)
 
         # Signal from paramedit widget to node selector widget.
-        reconf_widget.sig_node_disabled_selected.connect(
-                                       self._nodesel_widget.node_deselected)
+        param_edit_widget.sig_node_disabled_selected.connect(
+            self._nodesel_widget.node_deselected
+        )
         # Pass name of node to editor widget
         self._nodesel_widget.sig_node_selected.connect(
-                                                     reconf_widget.show_reconf)
+            param_edit_widget.show
+        )
 
         if not node:
             title = self._TITLE_PLUGIN
@@ -128,17 +127,21 @@ class ParamWidget(QWidget):
             title = self._TITLE_PLUGIN + ' %s' % node
         self.setObjectName(title)
 
-        #Connect filter signal-slots.
+        # Connect filter signal-slots.
         self._text_filter.filter_changed_signal.connect(
-                                            self._filter_key_changed)
+            self._filter_key_changed
+        )
 
         # Open any clients indicated from command line
-#        self.sig_selected.connect(self._nodesel_widget.node_selected)
-#        for rn in [rospy.resolve_name(c) for c in context.argv()]:
-#            if rn in self._nodesel_widget.get_paramitems():
-#                self.sig_selected.emit(rn)
-#            else:
-#                rospy.logwarn('Could not find a dynamic reconfigure client named \'%s\'', str(rn))
+        self.sig_selected.connect(self._nodesel_widget.node_selected)
+
+        for grn in context.argv():
+            if grn in self._nodesel_widget.get_nodeitems():
+                self.sig_selected.emit(grn)
+            else:
+                self._logger.warning(
+                    'Could not find a node named \'%s\'', str(grn)
+                )
 
     def shutdown(self):
         #TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch
