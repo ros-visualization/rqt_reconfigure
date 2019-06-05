@@ -1,6 +1,6 @@
 <package format="3">
 	<name>rqt_reconfigure</name>
-	<version>1.4.10</version>
+	<version>1.0.1</version>
 	<description>This rqt plugin succeeds former dynamic_reconfigure's GUI
 		(reconfigure_gui), and provides the way to view and edit the parameters
 		that are accessible via dynamic_reconfigure.<br />
