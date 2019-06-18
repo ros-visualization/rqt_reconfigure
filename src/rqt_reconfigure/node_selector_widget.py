@@ -38,7 +38,6 @@ from collections import OrderedDict
 import os
 import time
 
-#import dynamic_reconfigure as dyn_reconf
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, Signal
 try:

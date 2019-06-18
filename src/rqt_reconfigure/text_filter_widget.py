@@ -37,7 +37,6 @@ from python_qt_binding.QtWidgets import QWidget
 
 from qt_gui.ros_package_helper import get_package_path
 
-
 class TextFilterWidget(QWidget):
     """
     Taken from rqt_console.TextFilterWidget. Only modification from it is .ui

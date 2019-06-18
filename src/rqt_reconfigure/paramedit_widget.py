@@ -42,7 +42,6 @@ from qt_gui.ros_package_helper import get_package_path
 from rqt_py_common.layout_util import LayoutUtil
 
 import rclpy
-
 from .param_client_widget import ParamClientWidget
 
 

@@ -34,7 +34,6 @@
 
 from __future__ import division
 
-
 import sys
 
 from python_qt_binding.QtCore import Signal, QMargins
@@ -70,6 +69,7 @@ class ParamWidget(QWidget):
         reflect the available functionality, file & class names remain
         'param', expecting all the parameters will become handle-able.
         """
+
         super(ParamWidget, self).__init__()
         self.setObjectName(self._TITLE_PLUGIN)
         self.setWindowTitle(self._TITLE_PLUGIN)

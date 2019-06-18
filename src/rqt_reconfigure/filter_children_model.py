@@ -39,7 +39,6 @@ try:
     from python_qt_binding.QtCore import QSortFilterProxyModel  # Qt 5
 except ImportError:
     from python_qt_binding.QtGui import QSortFilterProxyModel  # Qt 4
-
 import rclpy
 
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
@@ -64,9 +63,11 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
     def __init__(self, parent):
         super(FilterChildrenModel, self).__init__(parent)
+
         # :Key: Internal ID of QModelIndex of each treenode.
         # :Value: TreenodeStatus
         # self._treenodes = OrderedDict()
+
         self._parent = parent
         self._toplv_parent_prev = None
         self._logger = rclpy.logging.get_logger(__name__)
