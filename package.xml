@@ -1,4 +1,4 @@
-<package format="3">
+<package format="2">
 	<name>rqt_reconfigure</name>
 	<version>1.0.1</version>
 	<description>This rqt plugin succeeds former dynamic_reconfigure's GUI
@@ -23,18 +23,19 @@
 	<author>Isaac Saito</author>
 	<author>Ze'ev Klapow</author>
 
-	<buildtool_depend>ament_cmake</buildtool_depend>
-
-  <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
+	<exec_depend>ament_index_python</exec_depend>
+	<exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
 	<exec_depend>python3-catkin-pkg-modules</exec_depend>
 	<exec_depend>qt_gui_py_common</exec_depend>
 	<exec_depend>rqt_gui</exec_depend>
 	<exec_depend>rqt_gui_py</exec_depend>
-  <exec_depend>rqt_py_console</exec_depend>
+	<exec_depend>rqt_py_console</exec_depend>
 	<exec_depend>rqt_py_common</exec_depend>
 
 	<export>
-		<rqt_gui plugin="${prefix}/plugin.xml" />
-		<build_type>ament_cmake</build_type>
+		<build_type>ament_python</build_type>
+		<rqt_gui plugin="${prefix}/plugin.xml"/>
+		<architecture_independent/>
 	</export>
+
 </package>

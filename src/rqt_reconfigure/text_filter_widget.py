@@ -35,7 +35,7 @@ import os
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 
-from qt_gui.ros_package_helper import get_package_path
+from ament_index_python import get_resource
 
 class TextFilterWidget(QWidget):
     """
@@ -54,8 +54,9 @@ class TextFilterWidget(QWidget):
         :param display_list_args: empty list, ''list''
         """
         super(TextFilterWidget, self).__init__()
+        _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(
-            get_package_path('rqt_reconfigure'), 'share', 'rqt_reconfigure', 'resource',
+            package_path, 'share', 'rqt_reconfigure', 'resource',
             'text_filter_widget.ui'
         )
         loadUi(ui_file, self)

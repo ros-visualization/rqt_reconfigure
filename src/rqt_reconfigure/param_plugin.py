@@ -35,7 +35,7 @@
 from rqt_gui_py.plugin import Plugin
 from rqt_py_common.plugin_container_widget import PluginContainerWidget
 
-from .param_widget import ParamWidget
+from rqt_reconfigure.param_widget import ParamWidget
 
 
 class ParamPlugin(Plugin):
@@ -46,7 +46,8 @@ class ParamPlugin(Plugin):
         """
 
         super(ParamPlugin, self).__init__(context)
-        self.setObjectName('Dynamic Reconfigure')
+        self.setObjectName('ParamPlugin')
+
 
         self._plugin_widget = ParamWidget(context)
         self._widget = PluginContainerWidget(self._plugin_widget, True, False)

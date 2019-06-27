@@ -48,7 +48,7 @@ from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
 import rclpy
 
-from qt_gui.ros_package_helper import get_package_path
+from ament_index_python import get_resource
 
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
 from rqt_reconfigure.filter_children_model import FilterChildrenModel
@@ -77,7 +77,7 @@ class NodeSelectorWidget(QWidget):
         self._logger = rclpy.logging.get_logger(__name__)
 
         self.stretch = None
-        package_path = get_package_path('rqt_reconfigure')
+        _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                                'node_selector.ui')
         loadUi(ui_file, self)

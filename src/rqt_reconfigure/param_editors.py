@@ -41,13 +41,13 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Signal, QLocale
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QLabel, QMenu, QWidget
-from qt_gui.ros_package_helper import get_package_path
+from ament_index_python import get_resource
 
 from rclpy.parameter import Parameter
 
 # These .ui files are frequently loaded multiple times. Since file access
 # costs a lot, only load each file once.
-package_path = get_package_path('rqt_reconfigure')
+_, package_path = get_resource('packages', 'rqt_graph')
 
 class EditorWidget(QWidget):
     '''

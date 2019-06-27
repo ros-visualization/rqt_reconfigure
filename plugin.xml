@@ -11,7 +11,7 @@
       </group>
       <label>Dynamic Reconfigure</label>
       <icon type="theme">accessories-text-editor</icon>
-      <statustip>A Python GUI for viewing and editing dynamic_reconfigure parameters.</statustip>
+      <statustip>A Python GUI for viewing and editing parameters.</statustip>
     </qtgui>
   </class>
 </library>

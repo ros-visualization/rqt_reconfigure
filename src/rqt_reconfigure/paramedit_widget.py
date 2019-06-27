@@ -38,11 +38,11 @@ from collections import OrderedDict
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
-from qt_gui.ros_package_helper import get_package_path
+from ament_index_python import get_resource
 from rqt_py_common.layout_util import LayoutUtil
 
 import rclpy
-from .param_client_widget import ParamClientWidget
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 
 
 class ParameditWidget(QWidget):
@@ -59,7 +59,7 @@ class ParameditWidget(QWidget):
         """"""
         super(ParameditWidget, self).__init__()
 
-        package_path = get_package_path('rqt_reconfigure')
+        _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure',
                                'resource', 'paramedit_pane.ui')
         loadUi(ui_file, self, {'ParameditWidget': ParameditWidget})

@@ -45,10 +45,10 @@ from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
 import rclpy
 import yaml
 
-from .param_api import create_param_client
+from rqt_reconfigure.param_api import create_param_client
 # *Editor classes that are not explicitly used within this .py file still need
 # to be imported. They are invoked implicitly during runtime.
-from .param_editors import (BooleanEditor, DoubleEditor, EditorWidget,
+from rqt_reconfigure.param_editors import (BooleanEditor, DoubleEditor, EditorWidget,
                             EDITOR_TYPES, IntegerEditor, StringEditor)
 
 
