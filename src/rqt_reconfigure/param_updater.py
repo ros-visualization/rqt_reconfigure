@@ -35,20 +35,20 @@
 import threading
 import time
 
-import rospy
+from rospy import ServiceException
 
 from . import logging
 
 
 class ParamUpdater(threading.Thread):
-    '''
+    """
     Using dynamic_reconfigure that is passed in __init__, this thread updates
     the Dynamic Reconfigure server's value.
 
     This class works for a single element in a single parameter.
-    '''
+    """
 
-    #TODO: Modify variable names to the ones that's more intuitive.
+    # TODO: Modify variable names to the ones that's more intuitive.
 
     def __init__(self, reconf):
         """
@@ -69,11 +69,11 @@ class ParamUpdater(threading.Thread):
         logging.debug(' ParamUpdater started')
 
         while not self._stop_flag:
-            if self._timestamp_last_pending is None or _timestamp_last_commit >= self._timestamp_last_pending:
-                    with self._condition_variable:
-                        logging.debug(' ParamUpdater loop 1.1')
-                        self._condition_variable.wait()
-                        logging.debug(' ParamUpdater loop 1.2')
+            if _timestamp_last_commit >= self._timestamp_last_pending:
+                with self._condition_variable:
+                    logging.debug(' ParamUpdater loop 1.1')
+                    self._condition_variable.wait()
+                    logging.debug(' ParamUpdater loop 1.2')
             logging.debug(' ParamUpdater loop 2')
 
             if self._stop_flag:
@@ -84,13 +84,13 @@ class ParamUpdater(threading.Thread):
             self._configs_pending = {}
 
             logging.debug('  run last_commit={}, last_pend={}'.format(
-                         _timestamp_last_commit, self._timestamp_last_pending))
+                _timestamp_last_commit, self._timestamp_last_pending))
 
             try:
                 self._reconf.update_configuration(configs_tobe_updated)
-            except rospy.ServiceException as ex:
+            except ServiceException as ex:
                 logging.debug('Could not update configs due to {}'.format(
-                                                                     ex.value))
+                    ex.value))
             except Exception as exc:
                 raise exc
 

@@ -32,27 +32,28 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-import rospy
+from dynamic_reconfigure import (DynamicReconfigureCallbackException,
+                                 DynamicReconfigureParameterException)
 
 from python_qt_binding.QtCore import QMargins
 from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
                                          QPushButton, QWidget)
-from . import logging
-from .param_editors import EditorWidget
-from .param_groups import GroupWidget, find_cfg
-from .param_updater import ParamUpdater
 
-from dynamic_reconfigure import (DynamicReconfigureParameterException,
-                                 DynamicReconfigureCallbackException)
 from rospy.service import ServiceException
 
 import yaml
+
+from . import logging
+from .param_editors import EditorWidget
+from .param_groups import find_cfg, GroupWidget
+from .param_updater import ParamUpdater
 
 
 class DynreconfClientWidget(GroupWidget):
     """
     A wrapper of dynamic_reconfigure.client instance.
+
     Represents a widget where users can view and modify ROS params.
     """
 
@@ -61,7 +62,6 @@ class DynreconfClientWidget(GroupWidget):
         :type reconf: dynamic_reconfigure.client
         :type node_name: str
         """
-
         group_desc = reconf.get_group_descriptions()
         logging.debug('DynreconfClientWidget.group_desc=%s', group_desc)
         super(DynreconfClientWidget, self).__init__(ParamUpdater(reconf),
@@ -92,54 +92,53 @@ class DynreconfClientWidget(GroupWidget):
         self._node_grn = node_name
 
     def get_node_grn(self):
-
         return self._node_grn
 
     def config_callback(self, config):
 
-        #TODO: Think about replacing callback architecture with signals.
+        # TODO: Think about replacing callback architecture with signals.
 
         if config:
             # TODO: should use config.keys but this method doesnt exist
 
             names = [name for name, v in config.items()]
             # v isn't used but necessary to get key and put it into dict.
-            logging.debug('config_callback name={} v={}'.format(name, v))
+            # logging.debug('config_callback name={} v={}'.format(name, v))
 
             for widget in self.editor_widgets:
                 if isinstance(widget, EditorWidget):
                     if widget.param_name in names:
                         logging.debug('EDITOR widget.param_name=%s',
-                                       widget.param_name)
+                                      widget.param_name)
                         widget.update_value(config[widget.param_name])
                 elif isinstance(widget, GroupWidget):
                     cfg = find_cfg(config, widget.param_name)
                     logging.debug('GROUP widget.param_name=%s',
-                                   widget.param_name)
+                                  widget.param_name)
                     widget.update_group(cfg)
 
     def _handle_load_clicked(self):
         filename = QFileDialog.getOpenFileName(
-                self, self.tr('Load from File'), '.',
-                self.tr('YAML file {.yaml} (*.yaml)'))
+            self, self.tr('Load from File'), '.',
+            self.tr('YAML file {.yaml} (*.yaml)'))
         if filename[0] != '':
             self.load_param(filename[0])
 
     def _handle_save_clicked(self):
         filename = QFileDialog.getSaveFileName(
-                self, self.tr('Save parameters to file...'), '.',
-                self.tr('YAML files {.yaml} (*.yaml)'))
+            self, self.tr('Save parameters to file...'), '.',
+            self.tr('YAML files {.yaml} (*.yaml)'))
         if filename[0] != '':
             self.save_param(filename[0])
 
     def save_param(self, filename):
         configuration = self.reconf.get_configuration()
         if configuration is not None:
-            with file(filename, 'w') as f:
+            with open(filename, 'w') as f:
                 yaml.dump(configuration, f)
 
     def load_param(self, filename):
-        with file(filename, 'r') as f:
+        with open(filename, 'r') as f:
             configuration = {}
             for doc in yaml.load_all(f.read()):
                 configuration.update(doc)
@@ -147,11 +146,20 @@ class DynreconfClientWidget(GroupWidget):
         try:
             self.reconf.update_configuration(configuration)
         except ServiceException as e:
-            logging.warn('Call for reconfiguration wasn\'t successful because: %s', e.message)
+            logging.warn(
+                "Call for reconfiguration wasn't successful because: %s",
+                e.message
+            )
         except DynamicReconfigureParameterException as e:
-            logging.warn('Reconfiguration wasn\'t successful because: %s', e.message)
+            logging.warn(
+                "Reconfiguration wasn't successful because: %s",
+                e.message
+            )
         except DynamicReconfigureCallbackException as e:
-            logging.warn('Reconfiguration wasn\'t successful because: %s', e.message)
+            logging.warn(
+                "Reconfiguration wasn't successful because: %s",
+                e.message
+            )
 
     def close(self):
         self.reconf.close()
@@ -163,5 +171,5 @@ class DynreconfClientWidget(GroupWidget):
         self.deleteLater()
 
     def filter_param(self, filter_key):
-        #TODO impl
+        # TODO impl
         pass

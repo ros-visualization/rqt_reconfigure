@@ -32,18 +32,16 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-import os
 from collections import OrderedDict
+import os
 
-import dynamic_reconfigure.client
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import Qt, Signal
+from python_qt_binding.QtCore import Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
+
 from rqt_py_common.layout_util import LayoutUtil
-import rospy
 
 from . import logging
-from .dynreconf_client_widget import DynreconfClientWidget
 
 
 class ParameditWidget(QWidget):
@@ -69,7 +67,9 @@ class ParameditWidget(QWidget):
         # Adding the list of Items
         self.vlayout = QVBoxLayout(self.scrollarea_holder_widget)
 
-        #self._set_index_widgets(self.listview, paramitems_dict) # causes error
+        # causes error
+        # self._set_index_widgets(self.listview, paramitems_dict)
+
         self.destroyed.connect(self.close)
 
     def _set_index_widgets(self, view, paramitems_dict):
@@ -90,7 +90,7 @@ class ParameditWidget(QWidget):
         node_grn = dynreconf_widget.get_node_grn()
         logging.debug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
 
-        if not node_grn in self._dynreconf_clients.keys():
+        if node_grn not in self._dynreconf_clients.keys():
             # Add dynreconf widget if there isn't already one.
 
             # Client gets renewed every time different node_grn was clicked.
@@ -98,16 +98,16 @@ class ParameditWidget(QWidget):
             self._dynreconf_clients.__setitem__(node_grn, dynreconf_widget)
             self.vlayout.addWidget(dynreconf_widget)
             dynreconf_widget.sig_node_disabled_selected.connect(
-                                                           self._node_disabled)
+                self._node_disabled)
 
         else:  # If there has one already existed, remove it.
             self._remove_node(node_grn)
-            #LayoutUtil.clear_layout(self.vlayout)
+            # LayoutUtil.clear_layout(self.vlayout)
 
             # Re-add the rest of existing items to layout.
-            #for k, v in self._dynreconf_clients.items():
-            #    logging.info('added to layout k={} v={}'.format(k, v))
-            #    self.vlayout.addWidget(v)
+            # for k, v in self._dynreconf_clients.items():
+            #     logging.info('added to layout k={} v={}'.format(k, v))
+            #     self.vlayout.addWidget(v)
 
         # Add color to alternate the rim of the widget.
         LayoutUtil.alternate_color(
@@ -121,18 +121,17 @@ class ParameditWidget(QWidget):
             dc.close()
             dc = None
 
-            self._paramedit_scrollarea.deleteLater()
+        self._paramedit_scrollarea.deleteLater()
 
     def filter_param(self, filter_key):
         """
         :type filter_key:
         """
+        # TODO Pick nodes that match filter_key.
 
-        #TODO Pick nodes that match filter_key.
-
-        #TODO For the nodes that are kept in previous step, call
-        #     DynreconfWidget.filter_param for all of its existing
-        #     instances.
+        # TODO For the nodes that are kept in previous step, call
+        #      DynreconfWidget.filter_param for all of its existing
+        #      instances.
         pass
 
     def _remove_node(self, node_grn):
@@ -152,11 +151,12 @@ class ParameditWidget(QWidget):
 
         item = self.vlayout.itemAt(i)
         if isinstance(item, QWidgetItem):
-                item.widget().close()
+            item.widget().close()
         w = self._dynreconf_clients.pop(node_grn)
 
         logging.debug('popped={} Len of left clients={}'.format(
-                                            w, len(self._dynreconf_clients)))
+            w, len(self._dynreconf_clients)
+        ))
 
     def _node_disabled(self, node_grn):
         logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))

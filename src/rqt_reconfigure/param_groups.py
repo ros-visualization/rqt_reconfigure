@@ -34,19 +34,19 @@
 
 import time
 
-from python_qt_binding.QtCore import QSize, Qt, Signal, QMargins
+from python_qt_binding.QtCore import QMargins, QSize, Qt, Signal
 from python_qt_binding.QtGui import QFont, QIcon
-from python_qt_binding.QtWidgets import (QFormLayout, QHBoxLayout,
-                                         QGroupBox, QLabel, QPushButton,
+from python_qt_binding.QtWidgets import (QFormLayout, QGroupBox,
+                                         QHBoxLayout, QLabel, QPushButton,
                                          QTabWidget, QVBoxLayout, QWidget)
-import rospy
 
 from . import logging
 # *Editor classes that are not explicitly used within this .py file still need
 # to be imported. They are invoked implicitly during runtime.
-from .param_editors import BooleanEditor, DoubleEditor, EditorWidget, \
-                           EDITOR_TYPES, EnumEditor, IntegerEditor, \
-                           StringEditor
+from .param_editors import (  # noqa: F401
+    BooleanEditor, DoubleEditor, EDITOR_TYPES, EditorWidget, EnumEditor,
+    IntegerEditor, StringEditor
+)
 
 _GROUP_TYPES = {
     '': 'BoxGroup',
@@ -58,10 +58,10 @@ _GROUP_TYPES = {
 
 
 def find_cfg(config, name):
-    '''
+    """
     (Ze'ev) reaaaaallly cryptic function which returns the config object for
     specified group.
-    '''
+    """
     cfg = None
     for k, v in config.items():
         try:
@@ -83,23 +83,22 @@ def find_cfg(config, name):
 
 
 class GroupWidget(QWidget):
-    '''
+    """
     (Isaac's guess as of 12/13/2012)
     This class bonds multiple Editor instances that are associated with
     a single node as a group.
-    '''
+    """
 
     # public signal
     sig_node_disabled_selected = Signal(str)
     sig_node_state_change = Signal(bool)
 
     def __init__(self, updater, config, nodename):
-        '''
+        """
         :param config:
         :type config: Dictionary? defined in dynamic_reconfigure.client.Client
         :type nodename: str
-        '''
-
+        """
         super(GroupWidget, self).__init__()
         self.state = config['state']
         self.param_name = config['name']
@@ -156,16 +155,16 @@ class GroupWidget(QWidget):
         self.nodename_qlabel.setText(nodename)
 
         # Labels should not stretch
-        #self.grid.setColumnStretch(1, 1)
-        #self.setLayout(self.grid)
+        # self.grid.setColumnStretch(1, 1)
+        # self.setLayout(self.grid)
 
     def collect_paramnames(self, config):
         pass
 
     def _create_node_widgets(self, config):
-        '''
+        """
         :type config: Dict?
-        '''
+        """
         i_debug = 0
         for param in config['parameters']:
             begin = time.time() * 1000
@@ -175,41 +174,41 @@ class GroupWidget(QWidget):
                 widget = EnumEditor(self.updater, param)
             elif param['type'] in EDITOR_TYPES:
                 logging.debug('GroupWidget i_debug=%d param type =%s',
-                               i_debug,
-                               param['type'])
+                              i_debug, param['type'])
                 editor_type = EDITOR_TYPES[param['type']]
                 widget = eval(editor_type)(self.updater, param)
 
             self.editor_widgets.append(widget)
             self._param_names.append(param['name'])
 
-            logging.debug('groups._create_node_widgets num editors=%d',
-                           i_debug)
+            logging.debug(
+                'groups._create_node_widgets num editors=%d', i_debug)
 
             end = time.time() * 1000
             time_elap = end - begin
             logging.debug('ParamG editor={} loop=#{} Time={}msec'.format(
-                                              editor_type, i_debug, time_elap))
+                editor_type, i_debug, time_elap))
             i_debug += 1
 
         for name, group in config['groups'].items():
             if group['type'] == 'tab':
-                widget = TabGroup(self, self.updater, group, self._toplevel_treenode_name)
+                widget = TabGroup(
+                    self, self.updater, group, self._toplevel_treenode_name)
             elif group['type'] in _GROUP_TYPES.keys():
-                widget = eval(_GROUP_TYPES[group['type']])(self.updater, group, self._toplevel_treenode_name)
+                widget = eval(_GROUP_TYPES[group['type']])(
+                    self.updater, group, self._toplevel_treenode_name)
             else:
-                widget = eval(_GROUP_TYPES[''])(self.updater, group, self._toplevel_treenode_name)
+                widget = eval(_GROUP_TYPES[''])(
+                    self.updater, group, self._toplevel_treenode_name)
 
             self.editor_widgets.append(widget)
-            logging.debug('groups._create_node_widgets ' +
-                           'name=%s',
-                           name)
+            logging.debug('groups._create_node_widgets name=%s', name)
 
         for i, ed in enumerate(self.editor_widgets):
             ed.display(self.grid)
 
         logging.debug('GroupWdgt._create_node_widgets len(editor_widgets)=%d',
-                       len(self.editor_widgets))
+                      len(self.editor_widgets))
 
     def display(self, grid):
         grid.addRow(self)
@@ -236,9 +235,9 @@ class GroupWidget(QWidget):
             w.close()
 
     def get_treenode_names(self):
-        '''
+        """
         :rtype: str[]
-        '''
+        """
         return self._param_names
 
     def _node_disable_bt_clicked(self):
@@ -247,6 +246,7 @@ class GroupWidget(QWidget):
 
 
 class BoxGroup(GroupWidget):
+
     def __init__(self, updater, config, nodename):
         super(BoxGroup, self).__init__(updater, config, nodename)
 
@@ -258,6 +258,7 @@ class BoxGroup(GroupWidget):
 
 
 class CollapseGroup(BoxGroup):
+
     def __init__(self, updater, config, nodename):
         super(CollapseGroup, self).__init__(updater, config, nodename)
         self.box.setCheckable(True)
@@ -275,6 +276,7 @@ class CollapseGroup(BoxGroup):
 
 
 class HideGroup(BoxGroup):
+
     def __init__(self, updater, config, nodename):
         super(HideGroup, self).__init__(updater, config, nodename)
         self.box.setVisible(self.state)
@@ -282,6 +284,7 @@ class HideGroup(BoxGroup):
 
 
 class TabGroup(GroupWidget):
+
     def __init__(self, parent, updater, config, nodename):
         super(TabGroup, self).__init__(updater, config, nodename)
         self.parent = parent
@@ -307,6 +310,7 @@ class TabGroup(GroupWidget):
 
 class ApplyGroup(BoxGroup):
     class ApplyUpdater:
+
         def __init__(self, updater, loopback):
             self.updater = updater
             self.loopback = loopback
