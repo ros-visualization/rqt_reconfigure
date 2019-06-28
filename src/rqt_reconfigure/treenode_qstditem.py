@@ -44,6 +44,7 @@ import rospy
 from rospy.exceptions import ROSException
 from rqt_py_common.data_items import ReadonlyItem
 
+from . import logging
 from .dynreconf_client_widget import DynreconfClientWidget
 
 
@@ -58,7 +59,7 @@ class ParamserverConnectThread(threading.Thread):
         try:
             dynreconf_client = dynamic_reconfigure.client.Client(
                                        str(self._param_name_raw), timeout=5.0)
-            rospy.logdebug('ParamserverConnectThread dynreconf_client={}'. \
+            logging.debug('ParamserverConnectThread dynreconf_client={}'. \
                           format(dynreconf_client))
             self._parent.set_dynreconf_client(dynreconf_client)
         except rospy.exceptions.ROSException as e:
@@ -101,14 +102,14 @@ class TreenodeQstdItem(ReadonlyItem):
             if args[1]:
                 self._is_rosnode = True
         except IndexError:  # tuple index out of range etc.
-                rospy.logerr('TreenodeQstdItem IndexError')
+                logging.error('TreenodeQstdItem IndexError')
 
     def set_dynreconf_client(self, dynreconf_client):
         """
         @param dynreconf_client: dynamic_reconfigure.client.Client
         """
         self._dynreconf_client = dynreconf_client
-        rospy.logdebug('Qitem set dynreconf_client={} param={}'.format(
+        logging.debug('Qitem set dynreconf_client={} param={}'.format(
                                                        self._dynreconf_client,
                                                        self._param_name_raw))
 
@@ -126,12 +127,12 @@ class TreenodeQstdItem(ReadonlyItem):
         """
 
         if not self._dynreconfclient_widget:
-            rospy.logdebug('get dynreconf_client={}'.format(
+            logging.debug('get dynreconf_client={}'.format(
                                                        self._dynreconf_client))
-            rospy.logdebug('In get_dynreconf_widget 1')
+            logging.debug('In get_dynreconf_widget 1')
             if not self._dynreconf_client:
                 self.connect_param_server()
-            rospy.logdebug('In get_dynreconf_widget 2')
+            logging.debug('In get_dynreconf_widget 2')
 
             timeout = 3 * 100
             loop = 0
@@ -146,9 +147,9 @@ class TreenodeQstdItem(ReadonlyItem):
 
                 time.sleep(0.01)
                 loop += 1
-                rospy.logdebug('In get_dynreconf_widget loop#{}'.format(loop))
+                logging.debug('In get_dynreconf_widget loop#{}'.format(loop))
 
-            rospy.logdebug('In get_dynreconf_widget 4')
+            logging.debug('In get_dynreconf_widget 4')
             self._dynreconfclient_widget = DynreconfClientWidget(
                                                        self._dynreconf_client,
                                                        self._param_name_raw)
@@ -157,7 +158,7 @@ class TreenodeQstdItem(ReadonlyItem):
             # stop the param server thread we had.
             self._dynreconfclient_widget.destroyed.connect(self.clear_dynreconfclient_widget)
             self._dynreconfclient_widget.destroyed.connect(self.disconnect_param_server)
-            rospy.logdebug('In get_dynreconf_widget 5')
+            logging.debug('In get_dynreconf_widget 5')
 
         else:
             pass
@@ -178,7 +179,7 @@ class TreenodeQstdItem(ReadonlyItem):
         # If the treenode doesn't represent ROS Node, return None.
         with self._lock:
             if not self._is_rosnode:
-                rospy.logerr('connect_param_server failed due to missing ' +
+                logging.error('connect_param_server failed due to missing ' +
                              'ROS Node. Return with nothing.')
                 return
 
@@ -214,7 +215,7 @@ class TreenodeQstdItem(ReadonlyItem):
             item = ReadonlyItem(paramname)
             item.setBackground(brush)
             paramnames_items.append(item)
-        rospy.logdebug('enable_param_items len of paramnames={}'.format(
+        logging.debug('enable_param_items len of paramnames={}'.format(
                                                         len(paramnames_items)))
         self.appendColumn(paramnames_items)
 
@@ -224,7 +225,7 @@ class TreenodeQstdItem(ReadonlyItem):
                            http://www.ros.org/wiki/Names).
                            Example: /paramname/subpara/subsubpara/...
         """
-        rospy.logdebug('_set_param_name param_name={} '.format(param_name))
+        logging.debug('_set_param_name param_name={} '.format(param_name))
 
         #  separate param_name by forward slash
         self._list_treenode_names = param_name.split('/')
@@ -234,7 +235,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
         self._toplevel_treenode_name = self._list_treenode_names[0]
 
-        rospy.logdebug('paramname={} nodename={} _list_params[-1]={}'.format(
+        logging.debug('paramname={} nodename={} _list_params[-1]={}'.format(
                        param_name, self._toplevel_treenode_name,
                        self._list_treenode_names[-1]))
 

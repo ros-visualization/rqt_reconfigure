@@ -41,6 +41,7 @@ from python_qt_binding.QtWidgets import (QFormLayout, QHBoxLayout,
                                          QTabWidget, QVBoxLayout, QWidget)
 import rospy
 
+from . import logging
 # *Editor classes that are not explicitly used within this .py file still need
 # to be imported. They are invoked implicitly during runtime.
 from .param_editors import BooleanEditor, DoubleEditor, EditorWidget, \
@@ -151,7 +152,7 @@ class GroupWidget(QWidget):
 
         self._create_node_widgets(config)
 
-        rospy.logdebug('Groups node name={}'.format(nodename))
+        logging.debug('Groups node name={}'.format(nodename))
         self.nodename_qlabel.setText(nodename)
 
         # Labels should not stretch
@@ -173,7 +174,7 @@ class GroupWidget(QWidget):
             if param['edit_method']:
                 widget = EnumEditor(self.updater, param)
             elif param['type'] in EDITOR_TYPES:
-                rospy.logdebug('GroupWidget i_debug=%d param type =%s',
+                logging.debug('GroupWidget i_debug=%d param type =%s',
                                i_debug,
                                param['type'])
                 editor_type = EDITOR_TYPES[param['type']]
@@ -182,12 +183,12 @@ class GroupWidget(QWidget):
             self.editor_widgets.append(widget)
             self._param_names.append(param['name'])
 
-            rospy.logdebug('groups._create_node_widgets num editors=%d',
+            logging.debug('groups._create_node_widgets num editors=%d',
                            i_debug)
 
             end = time.time() * 1000
             time_elap = end - begin
-            rospy.logdebug('ParamG editor={} loop=#{} Time={}msec'.format(
+            logging.debug('ParamG editor={} loop=#{} Time={}msec'.format(
                                               editor_type, i_debug, time_elap))
             i_debug += 1
 
@@ -200,14 +201,14 @@ class GroupWidget(QWidget):
                 widget = eval(_GROUP_TYPES[''])(self.updater, group, self._toplevel_treenode_name)
 
             self.editor_widgets.append(widget)
-            rospy.logdebug('groups._create_node_widgets ' +
+            logging.debug('groups._create_node_widgets ' +
                            'name=%s',
                            name)
 
         for i, ed in enumerate(self.editor_widgets):
             ed.display(self.grid)
 
-        rospy.logdebug('GroupWdgt._create_node_widgets len(editor_widgets)=%d',
+        logging.debug('GroupWdgt._create_node_widgets len(editor_widgets)=%d',
                        len(self.editor_widgets))
 
     def display(self, grid):
@@ -241,7 +242,7 @@ class GroupWidget(QWidget):
         return self._param_names
 
     def _node_disable_bt_clicked(self):
-        rospy.logdebug('param_gs _node_disable_bt_clicked')
+        logging.debug('param_gs _node_disable_bt_clicked')
         self.sig_node_disabled_selected.emit(self._toplevel_treenode_name)
 
 

@@ -43,6 +43,8 @@ from decimal import Decimal
 import rospkg
 import rospy
 
+from . import logging
+
 EDITOR_TYPES = {
     'bool': 'BooleanEditor',
     'str': 'StringEditor',
@@ -187,11 +189,11 @@ class StringEditor(EditorWidget):
 
     def update_value(self, value):
         super(StringEditor, self).update_value(value)
-        rospy.logdebug('StringEditor update_value={}'.format(value))
+        logging.debug('StringEditor update_value={}'.format(value))
         self._update_signal.emit(value)
 
     def edit_finished(self):
-        rospy.logdebug('StringEditor edit_finished val={}'.format(
+        logging.debug('StringEditor edit_finished val={}'.format(
                                               self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
 
@@ -406,7 +408,7 @@ class EnumEditor(EditorWidget):
         try:
             enum = eval(config['edit_method'])['enum']
         except:
-            rospy.logerr("reconfig EnumEditor) Malformed enum")
+            logging.error("reconfig EnumEditor) Malformed enum")
             return
 
         # Setup the enum items
