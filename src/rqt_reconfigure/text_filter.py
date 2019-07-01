@@ -61,11 +61,11 @@ class TextFilter(MessageFilter):
 
         if (self.is_enabled() and
             self._text != '' and
-            not self._qregexp == None  # If None, init process isn't done yet
+            not self._regexp == None   # If None, init process isn't done yet
                                        # and we can ignore the call to this
                                        # method.
             ):
-            pos_hit = self._qregexp.indexIn(text)
+            pos_hit = self._regexp.indexIn(text)
             if pos_hit >= 0:
                 _hit = True
             else:

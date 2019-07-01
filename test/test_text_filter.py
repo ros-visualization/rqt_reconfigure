@@ -62,6 +62,3 @@ class MyTest(unittest.TestCase):
         self.assertEqual(result_regex,
                          True  # Both _query_text & filtered_text overlaps.
                          )
-
-if __name__ == '__main__':
-    unittest.main()
