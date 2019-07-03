@@ -1,40 +1,44 @@
+<?xml version="1.0"?>
 <package format="2">
-	<name>rqt_reconfigure</name>
-	<version>0.4.10</version>
-	<description>This rqt plugin succeeds former dynamic_reconfigure's GUI
-		(reconfigure_gui), and provides the way to view and edit the parameters
-		that are accessible via dynamic_reconfigure.<br />
-		<br />
-		(12/27/2012) In the future, arbitrary parameters that are not associated
-		with any nodes (which are not handled by dynamic_reconfigure) might
-		become handled.
-		However, currently as the name indicates, this pkg solely is dependent
-		on dynamic_reconfigure that allows access to only those params latched
-		to nodes.
-	</description>
-	<maintainer email="logans@cottsay.net">Scott K Logan</maintainer>
+  <name>rqt_reconfigure</name>
+  <version>0.4.10</version>
+  <description>This rqt plugin succeeds former dynamic_reconfigure's GUI
+    (reconfigure_gui), and provides the way to view and edit the parameters
+    that are accessible via dynamic_reconfigure.<br/>
+    <br/>
+    (12/27/2012) In the future, arbitrary parameters that are not associated
+    with any nodes (which are not handled by dynamic_reconfigure) might
+    become handled.
+    However, currently as the name indicates, this pkg solely is dependent
+    on dynamic_reconfigure that allows access to only those params latched
+    to nodes.
+  </description>
+  <maintainer email="logans@cottsay.net">Scott K Logan</maintainer>
 
-	<license>BSD</license>
+  <license>BSD</license>
 
-	<url type="website">http://wiki.ros.org/rqt_reconfigure</url>
-	<url type="repository">https://github.com/ros-visualization/rqt_reconfigure</url>
-	<url type="bugtracker">https://github.com/ros-visualization/rqt_reconfigure/issues</url>
+  <url type="website">http://wiki.ros.org/rqt_reconfigure</url>
+  <url type="repository">https://github.com/ros-visualization/rqt_reconfigure</url>
+  <url type="bugtracker">https://github.com/ros-visualization/rqt_reconfigure/issues</url>
 
-	<author>Isaac Saito</author>
-	<author>Ze'ev Klapow</author>
+  <author>Isaac Saito</author>
+  <author>Ze'ev Klapow</author>
 
-	<buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
-	<exec_depend>dynamic_reconfigure</exec_depend>
-	<exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
-	<exec_depend>rospy</exec_depend>
-	<exec_depend>rqt_console</exec_depend>
-	<exec_depend>rqt_gui</exec_depend>
-	<exec_depend>rqt_gui_py</exec_depend>
-	<exec_depend>rqt_py_common</exec_depend>
+  <build_depend>roslint</build_depend>
+  <exec_depend>dynamic_reconfigure</exec_depend>
+  <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rqt_console</exec_depend>
+  <exec_depend>rqt_gui</exec_depend>
+  <exec_depend>rqt_gui_py</exec_depend>
+  <exec_depend>rqt_py_common</exec_depend>
 
-	<export>
-		<architecture_independent/>
-		<rqt_gui plugin="${prefix}/plugin.xml" />
-	</export>
+  <test_depend>rostest</test_depend>
+
+  <export>
+    <architecture_independent/>
+    <rqt_gui plugin="${prefix}/plugin.xml"/>
+  </export>
 </package>

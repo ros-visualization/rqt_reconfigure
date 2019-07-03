@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rqt_reconfigure)
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roslint)
 catkin_package()
 catkin_python_setup()
 
@@ -13,6 +14,13 @@ install(DIRECTORY resource
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-install(PROGRAMS scripts/rqt_reconfigure
+install(PROGRAMS scripts/${PROJECT_NAME}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+roslint_python(test)
+
+if (CATKIN_ENABLE_TESTING)
+  roslint_add_test()
+  catkin_add_nosetests(test)
+endif()
