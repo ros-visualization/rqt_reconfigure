@@ -41,6 +41,7 @@ from python_qt_binding.QtCore import Signal, QMargins
 from python_qt_binding.QtWidgets import (QLabel, QHBoxLayout, QSplitter,
                                          QVBoxLayout, QWidget)
 
+from rqt_reconfigure import logging
 from rqt_reconfigure.node_selector_widget import NodeSelectorWidget
 from rqt_reconfigure.paramedit_widget import ParameditWidget
 from rqt_reconfigure.text_filter import TextFilter
@@ -135,7 +136,7 @@ class ParamWidget(QWidget):
             if rn in self._nodesel_widget.get_paramitems():
                 self.sig_selected.emit(rn)
             else:
-                rospy.logwarn('Could not find a dynamic reconfigure client named \'%s\'', str(rn))
+                logging.warn('Could not find a dynamic reconfigure client named \'%s\'', str(rn))
 
     def shutdown(self):
         #TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch

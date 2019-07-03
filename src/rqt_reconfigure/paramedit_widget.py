@@ -42,6 +42,7 @@ from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
 from rqt_py_common.layout_util import LayoutUtil
 import rospy
 
+from . import logging
 from .dynreconf_client_widget import DynreconfClientWidget
 
 
@@ -87,7 +88,7 @@ class ParameditWidget(QWidget):
         @param dynreconf_widget:
         """
         node_grn = dynreconf_widget.get_node_grn()
-        rospy.logdebug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
+        logging.debug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
 
         if not node_grn in self._dynreconf_clients.keys():
             # Add dynreconf widget if there isn't already one.
@@ -105,7 +106,7 @@ class ParameditWidget(QWidget):
 
             # Re-add the rest of existing items to layout.
             #for k, v in self._dynreconf_clients.items():
-            #    rospy.loginfo('added to layout k={} v={}'.format(k, v))
+            #    logging.info('added to layout k={} v={}'.format(k, v))
             #    self.vlayout.addWidget(v)
 
         # Add color to alternate the rim of the widget.
@@ -154,11 +155,11 @@ class ParameditWidget(QWidget):
                 item.widget().close()
         w = self._dynreconf_clients.pop(node_grn)
 
-        rospy.logdebug('popped={} Len of left clients={}'.format(
+        logging.debug('popped={} Len of left clients={}'.format(
                                             w, len(self._dynreconf_clients)))
 
     def _node_disabled(self, node_grn):
-        rospy.logdebug('paramedit_w _node_disabled grn={}'.format(node_grn))
+        logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
 
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.

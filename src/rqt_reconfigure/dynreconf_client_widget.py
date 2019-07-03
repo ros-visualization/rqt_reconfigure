@@ -38,6 +38,7 @@ from python_qt_binding.QtCore import QMargins
 from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
                                          QPushButton, QWidget)
+from . import logging
 from .param_editors import EditorWidget
 from .param_groups import GroupWidget, find_cfg
 from .param_updater import ParamUpdater
@@ -62,7 +63,7 @@ class DynreconfClientWidget(GroupWidget):
         """
 
         group_desc = reconf.get_group_descriptions()
-        rospy.logdebug('DynreconfClientWidget.group_desc=%s', group_desc)
+        logging.debug('DynreconfClientWidget.group_desc=%s', group_desc)
         super(DynreconfClientWidget, self).__init__(ParamUpdater(reconf),
                                                     group_desc, node_name)
 
@@ -103,17 +104,17 @@ class DynreconfClientWidget(GroupWidget):
 
             names = [name for name, v in config.items()]
             # v isn't used but necessary to get key and put it into dict.
-            rospy.logdebug('config_callback name={} v={}'.format(name, v))
+            logging.debug('config_callback name={} v={}'.format(name, v))
 
             for widget in self.editor_widgets:
                 if isinstance(widget, EditorWidget):
                     if widget.param_name in names:
-                        rospy.logdebug('EDITOR widget.param_name=%s',
+                        logging.debug('EDITOR widget.param_name=%s',
                                        widget.param_name)
                         widget.update_value(config[widget.param_name])
                 elif isinstance(widget, GroupWidget):
                     cfg = find_cfg(config, widget.param_name)
-                    rospy.logdebug('GROUP widget.param_name=%s',
+                    logging.debug('GROUP widget.param_name=%s',
                                    widget.param_name)
                     widget.update_group(cfg)
 
@@ -146,11 +147,11 @@ class DynreconfClientWidget(GroupWidget):
         try:
             self.reconf.update_configuration(configuration)
         except ServiceException as e:
-            rospy.logwarn('Call for reconfiguration wasn\'t successful because: %s', e.message)
+            logging.warn('Call for reconfiguration wasn\'t successful because: %s', e.message)
         except DynamicReconfigureParameterException as e:
-            rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
+            logging.warn('Reconfiguration wasn\'t successful because: %s', e.message)
         except DynamicReconfigureCallbackException as e:
-            rospy.logwarn('Reconfiguration wasn\'t successful because: %s', e.message)
+            logging.warn('Reconfiguration wasn\'t successful because: %s', e.message)
 
     def close(self):
         self.reconf.close()

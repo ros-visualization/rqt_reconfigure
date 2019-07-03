@@ -37,6 +37,8 @@ import time
 
 import rospy
 
+from . import logging
+
 
 class ParamUpdater(threading.Thread):
     '''
@@ -64,15 +66,15 @@ class ParamUpdater(threading.Thread):
     def run(self):
         _timestamp_last_commit = None
 
-        rospy.logdebug(' ParamUpdater started')
+        logging.debug(' ParamUpdater started')
 
         while not self._stop_flag:
             if _timestamp_last_commit >= self._timestamp_last_pending:
                     with self._condition_variable:
-                        rospy.logdebug(' ParamUpdater loop 1.1')
+                        logging.debug(' ParamUpdater loop 1.1')
                         self._condition_variable.wait()
-                        rospy.logdebug(' ParamUpdater loop 1.2')
-            rospy.logdebug(' ParamUpdater loop 2')
+                        logging.debug(' ParamUpdater loop 1.2')
+            logging.debug(' ParamUpdater loop 2')
 
             if self._stop_flag:
                 return
@@ -81,13 +83,13 @@ class ParamUpdater(threading.Thread):
             configs_tobe_updated = self._configs_pending.copy()
             self._configs_pending = {}
 
-            rospy.logdebug('  run last_commit={}, last_pend={}'.format(
+            logging.debug('  run last_commit={}, last_pend={}'.format(
                          _timestamp_last_commit, self._timestamp_last_pending))
 
             try:
                 self._reconf.update_configuration(configs_tobe_updated)
             except rospy.ServiceException as ex:
-                rospy.logdebug('Could not update configs due to {}'.format(
+                logging.debug('Could not update configs due to {}'.format(
                                                                      ex.value))
             except Exception as exc:
                 raise exc
