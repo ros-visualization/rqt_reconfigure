@@ -18,7 +18,7 @@ install(PROGRAMS scripts/${PROJECT_NAME}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-roslint_python(test)
+roslint_python()
 
 if (CATKIN_ENABLE_TESTING)
   roslint_add_test()

@@ -32,16 +32,16 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
+from decimal import Decimal
 import math
 import os
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import Signal, QLocale
+from python_qt_binding.QtCore import QLocale, Signal
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
-from python_qt_binding.QtWidgets import QLabel, QMenu, QWidget
-from decimal import Decimal
+from python_qt_binding.QtWidgets import QMenu, QWidget
+
 import rospkg
-import rospy
 
 from . import logging
 
@@ -67,20 +67,19 @@ ui_enum = os.path.join(rp.get_path('rqt_reconfigure'), 'resource',
 
 
 class EditorWidget(QWidget):
-    '''
+    """
     This class is abstract -- its child classes should be instantiated.
 
     There exist two kinds of "update" methods:
     - _update_paramserver for Parameter Server.
     - update_value for the value displayed on GUI.
-    '''
+    """
 
     def __init__(self, updater, config):
-        '''
+        """
         @param updater: A class that extends threading.Thread.
         @type updater: rqt_reconfigure.param_updater.ParamUpdater
-        '''
-
+        """
         super(EditorWidget, self).__init__()
 
         self._updater = updater
@@ -91,18 +90,20 @@ class EditorWidget(QWidget):
         self.old_value = None
 
         self.cmenu = QMenu()
-        self.cmenu.addAction(self.tr('Set to Default')).triggered.connect(self._set_to_default)
+        self.cmenu.addAction(
+            self.tr('Set to Default')
+        ).triggered.connect(self._set_to_default)
 
     def _update_paramserver(self, value):
-        '''
+        """
         Update the value on Parameter Server.
-        '''
+        """
         if value != self.old_value:
             self.update_configuration(value)
             self.old_value = value
 
     def update_value(self, value):
-        '''
+        """
         To be implemented in subclass, but still used.
 
         Update the value that's displayed on the arbitrary GUI component
@@ -110,18 +111,18 @@ class EditorWidget(QWidget):
 
         This method is not called from the GUI thread, so any changes to
         QObjects will need to be done through a signal.
-        '''
+        """
         self.old_value = value
 
     def update_configuration(self, value):
         self._updater.update({self.param_name: value})
 
     def display(self, grid):
-        '''
+        """
         Should be overridden in subclass.
 
         :type grid: QFormLayout
-        '''
+        """
         self._paramname_label.setText(self.param_name)
 #        label_paramname = QLabel(self.param_name)
 #        label_paramname.setWordWrap(True)
@@ -132,9 +133,9 @@ class EditorWidget(QWidget):
         self._paramname_label.contextMenuEvent = self.contextMenuEvent
 
     def close(self):
-        '''
+        """
         Should be overridden in subclass.
-        '''
+        """
         pass
 
     def _set_to_default(self):
@@ -185,7 +186,8 @@ class StringEditor(EditorWidget):
         self._update_signal.connect(self._paramval_lineedit.setText)
 
         # Add special menu items
-        self.cmenu.addAction(self.tr('Set to Empty String')).triggered.connect(self._set_to_empty)
+        self.cmenu.addAction(self.tr('Set to Empty String')
+                             ).triggered.connect(self._set_to_empty)
 
     def update_value(self, value):
         super(StringEditor, self).update_value(value)
@@ -194,7 +196,7 @@ class StringEditor(EditorWidget):
 
     def edit_finished(self):
         logging.debug('StringEditor edit_finished val={}'.format(
-                                              self._paramval_lineedit.text()))
+            self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -239,13 +241,15 @@ class IntegerEditor(EditorWidget):
         self._update_signal.connect(self._update_gui)
 
         # Add special menu items
-        self.cmenu.addAction(self.tr('Set to Maximum')).triggered.connect(self._set_to_max)
-        self.cmenu.addAction(self.tr('Set to Minimum')).triggered.connect(self._set_to_min)
+        self.cmenu.addAction(self.tr('Set to Maximum')
+                             ).triggered.connect(self._set_to_max)
+        self.cmenu.addAction(self.tr('Set to Minimum')
+                             ).triggered.connect(self._set_to_min)
 
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText(str(
-                                self._slider_horizontal.sliderPosition()))
+            self._slider_horizontal.sliderPosition()))
 
     def _text_changed(self):
         # This is a final change - update param server
@@ -324,7 +328,7 @@ class DoubleEditor(EditorWidget):
         # Initialize to defaults
         self._paramval_lineEdit.setText(str(config['default']))
         self._slider_horizontal.setValue(
-                                     self._get_value_slider(config['default']))
+            self._get_value_slider(config['default']))
 
         # Make slider update text (locally)
         self._slider_horizontal.sliderMoved.connect(self._slider_moved)
@@ -341,14 +345,17 @@ class DoubleEditor(EditorWidget):
         self._update_signal.connect(self._update_gui)
 
         # Add special menu items
-        self.cmenu.addAction(self.tr('Set to Maximum')).triggered.connect(self._set_to_max)
-        self.cmenu.addAction(self.tr('Set to Minimum')).triggered.connect(self._set_to_min)
-        self.cmenu.addAction(self.tr('Set to NaN')).triggered.connect(self._set_to_nan)
+        self.cmenu.addAction(self.tr('Set to Maximum')
+                             ).triggered.connect(self._set_to_max)
+        self.cmenu.addAction(self.tr('Set to Minimum')
+                             ).triggered.connect(self._set_to_min)
+        self.cmenu.addAction(self.tr('Set to NaN')
+                             ).triggered.connect(self._set_to_nan)
 
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(
-                                                self._get_value_textfield()))))
+            self._get_value_textfield()))))
 
     def _text_changed(self):
         # This is a final change - update param server
@@ -361,14 +368,15 @@ class DoubleEditor(EditorWidget):
         self._update_paramserver(self._get_value_textfield())
 
     def _get_value_textfield(self):
-        '''@return: Current value in text field.'''
-        return self._ifunc(self._slider_horizontal.sliderPosition() /
-                                        self.scale) if self.scale else 0
+        """@return: Current value in text field."""
+        return self._ifunc(
+            self._slider_horizontal.sliderPosition() / self.scale
+        ) if self.scale else 0
 
     def _get_value_slider(self, value):
-        '''
+        """
         @rtype: double
-        '''
+        """
         return int(round((self._func(value)) * self.scale))
 
     def update_value(self, value):
@@ -382,7 +390,8 @@ class DoubleEditor(EditorWidget):
         if not math.isnan(value):
             self._slider_horizontal.setValue(self._get_value_slider(value))
         elif not math.isnan(self.param_default):
-            self._slider_horizontal.setValue(self._get_value_slider(self.param_default))
+            self._slider_horizontal.setValue(
+                self._get_value_slider(self.param_default))
         # Make the text match
         self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(value))))
         self._slider_horizontal.blockSignals(False)
@@ -407,15 +416,15 @@ class EnumEditor(EditorWidget):
 
         try:
             enum = eval(config['edit_method'])['enum']
-        except:
-            logging.error("reconfig EnumEditor) Malformed enum")
+        except:  # noqa: E722
+            logging.error('reconfig EnumEditor) Malformed enum')
             return
 
         # Setup the enum items
         self.names = [item['name'] for item in enum]
         self.values = [item['value'] for item in enum]
 
-        items = ["%s (%s)" % (self.names[i], self.values[i])
+        items = ['%s (%s)' % (self.names[i], self.values[i])
                  for i in range(0, len(self.names))]
 
         # Add items to the combo box
@@ -445,4 +454,3 @@ class EnumEditor(EditorWidget):
         self._combobox.blockSignals(True)
         self._combobox.setCurrentIndex(idx)
         self._combobox.blockSignals(False)
-
