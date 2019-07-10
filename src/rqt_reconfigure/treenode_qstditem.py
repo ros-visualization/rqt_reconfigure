@@ -47,7 +47,7 @@ from rospy.exceptions import ROSException
 from rqt_py_common.data_items import ReadonlyItem
 
 from . import logging
-from .dynreconf_client_widget import DynreconfClientWidget
+from .param_client_widget import ParamClientWidget
 
 
 class ParamserverConnectThread(threading.Thread):
@@ -58,15 +58,15 @@ class ParamserverConnectThread(threading.Thread):
         self._raw_param_name = param_name_raw
 
     def run(self):
-        dynreconf_client = None
+        param_client = None
         try:
-            dynreconf_client = dynamic_reconfigure.client.Client(
+            param_client = dynamic_reconfigure.client.Client(
                 str(self._raw_param_name), timeout=5.0)
             logging.debug(
-                'ParamserverConnectThread dynreconf_client={}'.format(
-                    dynreconf_client
+                'ParamserverConnectThread param_client={}'.format(
+                    param_client
                 ))
-            self._parent.set_dynreconf_client(dynreconf_client)
+            self._parent.set_param_client(param_client)
         except ROSException as e:
             raise type(e)(
                 e.message + "TreenodeQstdItem. Couldn't connect to {}".format(
@@ -95,9 +95,9 @@ class TreenodeQstdItem(ReadonlyItem):
         super(TreenodeQstdItem, self).__init__(grn_current_treenode)
 
         # dynamic_reconfigure.client.Client
-        self._dynreconf_client = None
-        # DynreconfClientWidget
-        self._dynreconfclient_widget = None
+        self._param_client = None
+        # ParamClientWidget
+        self._param_client_widget = None
 
         self._is_rosnode = False
 
@@ -110,71 +110,71 @@ class TreenodeQstdItem(ReadonlyItem):
         except IndexError:  # tuple index out of range etc.
             logging.error('TreenodeQstdItem IndexError')
 
-    def set_dynreconf_client(self, dynreconf_client):
+    def set_param_client(self, param_client):
         """
-        @param dynreconf_client: dynamic_reconfigure.client.Client
+        @param param_client: dynamic_reconfigure.client.Client
         """
-        self._dynreconf_client = dynreconf_client
-        logging.debug('Qitem set dynreconf_client={} param={}'.format(
-            self._dynreconf_client, self._raw_param_name
+        self._param_client = param_client
+        logging.debug('Qitem set param_client={} param={}'.format(
+            self._param_client, self._raw_param_name
         ))
 
-    def clear_dynreconf_client(self):
-        if self._dynreconf_client is not None:
-            self._dynreconf_client.close()
-            del self._dynreconf_client
-            self._dynreconf_client = None
+    def clear_param_client(self):
+        if self._param_client is not None:
+            self._param_client.close()
+            del self._param_client
+            self._param_client = None
 
-    def get_dynreconf_widget(self):
+    def get_param_client_widget(self):
         """
-        @rtype: DynreconfClientWidget (QWidget)
-        @return: None if dynreconf_client is not yet generated.
+        @rtype: ParamClientWidget (QWidget)
+        @return: None if param_client is not yet generated.
         @raise ROSException:
         """
-        if not self._dynreconfclient_widget:
-            logging.debug('get dynreconf_client={}'.format(
-                self._dynreconf_client
+        if not self._param_client_widget:
+            logging.debug('get param_client={}'.format(
+                self._param_client
             ))
-            logging.debug('In get_dynreconf_widget 1')
-            if not self._dynreconf_client:
+            logging.debug('In get_param_client_widget 1')
+            if not self._param_client:
                 self.connect_param_server()
-            logging.debug('In get_dynreconf_widget 2')
+            logging.debug('In get_param_client_widget 2')
 
             timeout = 3 * 100
             loop = 0
-            # Loop until _dynreconf_client is set. self._dynreconf_client gets
+            # Loop until _param_client is set. self._param_client gets
             # set from different thread (in ParamserverConnectThread).
-            while self._dynreconf_client is None:
+            while self._param_client is None:
                 # Avoid deadlock
                 if timeout < loop:
                     # Make itself unclickable
                     self.setEnabled(False)
-                    raise ROSException('dynreconf client failed')
+                    raise ROSException('param client failed')
 
                 time.sleep(0.01)
                 loop += 1
-                logging.debug('In get_dynreconf_widget loop#{}'.format(loop))
+                logging.debug('In get_param_client_widget loop#{}'.format(loop))
 
-            logging.debug('In get_dynreconf_widget 4')
-            self._dynreconfclient_widget = DynreconfClientWidget(
-                self._dynreconf_client, self._raw_param_name
+            logging.debug('In get_param_client_widget 4')
+            self._param_client_widget = ParamClientWidget(
+                self._param_client, self._raw_param_name
             )
-            # Creating the DynreconfClientWidget transfers ownership of the
-            # _dynreconf_client to it. If it is destroyed from Qt, we need to
+            # Creating the ParamClientWidget transfers ownership of the
+            # _param_client to it. If it is destroyed from Qt, we need to
             # clear our reference to it and stop the param server thread we
             # had.
-            self._dynreconfclient_widget.destroyed.connect(
-                self.clear_dynreconfclient_widget)
-            self._dynreconfclient_widget.destroyed.connect(
+            self._param_client_widget.destroyed.connect(
+                self.clear_param_client_widget)
+            self._param_client_widget.destroyed.connect(
                 self.disconnect_param_server)
-            logging.debug('In get_dynreconf_widget 5')
+            logging.debug('In get_param_client_widget 5')
 
         else:
             pass
-        return self._dynreconfclient_widget
+        return self._param_client_widget
 
-    def clear_dynreconfclient_widget(self):
-        self._dynreconfclient_widget = None
+    def clear_param_client_widget(self):
+        self._param_client_widget = None
 
     def connect_param_server(self):
         """
@@ -192,7 +192,7 @@ class TreenodeQstdItem(ReadonlyItem):
                               'ROS Node. Return with nothing.')
                 return
 
-            if not self._dynreconf_client:
+            if not self._param_client:
                 if self._paramserver_connect_thread:
                     if self._paramserver_connect_thread.isAlive():
                         self._paramserver_connect_thread.join(1)
@@ -208,16 +208,16 @@ class TreenodeQstdItem(ReadonlyItem):
                     self._paramserver_connect_thread.join(1)
                 del self._paramserver_connect_thread
                 self._paramserver_connect_thread = None
-            self.clear_dynreconf_client()
+            self.clear_param_client()
 
     def enable_param_items(self):
         """
         Create QStdItem per parameter and addColumn them to myself.
-        :rtype: None if _dynreconf_client is not initiated.
+        :rtype: None if _param_client is not initiated.
         """
-        if not self._dynreconfclient_widget:
+        if not self._param_client_widget:
             return None
-        param_names = self._dynreconfclient_widget.get_treenode_names()
+        param_names = self._param_client_widget.get_treenode_names()
         param_names_items = []
         brush = QBrush(Qt.lightGray)
         for param_name in param_names:

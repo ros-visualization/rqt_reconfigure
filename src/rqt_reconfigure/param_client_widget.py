@@ -50,7 +50,7 @@ from .param_groups import find_cfg, GroupWidget
 from .param_updater import ParamUpdater
 
 
-class DynreconfClientWidget(GroupWidget):
+class ParamClientWidget(GroupWidget):
     """
     A wrapper of dynamic_reconfigure.client instance.
 
@@ -63,9 +63,9 @@ class DynreconfClientWidget(GroupWidget):
         :type node_name: str
         """
         group_desc = reconf.get_group_descriptions()
-        logging.debug('DynreconfClientWidget.group_desc=%s', group_desc)
-        super(DynreconfClientWidget, self).__init__(ParamUpdater(reconf),
-                                                    group_desc, node_name)
+        logging.debug('ParamClientWidget.group_desc=%s', group_desc)
+        super(ParamClientWidget, self).__init__(ParamUpdater(reconf),
+                                                group_desc, node_name)
 
         # Save and load buttons
         self.button_widget = QWidget(self)

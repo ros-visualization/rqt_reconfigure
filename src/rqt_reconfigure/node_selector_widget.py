@@ -55,7 +55,7 @@ import rosservice
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
 
 from rqt_reconfigure import logging
-from rqt_reconfigure.dynreconf_client_widget import DynreconfClientWidget
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.filter_children_model import FilterChildrenModel
 from rqt_reconfigure.treenode_item_model import TreenodeItemModel
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
@@ -65,7 +65,7 @@ class NodeSelectorWidget(QWidget):
     _COL_NAMES = ['Node']
 
     # public signal
-    sig_node_selected = Signal(DynreconfClientWidget)
+    sig_node_selected = Signal(ParamClientWidget)
 
     def __init__(self, parent, rospack, signal_msg=None):
         """
@@ -181,7 +181,7 @@ class NodeSelectorWidget(QWidget):
 
         try:
             reconf_widget = self._nodeitems[
-                rosnode_name_selected].get_dynreconf_widget()
+                rosnode_name_selected].get_param_client_widget()
         except ROSException as e:
             raise e
 
@@ -223,7 +223,7 @@ class NodeSelectorWidget(QWidget):
         item_child = self._nodeitems[rosnode_name_selected]
         item_widget = None
         try:
-            item_widget = item_child.get_dynreconf_widget()
+            item_widget = item_child.get_param_client_widget()
         except ROSException as e:
             raise e
         logging.debug('item_selected={} child={} widget={}'.format(
