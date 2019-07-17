@@ -48,16 +48,15 @@ from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
 import rclpy
 
-from ament_index_python import get_resource
-
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
-from rqt_reconfigure.filter_children_model import FilterChildrenModel
-from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
-from rqt_reconfigure.treenode_item_model import TreenodeItemModel
 
+from rqt_reconfigure.filter_children_model import FilterChildrenModel
+from rqt_reconfigure.treenode_item_model import TreenodeItemModel
+from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
 from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.param_api import find_nodes_with_params
 
+from ament_index_python import get_resource
 
 class NodeSelectorWidget(QWidget):
     _COL_NAMES = ['Node']
@@ -72,17 +71,17 @@ class NodeSelectorWidget(QWidget):
         """
         super(NodeSelectorWidget, self).__init__()
         self._parent = parent
-        self._context = context
+        self.stretch = None
         self._signal_msg = signal_msg
+        self._context = context
         self._logger = rclpy.logging.get_logger(__name__)
 
-        self.stretch = None
         _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                                'node_selector.ui')
         loadUi(ui_file, self)
 
-        # List of the availa98ble nodes. Since the list should be updated over
+        # List of the available nodes. Since the list should be updated over
         # time and we don't want to create node instance per every update
         # cycle, This list instance should better be capable of keeping track.
         self._nodeitems = OrderedDict()
@@ -93,6 +92,7 @@ class NodeSelectorWidget(QWidget):
         #  Setup treeview and models
         self._item_model = TreenodeItemModel()
         self._rootitem = self._item_model.invisibleRootItem()  # QStandardItem
+
         self._nodes_previous = None
 
         # Calling this method updates the list of the node.
@@ -104,7 +104,8 @@ class NodeSelectorWidget(QWidget):
         #             collapse/expansion  state. http://goo.gl/GuwYp can be a
         #             help.
 
-        self._collapse_button.pressed.connect(self._node_selector_view.collapseAll)
+        self._collapse_button.pressed.connect(
+            self._node_selector_view.collapseAll)
         self._expand_button.pressed.connect(self._node_selector_view.expandAll)
         self._refresh_button.pressed.connect(self._refresh_nodes)
 
@@ -130,7 +131,8 @@ class NodeSelectorWidget(QWidget):
         self.selectionModel = self._node_selector_view.selectionModel()
         # Note: self.selectionModel.currentChanged doesn't work to deselect
         # a treenode as expected. Need to use selectionChanged.
-        self.selectionModel.selectionChanged.connect(self._selection_changed_slot)
+        self.selectionModel.selectionChanged.connect(
+            self._selection_changed_slot)
 
     def node_deselected(self, grn):
         """
@@ -140,17 +142,16 @@ class NodeSelectorWidget(QWidget):
         """
         # Obtain the corresponding index.
         qindex_tobe_deselected = self._item_model.get_index_from_grn(grn)
-        self._logger.debug('NodeSelWidt node_deselected qindex={} data={}'.format(
-            qindex_tobe_deselected, qindex_tobe_deselected.data(Qt.DisplayRole))
-        )
+        self._logger.debug('NodeSelWidt node_deselected qindex={} data={}'.
+            format(qindex_tobe_deselected,
+                   qindex_tobe_deselected.data(Qt.DisplayRole)))
 
         # Obtain all indices currently selected.
         indexes_selected = self.selectionModel.selectedIndexes()
         for index in indexes_selected:
             grn_from_selectedindex = RqtRosGraph.get_upper_grn(index, '')
-            self._logger.debug(' Compare given grn={} grn from selected={}'.format(
-                grn, grn_from_selectedindex
-            ))
+            self._logger.debug(' Compare given grn={} grn from selected={}'.
+                format( grn, grn_from_selectedindex))
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_selectedindex:
                 # Deselect the index.
@@ -165,12 +166,12 @@ class NodeSelectorWidget(QWidget):
         # Obtain the corresponding index.
         qindex_tobe_selected = self._item_model.get_index_from_grn(grn)
         self._logger.debug('NodeSelWidt node_selected qindex={} data={}'.format(
-            qindex_tobe_selected, qindex_tobe_selected.data(Qt.DisplayRole)
-        ))
+            qindex_tobe_selected, qindex_tobe_selected.data(Qt.DisplayRole)))
 
         # Select the index.
         if qindex_tobe_selected:
-            self.selectionModel.select(qindex_tobe_selected, QItemSelectionModel.Select)
+            self.selectionModel.select(
+                qindex_tobe_selected, QItemSelectionModel.Select)
 
     def _selection_deselected(self, index_current, rosnode_name_selected):
         """
@@ -180,8 +181,7 @@ class NodeSelectorWidget(QWidget):
 
         try:
             param_client_widget = self._nodeitems[
-                rosnode_name_selected
-            ].get_param_client_widget()
+                rosnode_name_selected].get_param_client_widget()
         except Exception as e:
             raise e
 
@@ -191,8 +191,8 @@ class NodeSelectorWidget(QWidget):
     def _selection_selected(self, index_current, rosnode_name_selected):
         """Intended to be called from _selection_changed_slot."""
         self._logger.debug('_selection_changed_slot row={} col={} data={}'.format(
-            index_current.row(), index_current.column(), index_current.data(Qt.DisplayRole)
-        ))
+            index_current.row(), index_current.column(),
+            index_current.data(Qt.DisplayRole)))
 
         # Determine if it's terminal treenode.
         found_node = False
@@ -204,11 +204,12 @@ class NodeSelectorWidget(QWidget):
             # If name of the leaf in the given name & the name taken from
             # nodeitem list matches.
             if ((name_nodeitem == rosnode_name_selected) and
-                (name_nodeitem[name_nodeitem.rfind(RqtRosGraph.DELIM_GRN) + 1:]
-                 == name_rosnode_leaf)):
+                (name_nodeitem[
+                    name_nodeitem.rfind(RqtRosGraph.DELIM_GRN) + 1:] ==
+                    name_rosnode_leaf)):
+
                 self._logger.debug('terminal str {} MATCH {}'.format(
-                    name_nodeitem, name_rosnode_leaf
-                ))
+                    name_nodeitem, name_rosnode_leaf))
                 found_node = True
                 break
         if not found_node:  # Only when it's NOT a terminal we deselect it.
@@ -217,6 +218,7 @@ class NodeSelectorWidget(QWidget):
             return
 
         # Only when it's a terminal we move forward.
+
         item_child = self._nodeitems[rosnode_name_selected]
         item_widget = None
         try:
@@ -224,8 +226,7 @@ class NodeSelectorWidget(QWidget):
         except Exception as e:
             raise e
         self._logger.debug('item_selected={} child={} widget={}'.format(
-            index_current, item_child, item_widget
-        ))
+            index_current, item_child, item_widget))
         self.sig_node_selected.emit(item_widget)
 
         # Show the node as selected.
@@ -307,7 +308,10 @@ class NodeSelectorWidget(QWidget):
         try:
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
+            self._logger.error(e.message)
+            #TODO: print to sysmsg pane
             raise e  # TODO Make sure 'raise' here returns or finalizes  func.
+
         if not nodes == self._nodes_previous:
             i_node_curr = 1
             num_nodes = len(nodes)
@@ -394,7 +398,9 @@ class NodeSelectorWidget(QWidget):
 
             # Arrange alphabetically by display name
             insert_index = 0
-            while insert_index < treenodeitem_parent.rowCount() and treenodeitem_parent.child(insert_index).text() < name_currentnode:
+            while (insert_index < treenodeitem_parent.rowCount() and
+                   treenodeitem_parent.child(insert_index)
+                   .text() < name_currentnode):
                 insert_index += 1
 
             treenodeitem_parent.insertRow(insert_index, stditem_currentnode)
@@ -416,17 +422,15 @@ class NodeSelectorWidget(QWidget):
         try:
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
-#            rospy.logerr("Reconfigure GUI cannot connect to master.")
+            self._logger.error('Reconfigure GUI cannot connect to master.')
             raise e  # TODO Make sure 'raise' here returns or finalizes func.
 
         for i in reversed(range(0, self._rootitem.rowCount())):
             candidate_for_removal = self._rootitem.child(i).get_raw_param_name()
             if not candidate_for_removal in nodes:
                 self._logger.debug(
-                    'Removing {} because the server is no longer available.'.format(
-                        candidate_for_removal
-                    )
-                )
+                    'Removing {} because the server is no longer available.'.
+                    format(candidate_for_removal))
                 self._rootitem.removeRow(i)
                 self._nodeitems.pop(candidate_for_removal).reset()
 
@@ -461,21 +465,21 @@ class NodeSelectorWidget(QWidget):
             curr_qstd_item = src_model.itemFromIndex(index_deselected)
 
         if selected.indexes() > 0:
-            self._logger.debug('sel={} par={} desel={} sel.d={} par.d={}'.format(
-                index_current, index_parent, index_deselected,
-                index_current.data(Qt.DisplayRole),
-                index_parent.data(Qt.DisplayRole)
-            ) + ' desel.d={} cur.item={}'.format(
-                None,  # index_deselected.data(Qt.DisplayRole)
-                curr_qstd_item
-            ))
-            pass
+            self._logger.debug(
+                'sel={} par={} desel={} '
+                'sel.d={} par.d={} desel.d={} cur.item={}'
+                .format(
+                    index_current, index_parent, index_deselected,
+                    index_current.data(Qt.DisplayRole),
+                    index_parent.data(Qt.DisplayRole),
+                    None,  # index_deselected.data(Qt.DisplayRole)
+                    curr_qstd_item))
         elif deselected.indexes():
-            self._logger.debug('sel={} par={} desel={} sel.d={} par.d={}'.format(
-                index_current, index_parent, index_deselected,
-                None, index_parent.data(Qt.DisplayRole)
-            ) + ' desel.d={} cur.item={}'.format(
-                index_deselected.data(Qt.DisplayRole),
-                curr_qstd_item
-            ))
-            pass
+            self._logger.debug(
+                'sel={} par={} desel={} '
+                'sel.d={} par.d={} desel.d={} cur.item={}'
+                .format(
+                    index_current, index_parent, index_deselected,
+                    None, index_parent.data(Qt.DisplayRole),
+                    index_deselected.data(Qt.DisplayRole),
+                    curr_qstd_item))

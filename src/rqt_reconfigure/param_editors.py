@@ -47,7 +47,7 @@ from rclpy.parameter import Parameter
 
 # These .ui files are frequently loaded multiple times. Since file access
 # costs a lot, only load each file once.
-_, package_path = get_resource('packages', 'rqt_graph')
+_, package_path = get_resource('packages', 'rqt_reconfigure')
 
 class EditorWidget(QWidget):
     '''
@@ -127,8 +127,8 @@ class BooleanEditor(EditorWidget):
     def __init__(self, *args, **kwargs):
         super(BooleanEditor, self).__init__(*args, **kwargs)
         ui_bool = os.path.join(
-            package_path, 'share', 'rqt_reconfigure', 'resource', 'editor_bool.ui'
-        )
+            package_path, 'share', 'rqt_reconfigure', 'resource',
+            'editor_bool.ui')
         loadUi(ui_bool, self)
 
         #Set inital value
@@ -148,7 +148,6 @@ class BooleanEditor(EditorWidget):
     def update_local(self, value):
         super(BooleanEditor, self).update_local(value)
         self._update_signal.emit(value)
-        #self._checkbox.setChecked(value) #TODO siganl doesn't work (Gonzo)
 
 
 class StringEditor(EditorWidget):
@@ -157,8 +156,8 @@ class StringEditor(EditorWidget):
     def __init__(self, *args, **kwargs):
         super(StringEditor, self).__init__(*args, **kwargs)
         ui_str = os.path.join(
-            package_path, 'share', 'rqt_reconfigure', 'resource', 'editor_string.ui'
-        )
+            package_path, 'share', 'rqt_reconfigure', 'resource',
+            'editor_string.ui' )
         loadUi(ui_str, self)
 
         self._paramval_lineedit.setText(self.parameter.value)
@@ -171,7 +170,8 @@ class StringEditor(EditorWidget):
         self._update_signal.connect(self._paramval_lineedit.setText)
 
         # Add special menu items
-        self.cmenu.addAction(self.tr('Set to Empty String')).triggered.connect(self._set_to_empty)
+        self.cmenu.addAction(self.tr('Set to Empty String')
+                             ).triggered.connect(self._set_to_empty)
 
         if self.descriptor.read_only:
             self._paramval_lineedit.setReadOnly(True)
@@ -194,48 +194,58 @@ class IntegerEditor(EditorWidget):
     def __init__(self, *args, **kwargs):
         super(IntegerEditor, self).__init__(*args, **kwargs)
         ui_int = os.path.join(
-            package_path, 'share', 'rqt_reconfigure', 'resource', 'editor_number.ui'
-        )
+            package_path, 'share', 'rqt_reconfigure', 'resource',
+            'editor_number.ui')
         loadUi(ui_int, self)
 
-        # Set ranges
-        self._min = int(self.descriptor.integer_range[0].from_value)
-        self._max = int(self.descriptor.integer_range[0].to_value)
-        self._min_val_label.setText(str(self._min))
-        self._max_val_label.setText(str(self._max))
+        if(len(self.descriptor.integer_range)  > 0):
+            # Set ranges
+            self._min = int(self.descriptor.integer_range[0].from_value)
+            self._max = int(self.descriptor.integer_range[0].to_value)
+            self._min_val_label.setText(str(self._min))
+            self._max_val_label.setText(str(self._max))
 
-        self._step = int(self.descriptor.integer_range[0].step)
-        self._slider_horizontal.setSingleStep(self._step)
-        self._slider_horizontal.setTickInterval(self._step)
-        self._slider_horizontal.setPageStep(self._step)
-        self._slider_horizontal.setRange(self._min, self._max)
+            self._step = int(self.descriptor.integer_range[0].step)
+            self._slider_horizontal.setSingleStep(self._step)
+            self._slider_horizontal.setTickInterval(self._step)
+            self._slider_horizontal.setPageStep(self._step)
+            self._slider_horizontal.setRange(self._min, self._max)
 
-        # TODO: Fix that the naming of _paramval_lineEdit instance is not
-        #       consistent among Editor's subclasses.
-        self._paramval_lineEdit.setValidator(QIntValidator(self._min,
-                                                           self._max, self))
+            self._slider_horizontal.setValue(int(self.parameter.value))
+            self._slider_horizontal.setValue(int(self.parameter.value))
 
-        # Initialize to default
-        self._paramval_lineEdit.setText(str(self.parameter.value))
-        self._slider_horizontal.setValue(int(self.parameter.value))
+            # Make slider update text (locally)
+            self._slider_horizontal.sliderMoved.connect(self._slider_moved)
 
-        # Make slider update text (locally)
-        self._slider_horizontal.sliderMoved.connect(self._slider_moved)
+            # Make slider update param server
+            # Turning off tracking means this isn't called during a drag
+            self._slider_horizontal.setTracking(False)
+            self._slider_horizontal.valueChanged.connect(self._slider_changed)
+
+            # Add special menu items
+            self.cmenu.addAction(self.tr('Set to Maximum')
+                             ).triggered.connect(self._set_to_max)
+            self.cmenu.addAction(self.tr('Set to Minimum')
+                             ).triggered.connect(self._set_to_min)
+
+            # TODO: Fix that the naming of _paramval_lineEdit instance is not
+            #       consistent among Editor's subclasses.
+            self._paramval_lineEdit.setValidator(QIntValidator(self._min,
+                                                   self._max, self))
+        else:
+            self._paramval_lineEdit.setValidator(QIntValidator())
+            self._min_val_label.setVisible(False)
+            self._max_val_label.setVisible(False)
+            self._slider_horizontal.setVisible(False)
 
         # Make keyboard input change slider position and update param server
         self._paramval_lineEdit.editingFinished.connect(self._text_changed)
 
-        # Make slider update param server
-        # Turning off tracking means this isn't called during a drag
-        self._slider_horizontal.setTracking(False)
-        self._slider_horizontal.valueChanged.connect(self._slider_changed)
+        # Initialize to default
+        self._paramval_lineEdit.setText(str(self.parameter.value))
 
         # Make the param server update selection
         self._update_signal.connect(self._update_gui)
-
-        # Add special menu items
-        self.cmenu.addAction(self.tr('Set to Maximum')).triggered.connect(self._set_to_max)
-        self.cmenu.addAction(self.tr('Set to Minimum')).triggered.connect(self._set_to_min)
 
         if self.descriptor.read_only:
             self._paramval_lineEdit.setEnabled(False)
@@ -285,80 +295,74 @@ class DoubleEditor(EditorWidget):
     def __init__(self, *args, **kwargs):
         super(DoubleEditor, self).__init__(*args, **kwargs)
         ui_num = os.path.join(
-            package_path, 'share', 'rqt_reconfigure', 'resource', 'editor_number.ui'
+            package_path, 'share', 'rqt_reconfigure', 'resource',
+            'editor_number.ui'
         )
         loadUi(ui_num, self)
 
-        #config step
-        self._step = float(self.descriptor.floating_point_range[0].step)
-        self._slider_horizontal.setSingleStep(self._step)
-        self._slider_horizontal.setTickInterval(self._step)
-        self._slider_horizontal.setPageStep(self._step)
 
-        # Handle unbounded doubles nicely
-        almost_inf = 1e10000
-        if self.descriptor.floating_point_range[0].from_value != -float('inf'):
+        if(len(self.descriptor.floating_point_range)  > 0):
+            #config step
+            self._step = float(self.descriptor.floating_point_range[0].step)
+            self._slider_horizontal.setSingleStep(self._step)
+            self._slider_horizontal.setTickInterval(self._step)
+            self._slider_horizontal.setPageStep(self._step)
+
+            # Handle unbounded doubles nicely
             self._min = float(self.descriptor.floating_point_range[0].from_value)
             self._min_val_label.setText(str(self._min))
-        else:
-            self._min = -almost_inf
-            self._min_val_label.setText('-inf')
 
-        if self.descriptor.floating_point_range[0].to_value != float('inf'):
             self._max = float(self.descriptor.floating_point_range[0].to_value)
             self._max_val_label.setText(str(self._max))
-        else:
-            self._max = almost_inf
-            self._max_val_label.setText('inf')
 
-        if (
-            self.descriptor.floating_point_range[0].from_value != -float('inf') and
-            self.descriptor.floating_point_range[0].to_value != float('inf')
-        ):
             self._func = lambda x: x
             self._ifunc = self._func
-        else:
-            self._func = lambda x: math.atan(x)
-            self._ifunc = lambda x: math.tan(x)
 
-        # If we have no range, disable the slider
-        self.scale = (self._func(self._max) - self._func(self._min))
-        if self.scale <= 0:
-            self.scale = 0
-            self.setDisabled(True)
-        else:
+            # If we have no range, disable the slider
+            self.scale = (self._func(self._max) - self._func(self._min))
             self.scale = 100 / self.scale
 
-        # Set ranges
-        self._slider_horizontal.setRange(self._get_value_slider(self._min),
+            # Set ranges
+            self._slider_horizontal.setRange(self._get_value_slider(self._min),
                                          self._get_value_slider(self._max))
-        validator = QDoubleValidator(self._min, self._max, 8, self)
-        validator.setLocale(QLocale(QLocale.C))
-        self._paramval_lineEdit.setValidator(validator)
+            validator = QDoubleValidator(self._min, self._max, 8, self)
+            validator.setLocale(QLocale(QLocale.C))
+            self._paramval_lineEdit.setValidator(validator)
+
+            self._slider_horizontal.setValue(
+                self._get_value_slider(self.parameter.value)
+            )
+
+            # Make slider update text (locally)
+            self._slider_horizontal.sliderMoved.connect(self._slider_moved)
+
+            # Make slider update param server
+            # Turning off tracking means this isn't called during a drag
+            self._slider_horizontal.setTracking(False)
+            self._slider_horizontal.valueChanged.connect(self._slider_changed)
+        else:
+            self._paramval_lineEdit.setValidator(QDoubleValidator())
+            self._min_val_label.setVisible(False)
+            self._max_val_label.setVisible(False)
+            self._slider_horizontal.setVisible(False)
+            self._func = lambda x: math.atan(x)
+            self._ifunc = lambda x: math.tan(x)
+            self.scale = 0
 
         # Initialize to defaults
         self._paramval_lineEdit.setText(str(self.parameter.value))
-        self._slider_horizontal.setValue(
-            self._get_value_slider(self.parameter.value)
-        )
-
-        # Make slider update text (locally)
-        self._slider_horizontal.sliderMoved.connect(self._slider_moved)
 
         # Make keyboard input change slider position and update param server
         self._paramval_lineEdit.editingFinished.connect(self._text_changed)
-
-        # Make slider update param server
-        # Turning off tracking means this isn't called during a drag
-        self._slider_horizontal.setTracking(False)
-        self._slider_horizontal.valueChanged.connect(self._slider_changed)
 
         # Make the param server update selection
         self._update_signal.connect(self._update_gui)
 
         # Add special menu items
-        self.cmenu.addAction(self.tr('Set to Maximum')).triggered.connect(self._set_to_max)
-        self.cmenu.addAction(self.tr('Set to Minimum')).triggered.connect(self._set_to_min)
+        self.cmenu.addAction(self.tr('Set to Maximum')
+                             ).triggered.connect(self._set_to_max)
+        self.cmenu.addAction(self.tr('Set to Minimum')
+                             ).triggered.connect(self._set_to_min)
 
         if self.descriptor.read_only:
             self._paramval_lineEdit.setEnabled(False)
@@ -368,7 +372,7 @@ class DoubleEditor(EditorWidget):
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(
-                                                self._get_value_textfield()))))
+            self._get_value_textfield()))))
 
     def _text_changed(self):
         # This is a final change - update param server

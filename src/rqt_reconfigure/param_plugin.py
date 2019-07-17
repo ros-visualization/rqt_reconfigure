@@ -68,4 +68,5 @@ class ParamPlugin(Plugin):
     @staticmethod
     def add_arguments(parser):
         group = parser.add_argument_group('Options for rqt_reconfigure plugin')
-        group.add_argument('node_name', nargs='*', default=[], help='Node(s) to open automatically')
+        group.add_argument('node_name', nargs='*', default=[],
+                           help='Node(s) to open automatically')

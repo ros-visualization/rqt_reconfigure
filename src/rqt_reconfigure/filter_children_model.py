@@ -39,8 +39,8 @@ try:
     from python_qt_binding.QtCore import QSortFilterProxyModel  # Qt 5
 except ImportError:
     from python_qt_binding.QtGui import QSortFilterProxyModel  # Qt 4
-import rclpy
 
+import rclpy
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
 
 
@@ -113,18 +113,16 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
            # Set all subsequent treenodes True
             self._logger.debug(
-                ' FCModel.filterAcceptsRow src_row={}'.format(src_row) +
-                ' parent row={} data={}'.format(
-                    src_parent_qmindex.row(),
-                    src_parent_qmindex.data()) +
-                ' filterRegExp={}'.format(regex)
-            )
+                ' FCModel.filterAcceptsRow'
+                ' src_row={} parent row={} data={} filterRegExp={}'.format(
+                    src_row, src_parent_qmindex.row(),
+                    src_parent_qmindex.data(), regex))
 
             # If the index is the terminal treenode, parameters that hit
             # the query are displayed at the root tree.
             child_index = curr_qmindex.child(0, 0)
             if ((not child_index.isValid()) and
-                (isinstance(curr_qitem, TreenodeQstdItem))):
+                     (isinstance(curr_qitem, TreenodeQstdItem))):
                 self._show_params_view(src_row, curr_qitem)
 
             # Once we find a treenode that hits the query, no need to further
@@ -176,7 +174,8 @@ class FilterChildrenModel(QSortFilterProxyModel):
         """
         self._logger.debug('FCModel.filterAcceptsCol source_col={} '.format(
             source_column) + 'parent col={} row={} data={}'.format(
-                source_parent.column(), source_parent.row(), source_parent.data()))
+                source_parent.column(), source_parent.row(),
+                source_parent.data()))
         return True
 
     def set_filter(self, filter_):

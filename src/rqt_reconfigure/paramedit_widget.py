@@ -92,7 +92,8 @@ class ParameditWidget(QWidget):
         if node_grn not in self._param_client_widgets:
             self._param_client_widgets[node_grn] = param_client_widget
             self._vlayout.addWidget(param_client_widget)
-            param_client_widget.sig_node_disabled_selected.connect(self._node_disabled)
+            param_client_widget.sig_node_disabled_selected.connect(
+                self._node_disabled)
         else:  # If there has one already existed, remove it.
             self._remove_node(node_grn)
             #LayoutUtil.clear_layout(self.vlayout)
@@ -152,7 +153,7 @@ class ParameditWidget(QWidget):
 
     def _node_disabled(self, node_grn):
         self._logger.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
-
+#self._checkbox.setChecked(value) #TODO siganl doesn't work (Gonzo)
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.
         self.sig_node_disabled_selected.emit(node_grn)
