@@ -114,21 +114,23 @@ class ParamClient(object):
 def create_param_client(node, remote_node_name, param_change_callback=None):
     return ParamClient(node, remote_node_name, param_change_callback)
 
+
 def _has_params(node, node_name):
-     client = node.create_client(ListParameters,
+    client = node.create_client(
+        ListParameters,
         '{node_name}/list_parameters'.format_map(locals()))
-     if not client.service_is_ready():
+    if not client.service_is_ready():
         client.wait_for_service()
-     ret = len(client.call(ListParameters.Request()).result.names) > 0
-     node.destroy_client(client)
-     return ret
+    ret = len(client.call(ListParameters.Request()).result.names) > 0
+    node.destroy_client(client)
+    return ret
+
 
 def find_nodes_with_params(node):
     return list(
-            filter( lambda node_name : _has_params(node, node_name),
-                    [
+            filter(lambda node_name: _has_params(node, node_name),
+                   [
                         ns + ('/' if not ns.endswith('/') else '') + node_name
                         for node_name, ns in node.get_node_names_and_namespaces()
-                    ]
+                   ])
             )
-           )

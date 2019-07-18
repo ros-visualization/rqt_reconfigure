@@ -36,11 +36,12 @@ from __future__ import division
 
 import sys
 
-from python_qt_binding.QtCore import Signal, QMargins
+from python_qt_binding.QtCore import QMargins, Signal
 from python_qt_binding.QtWidgets import (
-    QLabel, QHBoxLayout, QSplitter, QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QSplitter, QVBoxLayout, QWidget
 )
 
+from rqt_reconfigure import logging
 from rqt_reconfigure.node_selector_widget import NodeSelectorWidget
 from rqt_reconfigure.paramedit_widget import ParameditWidget
 from rqt_reconfigure.text_filter import TextFilter
@@ -69,16 +70,15 @@ class ParamWidget(QWidget):
         reflect the available functionality, file & class names remain
         'param', expecting all the parameters will become handle-able.
         """
-
         super(ParamWidget, self).__init__()
         self.setObjectName(self._TITLE_PLUGIN)
         self.setWindowTitle(self._TITLE_PLUGIN)
 
-        #TODO: .ui file needs to replace the GUI components declaration
-        #            below. For unknown reason, referring to another .ui files
-        #            from a .ui that is used in this class failed. So for now,
-        #            I decided not use .ui in this class.
-        #            If someone can tackle this I'd appreciate.
+        # TODO: .ui file needs to replace the GUI components declaration
+        #       below. For unknown reason, referring to another .ui files
+        #       from a .ui that is used in this class failed. So for now,
+        #       I decided not use .ui in this class.
+        #       If someone can tackle this I'd appreciate.
         hlayout_top = QHBoxLayout(self)
         hlayout_top.setContentsMargins(QMargins(0, 0, 0, 0))
         self._splitter = QSplitter(self)
@@ -90,7 +90,7 @@ class ParamWidget(QWidget):
         hlayout_filter = QHBoxLayout()
         self._text_filter = TextFilter()
         self.filter_lineedit = TextFilterWidget(self._text_filter)
-        self.filterkey_label = QLabel("&Filter key:")
+        self.filterkey_label = QLabel('&Filter key:')
         self.filterkey_label.setBuddy(self.filter_lineedit)
         hlayout_filter.addWidget(self.filterkey_label)
         hlayout_filter.addWidget(self.filter_lineedit)
@@ -139,13 +139,14 @@ class ParamWidget(QWidget):
             if grn in self._nodesel_widget.get_nodeitems():
                 self.sig_selected.emit(grn)
             else:
-                self._logger.warning(
-                    'Could not find a node named \'%s\'', str(grn)
+                logging.warn(
+                    "Could not find a node named '%s'",
+                    str(grn)
                 )
 
     def shutdown(self):
-        #TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch
-        #            subscriber.
+        # TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch
+        #       subscriber.
         pass
 
     def save_settings(self, plugin_settings, instance_settings):
@@ -166,8 +167,8 @@ class ParamWidget(QWidget):
     def _filter_key_changed(self):
         self._nodesel_widget.set_filter(self._text_filter)
 
-    #TODO: This method should be integrated into common architecture. I just
-    # can't think of how to do so within current design.
+    # TODO: This method should be integrated into common architecture. I just
+    #       can't think of how to do so within current design.
     def emit_sysmsg(self, msg_str):
         self.sig_sysmsg.emit(msg_str)
 

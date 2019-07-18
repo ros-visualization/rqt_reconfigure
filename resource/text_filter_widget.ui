@@ -18,15 +18,14 @@
 				<number>0</number>
 			</property>
 			<item>
-				<layout class="QHBoxLayout" name="horizontalLayout_2"
-					stretch="0">
+				<layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
 					<item>
-						<widget class="QLineEdit" name="text_edit" />
+						<widget class="QLineEdit" name="text_edit"/>
 					</item>
 				</layout>
 			</item>
 		</layout>
 	</widget>
-	<resources />
-	<connections />
+	<resources/>
+	<connections/>
 </ui>

@@ -46,17 +46,17 @@ except ImportError:
     from python_qt_binding.QtGui import QItemSelectionModel  # Qt 4
 from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
-import rclpy
+from ament_index_python import get_resource
 
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
 
+from rqt_reconfigure import logging
 from rqt_reconfigure.filter_children_model import FilterChildrenModel
+from rqt_reconfigure.param_api import find_nodes_with_params
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.treenode_item_model import TreenodeItemModel
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
-from rqt_reconfigure.param_client_widget import ParamClientWidget
-from rqt_reconfigure.param_api import find_nodes_with_params
 
-from ament_index_python import get_resource
 
 class NodeSelectorWidget(QWidget):
     _COL_NAMES = ['Node']
@@ -74,7 +74,6 @@ class NodeSelectorWidget(QWidget):
         self.stretch = None
         self._signal_msg = signal_msg
         self._context = context
-        self._logger = rclpy.logging.get_logger(__name__)
 
         _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
@@ -142,16 +141,16 @@ class NodeSelectorWidget(QWidget):
         """
         # Obtain the corresponding index.
         qindex_tobe_deselected = self._item_model.get_index_from_grn(grn)
-        self._logger.debug('NodeSelWidt node_deselected qindex={} data={}'.
-            format(qindex_tobe_deselected,
-                   qindex_tobe_deselected.data(Qt.DisplayRole)))
+        logging.debug('NodeSelWidt node_deselected qindex={} data={}'.format(
+            qindex_tobe_deselected,
+            qindex_tobe_deselected.data(Qt.DisplayRole)))
 
         # Obtain all indices currently selected.
         indexes_selected = self.selectionModel.selectedIndexes()
         for index in indexes_selected:
             grn_from_selectedindex = RqtRosGraph.get_upper_grn(index, '')
-            self._logger.debug(' Compare given grn={} grn from selected={}'.
-                format( grn, grn_from_selectedindex))
+            logging.debug(' Compare given grn={} grn from selected={}'.format(
+                grn, grn_from_selectedindex))
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_selectedindex:
                 # Deselect the index.
@@ -165,7 +164,7 @@ class NodeSelectorWidget(QWidget):
         """
         # Obtain the corresponding index.
         qindex_tobe_selected = self._item_model.get_index_from_grn(grn)
-        self._logger.debug('NodeSelWidt node_selected qindex={} data={}'.format(
+        logging.debug('NodeSelWidt node_selected qindex={} data={}'.format(
             qindex_tobe_selected, qindex_tobe_selected.data(Qt.DisplayRole)))
 
         # Select the index.
@@ -190,7 +189,7 @@ class NodeSelectorWidget(QWidget):
 
     def _selection_selected(self, index_current, rosnode_name_selected):
         """Intended to be called from _selection_changed_slot."""
-        self._logger.debug('_selection_changed_slot row={} col={} data={}'.format(
+        logging.debug('_selection_changed_slot row={} col={} data={}'.format(
             index_current.row(), index_current.column(),
             index_current.data(Qt.DisplayRole)))
 
@@ -208,7 +207,7 @@ class NodeSelectorWidget(QWidget):
                     name_nodeitem.rfind(RqtRosGraph.DELIM_GRN) + 1:] ==
                     name_rosnode_leaf)):
 
-                self._logger.debug('terminal str {} MATCH {}'.format(
+                logging.debug('terminal str {} MATCH {}'.format(
                     name_nodeitem, name_rosnode_leaf))
                 found_node = True
                 break
@@ -225,12 +224,12 @@ class NodeSelectorWidget(QWidget):
             item_widget = item_child.get_param_client_widget()
         except Exception as e:
             raise e
-        self._logger.debug('item_selected={} child={} widget={}'.format(
-            index_current, item_child, item_widget))
+        logging.debug('item_selected={} child={} widget={}'.format(
+                      index_current, item_child, item_widget))
         self.sig_node_selected.emit(item_widget)
 
         # Show the node as selected.
-        #selmodel.select(index_current, QItemSelectionModel.SelectCurrent)
+        # selmodel.select(index_current, QItemSelectionModel.SelectCurrent)
 
     def _selection_changed_slot(self, selected, deselected):
         """
@@ -242,9 +241,9 @@ class NodeSelectorWidget(QWidget):
         :type selected: QItemSelection
         :type deselected: QItemSelection
         """
-        ## Getting the index where user just selected. Should be single.
+        # Getting the index where user just selected. Should be single.
         if not selected.indexes() and not deselected.indexes():
-            self._logger.error('Nothing selected? Not ideal to reach here')
+            logging.error('Nothing selected? Not ideal to reach here')
             return
 
         index_current = None
@@ -258,12 +257,12 @@ class NodeSelectorWidget(QWidget):
             # permanent solution is asked here http://goo.gl/V4DT1
             index_current = deselected.indexes()[0]
 
-        self._logger.debug('  - - - index_current={}'.format(index_current))
+        logging.debug('  - - - index_current={}'.format(index_current))
 
         rosnode_name_selected = RqtRosGraph.get_upper_grn(index_current, '')
 
         # If retrieved node name isn't in the list of all nodes.
-        if not rosnode_name_selected in self._nodeitems.keys():
+        if rosnode_name_selected not in self._nodeitems.keys():
             # De-select the selected item.
             self.selectionModel.select(index_current,
                                        QItemSelectionModel.Deselect)
@@ -273,23 +272,22 @@ class NodeSelectorWidget(QWidget):
             try:
                 self._selection_selected(index_current, rosnode_name_selected)
             except Exception as e:
-                #TODO: print to sysmsg pane
+                # TODO: print to sysmsg pane
                 err_msg = 'Connection to node={} failed:\n{}'.format(
                     rosnode_name_selected, e
                 )
                 import traceback
                 traceback.print_exc()
                 self._signal_msg.emit(err_msg)
-                self._logger.error(err_msg)
+                logging.error(err_msg)
 
         elif deselected.indexes():
             try:
                 self._selection_deselected(index_current,
                                            rosnode_name_selected)
-            except ROSException as e:
-                self._logger.error(e.message)
-                #TODO: print to sysmsg pane
-                emit(e)
+            except Exception as e:
+                self._signal_msg.emit(e)
+                logging.error(e.message)
 
     def get_nodeitems(self):
         """
@@ -309,7 +307,7 @@ class NodeSelectorWidget(QWidget):
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
             self._logger.error(e.message)
-            #TODO: print to sysmsg pane
+            # TODO: print to sysmsg pane
             raise e  # TODO Make sure 'raise' here returns or finalizes  func.
 
         if not nodes == self._nodes_previous:
@@ -324,17 +322,18 @@ class NodeSelectorWidget(QWidget):
 
                 time_siglenode_loop = time.time()
 
-                ####(Begin) For DEBUG ONLY; skip some dynreconf creation
-#                if i_node_curr % 2 != 0:
-#                    i_node_curr += 1
-#                    continue
-                #### (End) For DEBUG ONLY. ####
+                # (Begin) For DEBUG ONLY; skip some dynreconf creation
+                # if i_node_curr % 2 != 0:
+                #     i_node_curr += 1
+                #     continue
+                # (End) For DEBUG ONLY. ####
 
                 # Instantiate QStandardItem. Inside, dyn_reconf client will
                 # be generated too.
 
                 treenodeitem_toplevel = TreenodeQstdItem(
-                    self._context, node_name_grn, TreenodeQstdItem.NODE_FULLPATH
+                    self._context, node_name_grn,
+                    TreenodeQstdItem.NODE_FULLPATH
                 )
                 _treenode_names = treenodeitem_toplevel.get_treenode_names()
 
@@ -349,13 +348,14 @@ class NodeSelectorWidget(QWidget):
                 elapsedtime_overall += time_siglenode_loop
 
                 _str_progress = 'reconf ' + \
-                     'loading #{}/{} {} / {}sec node={}'.format(
-                     i_node_curr, num_nodes, round(time_siglenode_loop, 2),
-                     round(elapsedtime_overall, 2), node_name_grn)
+                    'loading #{}/{} {} / {}sec node={}'.format(
+                        i_node_curr, num_nodes, round(time_siglenode_loop, 2),
+                        round(elapsedtime_overall, 2), node_name_grn
+                    )
 
                 # NOT a debug print - please DO NOT remove. This print works
                 # as progress notification when loading takes long time.
-                self._logger.debug(_str_progress)
+                logging.debug(_str_progress)
                 i_node_curr += 1
 
     def _add_children_treenode(self, treenodeitem_toplevel,
@@ -399,8 +399,8 @@ class NodeSelectorWidget(QWidget):
             # Arrange alphabetically by display name
             insert_index = 0
             while (insert_index < treenodeitem_parent.rowCount() and
-                   treenodeitem_parent.child(insert_index)
-                   .text() < name_currentnode):
+                    treenodeitem_parent.child(insert_index)
+                    .text() < name_currentnode):
                 insert_index += 1
 
             treenodeitem_parent.insertRow(insert_index, stditem_currentnode)
@@ -415,20 +415,21 @@ class NodeSelectorWidget(QWidget):
             self._add_children_treenode(treenodeitem_toplevel, stditem,
                                         child_names_left)
         else:  # Selectable ROS Node.
-            #TODO: Accept even non-terminal treenode as long as it's ROS Node.
+            # TODO: Accept even non-terminal treenode as long as it's ROS Node.
             self._item_model.set_item_from_index(grn_curr, stditem.index())
 
     def _prune_nodetree_pernode(self):
         try:
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
-            self._logger.error('Reconfigure GUI cannot connect to master.')
+            logging.error('Reconfigure GUI cannot connect to master.')
             raise e  # TODO Make sure 'raise' here returns or finalizes func.
 
         for i in reversed(range(0, self._rootitem.rowCount())):
-            candidate_for_removal = self._rootitem.child(i).get_raw_param_name()
-            if not candidate_for_removal in nodes:
-                self._logger.debug(
+            candidate_for_removal = \
+                self._rootitem.child(i).get_raw_param_name()
+            if candidate_for_removal not in nodes:
+                logging.debug(
                     'Removing {} because the server is no longer available.'.
                     format(candidate_for_removal))
                 self._rootitem.removeRow(i)
@@ -449,7 +450,7 @@ class NodeSelectorWidget(QWidget):
         """
         Method for Debug only
         """
-        #index_current = self.selectionModel.currentIndex()
+        # index_current = self.selectionModel.currentIndex()
         src_model = self._item_model
         index_current = None
         index_deselected = None
@@ -465,7 +466,7 @@ class NodeSelectorWidget(QWidget):
             curr_qstd_item = src_model.itemFromIndex(index_deselected)
 
         if selected.indexes() > 0:
-            self._logger.debug(
+            logging.debug(
                 'sel={} par={} desel={} '
                 'sel.d={} par.d={} desel.d={} cur.item={}'
                 .format(
@@ -475,7 +476,7 @@ class NodeSelectorWidget(QWidget):
                     None,  # index_deselected.data(Qt.DisplayRole)
                     curr_qstd_item))
         elif deselected.indexes():
-            self._logger.debug(
+            logging.debug(
                 'sel={} par={} desel={} '
                 'sel.d={} par.d={} desel.d={} cur.item={}'
                 .format(

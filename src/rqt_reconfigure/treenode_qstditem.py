@@ -34,15 +34,12 @@
 
 from __future__ import division
 
-import threading
-import time
-
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtGui import QBrush, QStandardItem
 
-import rclpy
-
 from rqt_py_common.data_items import ReadonlyItem
+
+from rqt_reconfigure import logging
 from rqt_reconfigure.param_client_widget import ParamClientWidget
 
 
@@ -61,7 +58,6 @@ class TreenodeQstdItem(ReadonlyItem):
                                is node that has GRN (Graph Resource Names, see
                                http://www.ros.org/wiki/Names). This can be None
         """
-
         grn_current_treenode = args[0]
         self._raw_param_name = grn_current_treenode
         self._list_treenode_names = self._raw_param_name.split('/')[1:]
@@ -72,7 +68,6 @@ class TreenodeQstdItem(ReadonlyItem):
         self._context = context
         self._param_client = None
         self._param_client_widget = None
-        self._logger = rclpy.logging.get_logger(__name__)
 
     def reset(self):
         self._param_client_widget = None
@@ -83,21 +78,27 @@ class TreenodeQstdItem(ReadonlyItem):
 
     def get_param_client_widget(self):
         """
-        @rtype: DynreconfClientWidget (QWidget)
-        @return: None if dynreconf_client is not yet generated.
+        @rtype: ParamClientWidget (QWidget)
+        @return: None if param_client is not yet generated.
         @raise ROSException:
         """
         if not self._param_client_widget:
+            logging.debug('In get_param_client_widget 4')
             self._param_client_widget = ParamClientWidget(
                 self._context, self._raw_param_name
             )
+            # Creating the ParamClientWidget transfers ownership of the
+            # _param_client to it. If it is destroyed from Qt, we need to
+            # clear our reference to it and stop the param server thread we
+            # had.
             self._param_client_widget.destroyed.connect(self.reset)
+            logging.debug('In get_param_client_widget 5')
         return self._param_client_widget
 
     def enable_param_items(self):
         """
         Create QStdItem per parameter and addColumn them to myself.
-        :rtype: None if _dynreconf_client is not initiated.
+        :rtype: None if _param_client is not initiated.
         """
         if not self._param_client_widget:
             return None
@@ -108,7 +109,7 @@ class TreenodeQstdItem(ReadonlyItem):
             item = ReadonlyItem(param_name)
             item.setBackground(brush)
             param_names_items.append(item)
-        self._logger.debug('enable_param_items len of param_names={}'.format(
+        logging.debug('enable_param_items len of param_names={}'.format(
             len(param_names_items)
         ))
         self.appendColumn(param_names_items)
@@ -117,8 +118,7 @@ class TreenodeQstdItem(ReadonlyItem):
         """
         :rtype: List of string. Null if param
         """
-
-        #TODO: what if self._list_treenode_names is empty or null?
+        # TODO: what if self._list_treenode_names is empty or null?
         return self._list_treenode_names
 
     def get_raw_param_name(self):

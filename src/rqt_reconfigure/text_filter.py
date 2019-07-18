@@ -33,6 +33,7 @@
 # Author: Isaac Saito
 
 from python_qt_binding.QtCore import QRegExp, Qt
+
 from rqt_console.filters.message_filter import MessageFilter
 
 
@@ -56,35 +57,19 @@ class TextFilter(MessageFilter):
         :type message: str.
         :rtype: bool
         """
-
         _hit = False
 
-        if (self.is_enabled() and
-            self._text != '' and
-            not self._qregexp == None  # If None, init process isn't done yet
-                                       # and we can ignore the call to this
-                                       # method.
-            ):
-            pos_hit = self._qregexp.indexIn(text)
+        if (
+                self.is_enabled() and self._text != '' and
+                self._regexp is not None    # If None, init process isn't done
+                                            # yet and we can ignore the call to
+        ):                                  # this method.
+            pos_hit = self._regexp.indexIn(text)
             if pos_hit >= 0:
                 _hit = True
             else:
                 _hit = False
         return _hit
-
-#    def set_regexp(self, qregexp):
-#        """
-#        Setter for self._qregexp. Need not be used if _qregexp is already set
-#        via __init__. Calling this method overwrites the existing regex
-#        instance.
-#
-#        Do not mix up self._qregexp with MessageFilter._regex that is boolean.
-#        Instead, this method sets QRegExp instance, that test_message method
-#        uses.
-#
-#        :type qregexp: QRegExp
-#        """
-#        self._qregexp = qregexp
 
     def get_regexp(self):
         return self._regex

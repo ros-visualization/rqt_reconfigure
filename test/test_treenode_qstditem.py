@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2012, Willow Garage, Inc.
@@ -49,9 +47,10 @@ class TestTreenodeQstdItem(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        #self._item = TreenodeQstdItem(self._nodename_raw, 0) # For unknown reason
-                                                        #this stops operation.
-        self._item = TreenodeQstdItem(self._nodename_raw)
+
+        # For unknown reason this stops operation.
+        # self._item = TreenodeQstdItem(None, self._nodename_raw, 0)
+        self._item = TreenodeQstdItem(None, self._nodename_raw)
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
@@ -63,7 +62,3 @@ class TestTreenodeQstdItem(unittest.TestCase):
 
 #    def test_get_node_name(self):
 #        self.assertEqual(self._item.get_widget().show())
-
-
-if __name__ == '__main__':
-    unittest.main()

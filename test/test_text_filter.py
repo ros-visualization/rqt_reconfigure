@@ -34,7 +34,8 @@
 
 import unittest
 
-from python_qt_binding.QtCore import Qt, QRegExp
+from python_qt_binding.QtCore import QRegExp, Qt
+
 from rqt_reconfigure.text_filter import TextFilter
 
 
@@ -62,6 +63,3 @@ class MyTest(unittest.TestCase):
         self.assertEqual(result_regex,
                          True  # Both _query_text & filtered_text overlaps.
                          )
-
-if __name__ == '__main__':
-    unittest.main()

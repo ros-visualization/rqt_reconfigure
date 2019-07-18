@@ -32,16 +32,17 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-
 from decimal import Decimal
 import math
 import os
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import Signal, QLocale
+from python_qt_binding.QtCore import QLocale, Signal
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
-from python_qt_binding.QtWidgets import QLabel, QMenu, QWidget
+from python_qt_binding.QtWidgets import QMenu, QWidget
 from ament_index_python import get_resource
+
+from . import logging
 
 from rclpy.parameter import Parameter
 
@@ -49,14 +50,15 @@ from rclpy.parameter import Parameter
 # costs a lot, only load each file once.
 _, package_path = get_resource('packages', 'rqt_reconfigure')
 
+
 class EditorWidget(QWidget):
-    '''
+    """
     This class is abstract -- its child classes should be instantiated.
 
     There exist two kinds of "update" methods:
     - _update_paramserver for Parameter Server.
     - update_value for the value displayed on GUI.
-    '''
+    """
 
     def __init__(self, param_client, parameter, descriptor):
         super(EditorWidget, self).__init__()
@@ -68,13 +70,13 @@ class EditorWidget(QWidget):
         self.cmenu = QMenu()
 
     def update_remote(self, value):
-        '''
+        """
         Update the value on Parameter Server.
-        '''
+        """
         self._param_client.set_parameters([self.parameter])
 
     def update_local(self, value):
-        '''
+        """
         To be implemented in subclass, but still used.
 
         Update the value that's displayed on the arbitrary GUI component
@@ -82,7 +84,7 @@ class EditorWidget(QWidget):
 
         This method is not called from the GUI thread, so any changes to
         QObjects will need to be done through a signal.
-        '''
+        """
         self.parameter = Parameter(
             name=self.parameter.name,
             type_=self.parameter.type_,
@@ -96,11 +98,11 @@ class EditorWidget(QWidget):
             self.update_remote(value)
 
     def display(self, grid):
-        '''
+        """
         Should be overridden in subclass.
 
         :type grid: QFormLayout
-        '''
+        """
         self._paramname_label.setText(self.parameter.name)
         self._paramname_label.setMinimumWidth(100)
         grid.addRow(self._paramname_label, self)
@@ -112,9 +114,9 @@ class EditorWidget(QWidget):
         grid.removeRow(self)
 
     def close(self):
-        '''
+        """
         Should be overridden in subclass.
-        '''
+        """
         pass
 
     def contextMenuEvent(self, e):
@@ -131,7 +133,7 @@ class BooleanEditor(EditorWidget):
             'editor_bool.ui')
         loadUi(ui_bool, self)
 
-        #Set inital value
+        # Set inital value
         self._checkbox.setChecked(self.parameter.value)
 
         # Make checkbox update param server
@@ -157,7 +159,7 @@ class StringEditor(EditorWidget):
         super(StringEditor, self).__init__(*args, **kwargs)
         ui_str = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
-            'editor_string.ui' )
+            'editor_string.ui')
         loadUi(ui_str, self)
 
         self._paramval_lineedit.setText(self.parameter.value)
@@ -179,9 +181,12 @@ class StringEditor(EditorWidget):
 
     def update_local(self, value):
         super(StringEditor, self).update_local(value)
+        logging.debug('StringEditor update_local={}'.format(value))
         self._update_signal.emit(value)
 
     def edit_finished(self):
+        logging.debug('StringEditor edit_finished val={}'.format(
+            self._paramval_lineedit.text()))
         self.update(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -198,7 +203,7 @@ class IntegerEditor(EditorWidget):
             'editor_number.ui')
         loadUi(ui_int, self)
 
-        if(len(self.descriptor.integer_range)  > 0):
+        if(len(self.descriptor.integer_range) > 0):
             # Set ranges
             self._min = int(self.descriptor.integer_range[0].from_value)
             self._max = int(self.descriptor.integer_range[0].to_value)
@@ -224,14 +229,14 @@ class IntegerEditor(EditorWidget):
 
             # Add special menu items
             self.cmenu.addAction(self.tr('Set to Maximum')
-                             ).triggered.connect(self._set_to_max)
+                                 ).triggered.connect(self._set_to_max)
             self.cmenu.addAction(self.tr('Set to Minimum')
-                             ).triggered.connect(self._set_to_min)
+                                 ).triggered.connect(self._set_to_min)
 
             # TODO: Fix that the naming of _paramval_lineEdit instance is not
             #       consistent among Editor's subclasses.
             self._paramval_lineEdit.setValidator(QIntValidator(self._min,
-                                                   self._max, self))
+                                                 self._max, self))
         else:
             self._paramval_lineEdit.setValidator(QIntValidator())
             self._min_val_label.setVisible(False)
@@ -255,8 +260,7 @@ class IntegerEditor(EditorWidget):
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText(str(
-            self._slider_horizontal.sliderPosition()
-        ))
+            self._slider_horizontal.sliderPosition()))
 
     def _text_changed(self):
         # This is a final change - update param server
@@ -300,9 +304,8 @@ class DoubleEditor(EditorWidget):
         )
         loadUi(ui_num, self)
 
-
-        if(len(self.descriptor.floating_point_range)  > 0):
-            #config step
+        if(len(self.descriptor.floating_point_range) > 0):
+            # config step
             self._step = float(self.descriptor.floating_point_range[0].step)
             self._slider_horizontal.setSingleStep(self._step)
             self._slider_horizontal.setTickInterval(self._step)
@@ -324,7 +327,7 @@ class DoubleEditor(EditorWidget):
 
             # Set ranges
             self._slider_horizontal.setRange(self._get_value_slider(self._min),
-                                         self._get_value_slider(self._max))
+                                             self._get_value_slider(self._max))
             validator = QDoubleValidator(self._min, self._max, 8, self)
             validator.setLocale(QLocale(QLocale.C))
             self._paramval_lineEdit.setValidator(validator)
@@ -385,14 +388,15 @@ class DoubleEditor(EditorWidget):
         self.update(self._get_value_textfield())
 
     def _get_value_textfield(self):
-        '''@return: Current value in text field.'''
-        return self._ifunc(self._slider_horizontal.sliderPosition() /
-                                        self.scale) if self.scale else 0
+        """@return: Current value in text field."""
+        return self._ifunc(
+            self._slider_horizontal.sliderPosition() / self.scale
+        ) if self.scale else 0
 
     def _get_value_slider(self, value):
-        '''
+        """
         @rtype: double
-        '''
+        """
         return int(round((self._func(value)) * self.scale))
 
     def update_local(self, value):
@@ -407,7 +411,8 @@ class DoubleEditor(EditorWidget):
         if not math.isnan(value):
             self._slider_horizontal.setValue(self._get_value_slider(value))
         elif not math.isnan(self.param_default):
-            self._slider_horizontal.setValue(self._get_value_slider(self.param_default))
+            self._slider_horizontal.setValue(
+                self._get_value_slider(self.param_default))
         # Make the text match
         self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(value))))
         self._slider_horizontal.blockSignals(False)
@@ -420,6 +425,7 @@ class DoubleEditor(EditorWidget):
 
     def _set_to_nan(self):
         self.update(float('NaN'))
+
 
 EDITOR_TYPES = {
     Parameter.Type.BOOL: BooleanEditor,

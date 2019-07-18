@@ -32,24 +32,23 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-
-import time
-
 from python_qt_binding.QtCore import QSize, Qt, Signal, QMargins
 from python_qt_binding.QtGui import QFont, QIcon
 from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
-                                         QPushButton, QWidget,
                                          QFormLayout, QLabel,
                                          QPushButton, QVBoxLayout,
                                          QWidget)
 import rclpy
 import yaml
 
+from rqt_reconfigure import logging
 from rqt_reconfigure.param_api import create_param_client
 # *Editor classes that are not explicitly used within this .py file still need
 # to be imported. They are invoked implicitly during runtime.
-from rqt_reconfigure.param_editors import (BooleanEditor, DoubleEditor, EditorWidget,
-                            EDITOR_TYPES, IntegerEditor, StringEditor)
+from rqt_reconfigure.param_editors import (BooleanEditor,  # noqa: F401
+                                           DoubleEditor, EditorWidget,
+                                           EDITOR_TYPES, IntegerEditor,
+                                           StringEditor)
 
 
 class ParamClientWidget(QWidget):
@@ -62,7 +61,6 @@ class ParamClientWidget(QWidget):
 
     def __init__(self, context, node_name):
         """
-        :type reconf: dynamic_reconfigure.client
         :type node_name: str
         """
         super(ParamClientWidget, self).__init__()
@@ -74,12 +72,11 @@ class ParamClientWidget(QWidget):
         self._param_client = create_param_client(
             context.node, node_name, self._handle_param_event
         )
-        self._logger = rclpy.logging.get_logger(__name__)
 
         # TODO: .ui file needs to be back into usage in later phase.
-#        ui_file = os.path.join(rp.get_path('rqt_reconfigure'),
-#                               'resource', 'singlenode_parameditor.ui')
-#        loadUi(ui_file, self)
+        # ui_file = os.path.join(rp.get_path('rqt_reconfigure'),
+        #                        'resource', 'singlenode_parameditor.ui')
+        # loadUi(ui_file, self)
 
         verticalLayout = QVBoxLayout(self)
         verticalLayout.setContentsMargins(QMargins(0, 0, 0, 0))
@@ -119,8 +116,8 @@ class ParamClientWidget(QWidget):
         )
 
         # Labels should not stretch
-        #self.grid.setColumnStretch(1, 1)
-        #self.setLayout(self.grid)
+        # self.grid.setColumnStretch(1, 1)
+        # self.setLayout(self.grid)
 
         # Save and load buttons
         button_widget = QWidget(self)
@@ -147,7 +144,7 @@ class ParamClientWidget(QWidget):
     def _handle_param_event(
         self, new_parameters, changed_parameters, deleted_parameters
     ):
-        #TODO: Think about replacing callback architecture with signals.
+        # TODO: Think about replacing callback architecture with signals.
         if new_parameters:
             new_descriptors = self._param_client.describe_parameters(
                 names=[p.name for p in new_parameters]
@@ -167,8 +164,8 @@ class ParamClientWidget(QWidget):
 
     def _handle_save_clicked(self):
         filename = QFileDialog.getSaveFileName(
-                self, self.tr('Save parameters to file...'), '.',
-                self.tr('YAML files {.yaml} (*.yaml)'))
+            self, self.tr('Save parameters to file...'), '.',
+            self.tr('YAML files {.yaml} (*.yaml)'))
         if filename[0] != '':
             self.save_param(filename[0])
 
@@ -180,8 +177,8 @@ class ParamClientWidget(QWidget):
                 )
                 yaml.dump({p.name: p.value for p in parameters}, f)
             except Exception as e:
-                self._logger.warning(
-                    'Parameter saving wasn\'t successful because: ' + str(e)
+                logging.warn(
+                    "Parameter saving wasn't successful because: " + str(e)
                 )
 
     def load_param(self, filename):
@@ -195,8 +192,8 @@ class ParamClientWidget(QWidget):
         try:
             self._param_client.set_parameters(parameters)
         except Exception as e:
-            self._logger.warning(
-                'Parameter loading wasn\'t successful because: ' + str(e)
+            logging.warn(
+                "Parameter loading wasn't successful because: " + str(e)
             )
 
     def collect_paramnames(self, config):
@@ -206,7 +203,8 @@ class ParamClientWidget(QWidget):
         for parameter in parameters:
             if parameter.name not in self._editor_widgets:
                 continue
-            self._logger.debug('Removing editor widget for {}'.format(parameter.name))
+            logging.debug('Removing editor widget for {}'.format(
+                parameter.name))
             self._editor_widgets[parameter.name].hide(self.grid)
             self._editor_widgets[parameter.name].close()
             del self._editor_widgets[parameter.name]
@@ -215,14 +213,15 @@ class ParamClientWidget(QWidget):
         for parameter in parameters:
             if parameter.name not in self._editor_widgets:
                 continue
-            self._logger.debug('Updating editor widget for {}'.format(parameter.name))
+            logging.debug('Updating editor widget for {}'.format(
+                parameter.name))
             self._editor_widgets[parameter.name].update_local(parameter.value)
 
     def add_editor_widgets(self, parameters, descriptors):
         for parameter, descriptor in zip(parameters, descriptors):
             if parameter.type_ not in EDITOR_TYPES:
                 continue
-            self._logger.debug('Adding editor widget for {}'.format(parameter.name))
+            logging.debug('Adding editor widget for {}'.format(parameter.name))
             editor_widget = EDITOR_TYPES[parameter.type_](
                 self._param_client, parameter, descriptor
             )
@@ -239,7 +238,7 @@ class ParamClientWidget(QWidget):
         return list(self._editor_widgets.keys())
 
     def _node_disable_bt_clicked(self):
-        self._logger.debug('param_gs _node_disable_bt_clicked')
+        logging.debug('param_gs _node_disable_bt_clicked')
         self.sig_node_disabled_selected.emit(self._toplevel_treenode_name)
 
     def close(self):
@@ -251,5 +250,5 @@ class ParamClientWidget(QWidget):
         self.deleteLater()
 
     def filter_param(self, filter_key):
-        #TODO impl
+        # TODO impl
         pass

@@ -34,9 +34,9 @@
 
 from __future__ import division
 
-from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtGui import QStandardItemModel
-import rclpy
+
+from rqt_reconfigure import logging
 
 
 class TreenodeItemModel(QStandardItemModel):
@@ -53,7 +53,6 @@ class TreenodeItemModel(QStandardItemModel):
     def __init__(self, parent=None):
         super(TreenodeItemModel, self).__init__(parent)
         self._parent = parent
-        self._logger = rclpy.logging.get_logger(__name__)
         self._indexes = {}  # { str : QPersistentModelIndex }
 
     def get_index_from_grn(self, grn):
@@ -63,7 +62,7 @@ class TreenodeItemModel(QStandardItemModel):
         :rtype: QPersistentModelIndex. None if the corresponding item isn't
                 found.
         """
-        self._logger.debug('get_index_from_grn all item={}'.format(self._indexes))
+        logging.debug('get_index_from_grn all item={}'.format(self._indexes))
         return self._indexes.get(grn)
 
     def set_item_from_index(self, grn, qpindex):
@@ -71,5 +70,7 @@ class TreenodeItemModel(QStandardItemModel):
         :type grn: str
         :type qpindex: QPersistentModelIndex
         """
-        self._logger.debug('set_item_from_index grn={} qpindex={}'.format(grn, qpindex))
+        logging.debug('set_item_from_index grn={} qpindex={}'.format(
+            grn, qpindex
+        ))
         self._indexes[grn] = qpindex

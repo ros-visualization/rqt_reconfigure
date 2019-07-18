@@ -32,17 +32,17 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-import os
 from collections import OrderedDict
+import os
+
+from ament_index_python import get_resource
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import Qt, Signal
+from python_qt_binding.QtCore import Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
-from ament_index_python import get_resource
 from rqt_py_common.layout_util import LayoutUtil
 
-import rclpy
-from rqt_reconfigure.param_client_widget import ParamClientWidget
+from rqt_reconfigure import logging
 
 
 class ParameditWidget(QWidget):
@@ -65,12 +65,13 @@ class ParameditWidget(QWidget):
         loadUi(ui_file, self, {'ParameditWidget': ParameditWidget})
 
         self._param_client_widgets = OrderedDict()
-        self._logger = rclpy.logging.get_logger(__name__)
 
         # Adding the list of Items
         self._vlayout = QVBoxLayout(self.scrollarea_holder_widget)
 
-        #self._set_index_widgets(self.listview, paramitems_dict) # causes error
+        # causes error
+        # self._set_index_widgets(self.listview, paramitems_dict)
+
         self.destroyed.connect(self.close)
 
     def _set_index_widgets(self, view, paramitems_dict):
@@ -87,7 +88,7 @@ class ParameditWidget(QWidget):
         Callback when user chooses a node.
         """
         node_grn = param_client_widget.get_node_grn()
-        self._logger.debug('ParamEditWidget.show str(node_grn)=' + str(node_grn))
+        logging.debug('ParamEditWidget.show str(node_grn)=' + str(node_grn))
 
         if node_grn not in self._param_client_widgets:
             self._param_client_widgets[node_grn] = param_client_widget
@@ -96,12 +97,12 @@ class ParameditWidget(QWidget):
                 self._node_disabled)
         else:  # If there has one already existed, remove it.
             self._remove_node(node_grn)
-            #LayoutUtil.clear_layout(self.vlayout)
+            # LayoutUtil.clear_layout(self.vlayout)
 
             # Re-add the rest of existing items to layout.
-            #for k, v in self._dynreconf_clients.items():
-            #    rospy.loginfo('added to layout k={} v={}'.format(k, v))
-            #    self.vlayout.addWidget(v)
+            # for k, v in self._param_clients.items():
+            #     logging.info('added to layout k={} v={}'.format(k, v))
+            #     self.vlayout.addWidget(v)
 
         # Add color to alternate the rim of the widget.
         LayoutUtil.alternate_color(
@@ -119,12 +120,11 @@ class ParameditWidget(QWidget):
         """
         :type filter_key:
         """
+        # TODO Pick nodes that match filter_key.
 
-        #TODO Pick nodes that match filter_key.
-
-        #TODO For the nodes that are kept in previous step, call
-        #     DynreconfWidget.filter_param for all of its existing
-        #     instances.
+        # TODO For the nodes that are kept in previous step, call
+        #      ParamClientWidget.filter_param for all of its existing
+        #      instances.
         pass
 
     def _remove_node(self, node_grn):
@@ -147,13 +147,14 @@ class ParameditWidget(QWidget):
             item.widget().close()
         w = self._param_client_widgets.pop(node_grn)
 
-        self._logger.debug('popped={} Len of left clients={}'.format(
+        logging.debug('popped={} Len of left clients={}'.format(
             w, len(self._param_client_widgets)
         ))
 
     def _node_disabled(self, node_grn):
-        self._logger.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
-#self._checkbox.setChecked(value) #TODO siganl doesn't work (Gonzo)
+        logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
+        # self._checkbox.setChecked(value) # TODO(Gonzo) signal doesn't work
+
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.
         self.sig_node_disabled_selected.emit(node_grn)

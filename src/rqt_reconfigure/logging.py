@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2012, Willow Garage, Inc.
+# Copyright (c) 2019, Open Source Robotics Foundation, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,43 +29,13 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Isaac Saito
 
-from rqt_gui_py.plugin import Plugin
+from rclpy.logging import get_logger
 
-from rqt_py_common.plugin_container_widget import PluginContainerWidget
+logger = get_logger(__package__)
 
-from rqt_reconfigure.param_widget import ParamWidget
-
-
-class ParamPlugin(Plugin):
-
-    def __init__(self, context):
-        """
-        :type context: qt_gui.PluginContext
-        """
-        super(ParamPlugin, self).__init__(context)
-        self.setObjectName('ParamPlugin')
-
-        self._plugin_widget = ParamWidget(context)
-        self._widget = PluginContainerWidget(self._plugin_widget, True, False)
-        if context.serial_number() > 1:
-            self._widget.setWindowTitle(self._widget.windowTitle() +
-                                        (' (%d)' % context.serial_number()))
-        context.add_widget(self._widget)
-
-    def shutdown_plugin(self):
-        self._widget.shutdown()
-
-    def save_settings(self, plugin_settings, instance_settings):
-        self._widget.save_settings(plugin_settings, instance_settings)
-
-    def restore_settings(self, plugin_settings, instance_settings):
-        self._widget.restore_settings(plugin_settings, instance_settings)
-
-    @staticmethod
-    def add_arguments(parser):
-        group = parser.add_argument_group('Options for rqt_reconfigure plugin')
-        group.add_argument('node_name', nargs='*', default=[],
-                           help='Node(s) to open automatically')
+debug = logger.debug
+error = logger.error
+fatal = logger.fatal
+info = logger.info
+warn = logger.warning
