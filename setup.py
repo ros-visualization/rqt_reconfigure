@@ -48,4 +48,5 @@ setup(
         'that are accessible via dynamic_reconfigure.'
     ),
     license='BSD',
+    tests_require=['pytest'],
 )
