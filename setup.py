@@ -14,6 +14,7 @@ setup(
     package_dir={'': 'src'},
     packages=[package_name],
     data_files=[
+        ('lib/' + package_name, ['scripts/' + package_name]),
         ('share/' + package_name + '/resource', [
             'resource/editor_bool.ui',
             'resource/editor_enum.ui',
@@ -47,9 +48,4 @@ setup(
         'that are accessible via dynamic_reconfigure.'
     ),
     license='BSD',
-    entry_points={
-        'console_scripts': [
-            'rqt_reconfigure = rqt_reconfigure.main:main',
-        ],
-    },
 )
