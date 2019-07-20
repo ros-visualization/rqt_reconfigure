@@ -40,9 +40,10 @@ from ament_index_python import get_resource
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
+
 from rqt_py_common.layout_util import LayoutUtil
 
-from rqt_reconfigure import logging
+from . import logging
 
 
 class ParameditWidget(QWidget):

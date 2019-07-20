@@ -67,6 +67,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
         self._context = context
         self._param_client = None
+        # ParamClientWidget
         self._param_client_widget = None
 
     def reset(self):
@@ -114,15 +115,15 @@ class TreenodeQstdItem(ReadonlyItem):
         ))
         self.appendColumn(param_names_items)
 
+    def get_raw_param_name(self):
+        return self._raw_param_name
+
     def get_treenode_names(self):
         """
         :rtype: List of string. Null if param
         """
         # TODO: what if self._list_treenode_names is empty or null?
         return self._list_treenode_names
-
-    def get_raw_param_name(self):
-        return self._raw_param_name
 
     def get_node_name(self):
         """

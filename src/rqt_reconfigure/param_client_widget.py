@@ -157,8 +157,8 @@ class ParamClientWidget(QWidget):
 
     def _handle_load_clicked(self):
         filename = QFileDialog.getOpenFileName(
-                self, self.tr('Load from File'), '.',
-                self.tr('YAML file {.yaml} (*.yaml)'))
+            self, self.tr('Load from File'), '.',
+            self.tr('YAML file {.yaml} (*.yaml)'))
         if filename[0] != '':
             self.load_param(filename[0])
 

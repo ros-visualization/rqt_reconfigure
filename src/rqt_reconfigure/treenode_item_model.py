@@ -36,7 +36,7 @@ from __future__ import division
 
 from python_qt_binding.QtGui import QStandardItemModel
 
-from rqt_reconfigure import logging
+from . import logging
 
 
 class TreenodeItemModel(QStandardItemModel):
@@ -53,6 +53,7 @@ class TreenodeItemModel(QStandardItemModel):
     def __init__(self, parent=None):
         super(TreenodeItemModel, self).__init__(parent)
         self._parent = parent
+
         self._indexes = {}  # { str : QPersistentModelIndex }
 
     def get_index_from_grn(self, grn):
