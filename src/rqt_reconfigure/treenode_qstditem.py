@@ -34,44 +34,13 @@
 
 from __future__ import division
 
-import threading
-import time
-
-import dynamic_reconfigure.client
-
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtGui import QBrush, QStandardItem
 
-from rospy.exceptions import ROSException
-
 from rqt_py_common.data_items import ReadonlyItem
 
-from . import logging
-from .param_client_widget import ParamClientWidget
-
-
-class ParamserverConnectThread(threading.Thread):
-
-    def __init__(self, parent, param_name_raw):
-        super(ParamserverConnectThread, self).__init__()
-        self._parent = parent
-        self._raw_param_name = param_name_raw
-
-    def run(self):
-        param_client = None
-        try:
-            param_client = dynamic_reconfigure.client.Client(
-                str(self._raw_param_name), timeout=5.0)
-            logging.debug(
-                'ParamserverConnectThread param_client={}'.format(
-                    param_client
-                ))
-            self._parent.set_param_client(param_client)
-        except ROSException as e:
-            raise type(e)(
-                e.message + "TreenodeQstdItem. Couldn't connect to {}".format(
-                    self._raw_param_name
-                ))
+from rqt_reconfigure import logging
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 
 
 class TreenodeQstdItem(ReadonlyItem):
@@ -82,7 +51,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
     NODE_FULLPATH = 1
 
-    def __init__(self, *args):
+    def __init__(self, context, *args):
         """
         :param args[0]: str (will become 1st arg of QStandardItem)
         :param args[1]: integer value that indicates whether this class
@@ -91,35 +60,18 @@ class TreenodeQstdItem(ReadonlyItem):
         """
         grn_current_treenode = args[0]
         self._raw_param_name = grn_current_treenode
-        self._set_param_name(grn_current_treenode)
+        self._list_treenode_names = self._raw_param_name.split('/')[1:]
+        self._toplevel_treenode_name = self._list_treenode_names[0]
+
         super(TreenodeQstdItem, self).__init__(grn_current_treenode)
 
-        # dynamic_reconfigure.client.Client
+        self._context = context
         self._param_client = None
         # ParamClientWidget
         self._param_client_widget = None
 
-        self._is_rosnode = False
-
-        self._lock = threading.Lock()
-        self._paramserver_connect_thread = None
-
-        try:
-            if args[1]:
-                self._is_rosnode = True
-        except IndexError:  # tuple index out of range etc.
-            logging.error('TreenodeQstdItem IndexError')
-
-    def set_param_client(self, param_client):
-        """
-        @param param_client: dynamic_reconfigure.client.Client
-        """
-        self._param_client = param_client
-        logging.debug('Qitem set param_client={} param={}'.format(
-            self._param_client, self._raw_param_name
-        ))
-
-    def clear_param_client(self):
+    def reset(self):
+        self._param_client_widget = None
         if self._param_client is not None:
             self._param_client.close()
             del self._param_client
@@ -132,83 +84,17 @@ class TreenodeQstdItem(ReadonlyItem):
         @raise ROSException:
         """
         if not self._param_client_widget:
-            logging.debug('get param_client={}'.format(
-                self._param_client
-            ))
-            logging.debug('In get_param_client_widget 1')
-            if not self._param_client:
-                self.connect_param_server()
-            logging.debug('In get_param_client_widget 2')
-
-            timeout = 3 * 100
-            loop = 0
-            # Loop until _param_client is set. self._param_client gets
-            # set from different thread (in ParamserverConnectThread).
-            while self._param_client is None:
-                # Avoid deadlock
-                if timeout < loop:
-                    # Make itself unclickable
-                    self.setEnabled(False)
-                    raise ROSException('param client failed')
-
-                time.sleep(0.01)
-                loop += 1
-                logging.debug('In get_param_client_widget loop#{}'.format(loop))
-
             logging.debug('In get_param_client_widget 4')
             self._param_client_widget = ParamClientWidget(
-                self._param_client, self._raw_param_name
+                self._context, self._raw_param_name
             )
             # Creating the ParamClientWidget transfers ownership of the
             # _param_client to it. If it is destroyed from Qt, we need to
             # clear our reference to it and stop the param server thread we
             # had.
-            self._param_client_widget.destroyed.connect(
-                self.clear_param_client_widget)
-            self._param_client_widget.destroyed.connect(
-                self.disconnect_param_server)
+            self._param_client_widget.destroyed.connect(self.reset)
             logging.debug('In get_param_client_widget 5')
-
-        else:
-            pass
         return self._param_client_widget
-
-    def clear_param_client_widget(self):
-        self._param_client_widget = None
-
-    def connect_param_server(self):
-        """
-        Connect to parameter server using dynamic_reconfigure client.
-        Behavior is delegated to a private method _connect_param_server, and
-        its return value, client, is set to member variable.
-
-        @return void
-        @raise ROSException:
-        """
-        # If the treenode doesn't represent ROS Node, return None.
-        with self._lock:
-            if not self._is_rosnode:
-                logging.error('connect_param_server failed due to missing '
-                              'ROS Node. Return with nothing.')
-                return
-
-            if not self._param_client:
-                if self._paramserver_connect_thread:
-                    if self._paramserver_connect_thread.isAlive():
-                        self._paramserver_connect_thread.join(1)
-                self._paramserver_connect_thread = ParamserverConnectThread(
-                    self, self._raw_param_name)
-                self._paramserver_connect_thread.start()
-
-    def disconnect_param_server(self):
-        with self._lock:
-            if self._paramserver_connect_thread:
-                # Try to stop the thread
-                if self._paramserver_connect_thread.isAlive():
-                    self._paramserver_connect_thread.join(1)
-                del self._paramserver_connect_thread
-                self._paramserver_connect_thread = None
-            self.clear_param_client()
 
     def enable_param_items(self):
         """
@@ -224,37 +110,10 @@ class TreenodeQstdItem(ReadonlyItem):
             item = ReadonlyItem(param_name)
             item.setBackground(brush)
             param_names_items.append(item)
-        logging.debug('enable_param_items len of paramnames={}'.format(
+        logging.debug('enable_param_items len of param_names={}'.format(
             len(param_names_items)
         ))
         self.appendColumn(param_names_items)
-
-    def _set_param_name(self, param_name):
-        """
-        :param param_name: A string formatted as GRN (Graph Resource Names, see
-                           http://www.ros.org/wiki/Names).
-                           Example: /paramname/subpara/subsubpara/...
-        """
-        logging.debug('_set_param_name param_name={} '.format(param_name))
-
-        #  separate param_name by forward slash
-        self._list_treenode_names = param_name.split('/')
-
-        #  Deleting the 1st elem which is zero-length str.
-        del self._list_treenode_names[0]
-
-        self._toplevel_treenode_name = self._list_treenode_names[0]
-
-        logging.debug('paramname={} nodename={} _list_params[-1]={}'.format(
-            param_name, self._toplevel_treenode_name,
-            self._list_treenode_names[-1]
-        ))
-
-    def get_param_name_toplv(self):
-        """
-        :rtype: String of the top level param name.
-        """
-        return self._name_top
 
     def get_raw_param_name(self):
         return self._raw_param_name

@@ -32,90 +32,128 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-from dynamic_reconfigure import (DynamicReconfigureCallbackException,
-                                 DynamicReconfigureParameterException)
-
-from python_qt_binding.QtCore import QMargins
-from python_qt_binding.QtGui import QIcon
+from python_qt_binding.QtCore import QSize, Qt, Signal, QMargins
+from python_qt_binding.QtGui import QFont, QIcon
 from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
-                                         QPushButton, QWidget)
-
-from rospy.service import ServiceException
-
+                                         QFormLayout, QLabel,
+                                         QPushButton, QVBoxLayout,
+                                         QWidget)
+import rclpy
 import yaml
 
-from . import logging
-from .param_editors import EditorWidget
-from .param_groups import find_cfg, GroupWidget
-from .param_updater import ParamUpdater
+from rqt_reconfigure import logging
+from rqt_reconfigure.param_api import create_param_client
+# *Editor classes that are not explicitly used within this .py file still need
+# to be imported. They are invoked implicitly during runtime.
+from rqt_reconfigure.param_editors import (BooleanEditor,  # noqa: F401
+                                           DoubleEditor, EditorWidget,
+                                           EDITOR_TYPES, IntegerEditor,
+                                           StringEditor)
 
 
-class ParamClientWidget(GroupWidget):
+class ParamClientWidget(QWidget):
     """
-    A wrapper of dynamic_reconfigure.client instance.
-
     Represents a widget where users can view and modify ROS params.
     """
 
-    def __init__(self, reconf, node_name):
+    sig_node_disabled_selected = Signal(str)
+    sig_node_state_change = Signal(bool)
+
+    def __init__(self, context, node_name):
         """
-        :type reconf: dynamic_reconfigure.client
         :type node_name: str
         """
-        group_desc = reconf.get_group_descriptions()
-        logging.debug('ParamClientWidget.group_desc=%s', group_desc)
-        super(ParamClientWidget, self).__init__(ParamUpdater(reconf),
-                                                group_desc, node_name)
+        super(ParamClientWidget, self).__init__()
+        self._node_grn = node_name
+        self._toplevel_treenode_name = node_name
+
+        self._editor_widgets = {}
+
+        self._param_client = create_param_client(
+            context.node, node_name, self._handle_param_event
+        )
+
+        # TODO: .ui file needs to be back into usage in later phase.
+        # ui_file = os.path.join(rp.get_path('rqt_reconfigure'),
+        #                        'resource', 'singlenode_parameditor.ui')
+        # loadUi(ui_file, self)
+
+        verticalLayout = QVBoxLayout(self)
+        verticalLayout.setContentsMargins(QMargins(0, 0, 0, 0))
+
+        widget_nodeheader = QWidget()
+        h_layout_nodeheader = QHBoxLayout(widget_nodeheader)
+        h_layout_nodeheader.setContentsMargins(QMargins(0, 0, 0, 0))
+
+        nodename_qlabel = QLabel(self)
+        font = QFont('Trebuchet MS, Bold')
+        font.setUnderline(True)
+        font.setBold(True)
+        font.setPointSize(10)
+        nodename_qlabel.setFont(font)
+        nodename_qlabel.setAlignment(Qt.AlignCenter)
+        nodename_qlabel.setText(node_name)
+        h_layout_nodeheader.addWidget(nodename_qlabel)
+
+        # Button to close a node.
+        icon_disable_node = QIcon.fromTheme('window-close')
+        bt_disable_node = QPushButton(icon_disable_node, '', self)
+        bt_disable_node.setToolTip('Hide this node')
+        bt_disable_node_size = QSize(36, 24)
+        bt_disable_node.setFixedSize(bt_disable_node_size)
+        bt_disable_node.pressed.connect(self._node_disable_bt_clicked)
+        h_layout_nodeheader.addWidget(bt_disable_node)
+
+        grid_widget = QWidget(self)
+        self.grid = QFormLayout(grid_widget)
+        verticalLayout.addWidget(widget_nodeheader)
+        verticalLayout.addWidget(grid_widget, 1)
+        # Again, these UI operation above needs to happen in .ui file.
+        param_names = self._param_client.list_parameters()
+        self.add_editor_widgets(
+            self._param_client.get_parameters(param_names),
+            self._param_client.describe_parameters(param_names)
+        )
+
+        # Labels should not stretch
+        # self.grid.setColumnStretch(1, 1)
+        # self.setLayout(self.grid)
 
         # Save and load buttons
-        self.button_widget = QWidget(self)
-        self.button_header = QHBoxLayout(self.button_widget)
-        self.button_header.setContentsMargins(QMargins(0, 0, 0, 0))
+        button_widget = QWidget(self)
+        button_header = QHBoxLayout(button_widget)
+        button_header.setContentsMargins(QMargins(0, 0, 0, 0))
 
-        self.load_button = QPushButton()
-        self.save_button = QPushButton()
+        load_button = QPushButton()
+        save_button = QPushButton()
 
-        self.load_button.setIcon(QIcon.fromTheme('document-open'))
-        self.save_button.setIcon(QIcon.fromTheme('document-save'))
+        load_button.setIcon(QIcon.fromTheme('document-open'))
+        save_button.setIcon(QIcon.fromTheme('document-save'))
 
-        self.load_button.clicked[bool].connect(self._handle_load_clicked)
-        self.save_button.clicked[bool].connect(self._handle_save_clicked)
+        load_button.clicked[bool].connect(self._handle_load_clicked)
+        save_button.clicked[bool].connect(self._handle_save_clicked)
 
-        self.button_header.addWidget(self.save_button)
-        self.button_header.addWidget(self.load_button)
+        button_header.addWidget(save_button)
+        button_header.addWidget(load_button)
 
         self.setMinimumWidth(150)
-
-        self.reconf = reconf
-        self.updater.start()
-        self.reconf.config_callback = self.config_callback
-        self._node_grn = node_name
 
     def get_node_grn(self):
         return self._node_grn
 
-    def config_callback(self, config):
-
+    def _handle_param_event(
+        self, new_parameters, changed_parameters, deleted_parameters
+    ):
         # TODO: Think about replacing callback architecture with signals.
-
-        if config:
-            # TODO: should use config.keys but this method doesnt exist
-
-            names = [name for name, v in config.items()]
-            # v isn't used but necessary to get key and put it into dict.
-            # logging.debug('config_callback name={} v={}'.format(name, v))
-
-            for widget in self.editor_widgets:
-                if isinstance(widget, EditorWidget):
-                    if widget.param_name in names:
-                        logging.debug('EDITOR widget.param_name=%s',
-                                      widget.param_name)
-                        widget.update_value(config[widget.param_name])
-                elif isinstance(widget, GroupWidget):
-                    cfg = find_cfg(config, widget.param_name)
-                    logging.debug('GROUP widget.param_name=%s',
-                                  widget.param_name)
-                    widget.update_group(cfg)
+        if new_parameters:
+            new_descriptors = self._param_client.describe_parameters(
+                names=[p.name for p in new_parameters]
+            )
+            self.add_editor_widgets(new_parameters, new_descriptors)
+        if changed_parameters:
+            self.update_editor_widgets(changed_parameters)
+        if deleted_parameters:
+            self.remove_editor_widgets(deleted_parameters)
 
     def _handle_load_clicked(self):
         filename = QFileDialog.getOpenFileName(
@@ -132,40 +170,81 @@ class ParamClientWidget(GroupWidget):
             self.save_param(filename[0])
 
     def save_param(self, filename):
-        configuration = self.reconf.get_configuration()
-        if configuration is not None:
-            with open(filename, 'w') as f:
-                yaml.dump(configuration, f)
+        with open(filename, 'w') as f:
+            try:
+                parameters = self._param_client.get_parameters(
+                    self._param_client.list_parameters()
+                )
+                yaml.dump({p.name: p.value for p in parameters}, f)
+            except Exception as e:
+                logging.warn(
+                    "Parameter saving wasn't successful because: " + str(e)
+                )
 
     def load_param(self, filename):
         with open(filename, 'r') as f:
-            configuration = {}
-            for doc in yaml.load_all(f.read()):
-                configuration.update(doc)
+            parameters = [
+                rclpy.parameter.Parameter(name=name, value=value)
+                for doc in yaml.load_all(f.read())
+                for name, value in doc.items()
+            ]
 
         try:
-            self.reconf.update_configuration(configuration)
-        except ServiceException as e:
+            self._param_client.set_parameters(parameters)
+        except Exception as e:
             logging.warn(
-                "Call for reconfiguration wasn't successful because: %s",
-                e.message
+                "Parameter loading wasn't successful because: " + str(e)
             )
-        except DynamicReconfigureParameterException as e:
-            logging.warn(
-                "Reconfiguration wasn't successful because: %s",
-                e.message
+
+    def collect_paramnames(self, config):
+        pass
+
+    def remove_editor_widgets(self, parameters):
+        for parameter in parameters:
+            if parameter.name not in self._editor_widgets:
+                continue
+            logging.debug('Removing editor widget for {}'.format(
+                parameter.name))
+            self._editor_widgets[parameter.name].hide(self.grid)
+            self._editor_widgets[parameter.name].close()
+            del self._editor_widgets[parameter.name]
+
+    def update_editor_widgets(self, parameters):
+        for parameter in parameters:
+            if parameter.name not in self._editor_widgets:
+                continue
+            logging.debug('Updating editor widget for {}'.format(
+                parameter.name))
+            self._editor_widgets[parameter.name].update_local(parameter.value)
+
+    def add_editor_widgets(self, parameters, descriptors):
+        for parameter, descriptor in zip(parameters, descriptors):
+            if parameter.type_ not in EDITOR_TYPES:
+                continue
+            logging.debug('Adding editor widget for {}'.format(parameter.name))
+            editor_widget = EDITOR_TYPES[parameter.type_](
+                self._param_client, parameter, descriptor
             )
-        except DynamicReconfigureCallbackException as e:
-            logging.warn(
-                "Reconfiguration wasn't successful because: %s",
-                e.message
-            )
+            self._editor_widgets[parameter.name] = editor_widget
+            editor_widget.display(self.grid)
+
+    def display(self, grid):
+        grid.addRow(self)
+
+    def get_treenode_names(self):
+        '''
+        :rtype: str[]
+        '''
+        return list(self._editor_widgets.keys())
+
+    def _node_disable_bt_clicked(self):
+        logging.debug('param_gs _node_disable_bt_clicked')
+        self.sig_node_disabled_selected.emit(self._toplevel_treenode_name)
 
     def close(self):
-        self.reconf.close()
-        self.updater.stop()
+        self._param_client.close()
 
-        for w in self.editor_widgets:
+        for w in self._editor_widgets.values():
             w.close()
 
         self.deleteLater()

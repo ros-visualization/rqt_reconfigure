@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>rqt_reconfigure</name>
-  <version>0.4.10</version>
+  <version>1.0.1</version>
   <description>This rqt plugin succeeds former dynamic_reconfigure's GUI
     (reconfigure_gui), and provides the way to view and edit the parameters
     that are accessible via dynamic_reconfigure.<br/>
@@ -17,6 +17,9 @@
 
   <license>BSD</license>
 
+  <!-- Some tests are ASL 2.0 -->
+  <license>Apache License 2.0</license>
+
   <url type="website">http://wiki.ros.org/rqt_reconfigure</url>
   <url type="repository">https://github.com/ros-visualization/rqt_reconfigure</url>
   <url type="bugtracker">https://github.com/ros-visualization/rqt_reconfigure/issues</url>
@@ -24,21 +27,21 @@
   <author>Isaac Saito</author>
   <author>Ze'ev Klapow</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <build_depend>roslint</build_depend>
-  <exec_depend>dynamic_reconfigure</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
   <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>rqt_console</exec_depend>
+  <exec_depend>python3-catkin-pkg-modules</exec_depend>
+  <exec_depend>qt_gui_py_common</exec_depend>
   <exec_depend>rqt_gui</exec_depend>
   <exec_depend>rqt_gui_py</exec_depend>
+  <exec_depend>rqt_py_console</exec_depend>
   <exec_depend>rqt_py_common</exec_depend>
 
-  <test_depend>rostest</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_xmllint</test_depend>
 
   <export>
     <architecture_independent/>
+    <build_type>ament_python</build_type>
     <rqt_gui plugin="${prefix}/plugin.xml"/>
   </export>
 </package>

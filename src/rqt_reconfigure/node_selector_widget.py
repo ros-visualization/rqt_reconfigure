@@ -38,8 +38,6 @@ from collections import OrderedDict
 import os
 import time
 
-import dynamic_reconfigure as dyn_reconf
-
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, Signal
 try:
@@ -48,15 +46,14 @@ except ImportError:
     from python_qt_binding.QtGui import QItemSelectionModel  # Qt 4
 from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
-from rospy.exceptions import ROSException
-
-import rosservice
+from ament_index_python import get_resource
 
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
 
 from rqt_reconfigure import logging
-from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.filter_children_model import FilterChildrenModel
+from rqt_reconfigure.param_api import find_nodes_with_params
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.treenode_item_model import TreenodeItemModel
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
 
@@ -67,7 +64,7 @@ class NodeSelectorWidget(QWidget):
     # public signal
     sig_node_selected = Signal(ParamClientWidget)
 
-    def __init__(self, parent, rospack, signal_msg=None):
+    def __init__(self, parent, context, signal_msg=None):
         """
         @param signal_msg: Signal to carries a system msg that is shown on GUI.
         @type signal_msg: QtCore.Signal
@@ -76,8 +73,10 @@ class NodeSelectorWidget(QWidget):
         self._parent = parent
         self.stretch = None
         self._signal_msg = signal_msg
+        self._context = context
 
-        ui_file = os.path.join(rospack.get_path('rqt_reconfigure'), 'resource',
+        _, package_path = get_resource('packages', 'rqt_reconfigure')
+        ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                                'node_selector.ui')
         loadUi(ui_file, self)
 
@@ -180,14 +179,13 @@ class NodeSelectorWidget(QWidget):
         self.selectionModel.select(index_current, QItemSelectionModel.Deselect)
 
         try:
-            reconf_widget = self._nodeitems[
+            param_client_widget = self._nodeitems[
                 rosnode_name_selected].get_param_client_widget()
-        except ROSException as e:
+        except Exception as e:
             raise e
 
         # Signal to notify other pane that also contains node widget.
-        self.sig_node_selected.emit(reconf_widget)
-        # self.sig_node_selected.emit(self._nodeitems[rosnode_name_selected])
+        self.sig_node_selected.emit(param_client_widget)
 
     def _selection_selected(self, index_current, rosnode_name_selected):
         """Intended to be called from _selection_changed_slot."""
@@ -224,7 +222,7 @@ class NodeSelectorWidget(QWidget):
         item_widget = None
         try:
             item_widget = item_child.get_param_client_widget()
-        except ROSException as e:
+        except Exception as e:
             raise e
         logging.debug('item_selected={} child={} widget={}'.format(
                       index_current, item_child, item_widget))
@@ -273,10 +271,13 @@ class NodeSelectorWidget(QWidget):
         if selected.indexes():
             try:
                 self._selection_selected(index_current, rosnode_name_selected)
-            except ROSException as e:
+            except Exception as e:
                 # TODO: print to sysmsg pane
-                err_msg = e.message + '. Connection to node=' + \
-                    format(rosnode_name_selected) + ' failed'
+                err_msg = 'Connection to node={} failed:\n{}'.format(
+                    rosnode_name_selected, e
+                )
+                import traceback
+                traceback.print_exc()
                 self._signal_msg.emit(err_msg)
                 logging.error(err_msg)
 
@@ -284,11 +285,11 @@ class NodeSelectorWidget(QWidget):
             try:
                 self._selection_deselected(index_current,
                                            rosnode_name_selected)
-            except ROSException as e:
+            except Exception as e:
+                self._signal_msg.emit(e)
                 logging.error(e.message)
-                # TODO: print to sysmsg pane
 
-    def get_paramitems(self):
+    def get_nodeitems(self):
         """
         :rtype: OrderedDict 1st elem is node's GRN name,
                 2nd is TreenodeQstdItem instance
@@ -303,10 +304,11 @@ class NodeSelectorWidget(QWidget):
         #             are associated with nodes. In order to handle independent
         #             params, different approach needs taken.
         try:
-            nodes = dyn_reconf.find_reconfigure_services()
-        except rosservice.ROSServiceIOException as e:
-            logging.error('Reconfigure GUI cannot connect to master.')
-            raise e  # TODO Make sure 'raise' here returns or finalizes func.
+            nodes = find_nodes_with_params(self._context.node)
+        except Exception as e:
+            self._logger.error(e.message)
+            # TODO: print to sysmsg pane
+            raise e  # TODO Make sure 'raise' here returns or finalizes  func.
 
         if not nodes == self._nodes_previous:
             i_node_curr = 1
@@ -328,8 +330,11 @@ class NodeSelectorWidget(QWidget):
 
                 # Instantiate QStandardItem. Inside, dyn_reconf client will
                 # be generated too.
+
                 treenodeitem_toplevel = TreenodeQstdItem(
-                    node_name_grn, TreenodeQstdItem.NODE_FULLPATH)
+                    self._context, node_name_grn,
+                    TreenodeQstdItem.NODE_FULLPATH
+                )
                 _treenode_names = treenodeitem_toplevel.get_treenode_names()
 
                 # Using OrderedDict here is a workaround for StdItemModel
@@ -372,7 +377,7 @@ class NodeSelectorWidget(QWidget):
 
         name_currentnode = child_names_left.pop(0)
         grn_curr = treenodeitem_toplevel.get_raw_param_name()
-        stditem_currentnode = TreenodeQstdItem(grn_curr,
+        stditem_currentnode = TreenodeQstdItem(self._context, grn_curr,
                                                TreenodeQstdItem.NODE_FULLPATH)
 
         # item at the bottom is your most recent node.
@@ -415,8 +420,8 @@ class NodeSelectorWidget(QWidget):
 
     def _prune_nodetree_pernode(self):
         try:
-            nodes = dyn_reconf.find_reconfigure_services()
-        except rosservice.ROSServiceIOException as e:
+            nodes = find_nodes_with_params(self._context.node)
+        except Exception as e:
             logging.error('Reconfigure GUI cannot connect to master.')
             raise e  # TODO Make sure 'raise' here returns or finalizes func.
 
@@ -427,18 +432,12 @@ class NodeSelectorWidget(QWidget):
                 logging.debug(
                     'Removing {} because the server is no longer available.'.
                     format(candidate_for_removal))
-                self._nodeitems[candidate_for_removal].\
-                    disconnect_param_server()
                 self._rootitem.removeRow(i)
-                self._nodeitems.pop(candidate_for_removal)
+                self._nodeitems.pop(candidate_for_removal).reset()
 
     def _refresh_nodes(self):
         self._prune_nodetree_pernode()
         self._update_nodetree_pernode()
-
-    def close_node(self):
-        logging.debug(' in close_node')
-        # TODO(Isaac) Figure out if dynamic_reconfigure needs to be closed.
 
     def set_filter(self, filter_):
         """

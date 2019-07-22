@@ -35,6 +35,8 @@
 from collections import OrderedDict
 import os
 
+from ament_index_python import get_resource
+
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
@@ -54,18 +56,19 @@ class ParameditWidget(QWidget):
     # public signal
     sig_node_disabled_selected = Signal(str)
 
-    def __init__(self, rospack):
+    def __init__(self):
         """"""
         super(ParameditWidget, self).__init__()
 
-        ui_file = os.path.join(rospack.get_path('rqt_reconfigure'),
+        _, package_path = get_resource('packages', 'rqt_reconfigure')
+        ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure',
                                'resource', 'paramedit_pane.ui')
         loadUi(ui_file, self, {'ParameditWidget': ParameditWidget})
 
-        self._param_clients = OrderedDict()
+        self._param_client_widgets = OrderedDict()
 
         # Adding the list of Items
-        self.vlayout = QVBoxLayout(self.scrollarea_holder_widget)
+        self._vlayout = QVBoxLayout(self.scrollarea_holder_widget)
 
         # causes error
         # self._set_index_widgets(self.listview, paramitems_dict)
@@ -81,25 +84,18 @@ class ParameditWidget(QWidget):
             view.setIndexWidget(i, p)
             i += 1
 
-    def show_reconf(self, param_client_widget):
+    def show(self, param_client_widget):
         """
         Callback when user chooses a node.
-
-        @param param_client_widget:
         """
         node_grn = param_client_widget.get_node_grn()
-        logging.debug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
+        logging.debug('ParamEditWidget.show str(node_grn)=' + str(node_grn))
 
-        if node_grn not in self._param_clients.keys():
-            # Add param widget if there isn't already one.
-
-            # Client gets renewed every time different node_grn was clicked.
-
-            self._param_clients.__setitem__(node_grn, param_client_widget)
-            self.vlayout.addWidget(param_client_widget)
+        if node_grn not in self._param_client_widgets:
+            self._param_client_widgets[node_grn] = param_client_widget
+            self._vlayout.addWidget(param_client_widget)
             param_client_widget.sig_node_disabled_selected.connect(
                 self._node_disabled)
-
         else:  # If there has one already existed, remove it.
             self._remove_node(node_grn)
             # LayoutUtil.clear_layout(self.vlayout)
@@ -111,16 +107,14 @@ class ParameditWidget(QWidget):
 
         # Add color to alternate the rim of the widget.
         LayoutUtil.alternate_color(
-            self._param_clients.values(),
+            self._param_client_widgets.values(),
             [self.palette().window().color().lighter(125),
              self.palette().window().color().darker(125)])
 
     def close(self):
-        for dc in self._param_clients:
-            # Clear out the old widget
-            dc.close()
-            dc = None
-
+        for w in self._param_client_widgets:
+            w.close()
+        self._param_client_widgets.clear()
         self._paramedit_scrollarea.deleteLater()
 
     def filter_param(self, filter_key):
@@ -136,7 +130,7 @@ class ParameditWidget(QWidget):
 
     def _remove_node(self, node_grn):
         try:
-            i = self._param_clients.keys().index(node_grn)
+            i = list(self._param_client_widgets.keys()).index(node_grn)
         except ValueError:
             # ValueError occurring here means that the specified key is not
             # found, most likely already removed, which is possible in the
@@ -149,17 +143,18 @@ class ParameditWidget(QWidget):
             #     ParameditWidget's slot. Thus reaches this method again.
             return
 
-        item = self.vlayout.itemAt(i)
+        item = self._vlayout.itemAt(i)
         if isinstance(item, QWidgetItem):
             item.widget().close()
-        w = self._param_clients.pop(node_grn)
+        w = self._param_client_widgets.pop(node_grn)
 
         logging.debug('popped={} Len of left clients={}'.format(
-            w, len(self._param_clients)
+            w, len(self._param_client_widgets)
         ))
 
     def _node_disabled(self, node_grn):
         logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
+        # self._checkbox.setChecked(value) # TODO(Gonzo) signal doesn't work
 
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.
