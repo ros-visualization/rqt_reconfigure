@@ -51,8 +51,8 @@ class TestTreenodeQstdItem(unittest.TestCase):
         unittest.TestCase.setUp(self)
 
         # For unknown reason this stops operation.
-        # self._item = TreenodeQstdItem(self._nodename_raw, 0)
-        self._item = TreenodeQstdItem(self._nodename_raw)
+        # self._item = TreenodeQstdItem(None, self._nodename_raw, 0)
+        self._item = TreenodeQstdItem(None, self._nodename_raw)
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)

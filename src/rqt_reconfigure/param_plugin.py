@@ -48,7 +48,7 @@ class ParamPlugin(Plugin):
         :type context: qt_gui.PluginContext
         """
         super(ParamPlugin, self).__init__(context)
-        self.setObjectName('Dynamic Reconfigure')
+        self.setObjectName('ParamPlugin')
 
         self._plugin_widget = ParamWidget(context)
         self._widget = PluginContainerWidget(self._plugin_widget, True, False)

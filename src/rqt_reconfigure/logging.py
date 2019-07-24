@@ -32,8 +32,12 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from rospy import logdebug as debug  # noqa: F401
-from rospy import logerr as error  # noqa: F401
-from rospy import logfatal as fatal  # noqa: F401
-from rospy import loginfo as info  # noqa: F401
-from rospy import logwarn as warn  # noqa: F401
+from rclpy.logging import get_logger
+
+logger = get_logger(__package__)
+
+debug = logger.debug
+error = logger.error
+fatal = logger.fatal
+info = logger.info
+warn = logger.warning
