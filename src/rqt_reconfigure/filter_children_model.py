@@ -119,8 +119,8 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
             # If the index is the terminal treenode, parameters that hit
             # the query are displayed at the root tree.
-            child_index = curr_qmindex.child(0, 0)
-            if ((not child_index.isValid()) and
+            _child_index = curr_qmindex.child(0, 0)
+            if ((not _child_index.isValid()) and
                     (isinstance(curr_qitem, TreenodeQstdItem))):
                 self._show_params_view(src_row, curr_qitem)
 
