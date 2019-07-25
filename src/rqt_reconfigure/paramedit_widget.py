@@ -154,7 +154,7 @@ class ParameditWidget(QWidget):
 
     def _node_disabled(self, node_grn):
         logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
-    
+
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.
         self.sig_node_disabled_selected.emit(node_grn)

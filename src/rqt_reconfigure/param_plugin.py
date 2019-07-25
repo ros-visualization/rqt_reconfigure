@@ -48,7 +48,6 @@ class ParamPlugin(Plugin):
         super(ParamPlugin, self).__init__(context)
         self.setObjectName('ParamPlugin')
 
-
         self._plugin_widget = ParamWidget(context)
         self._widget = PluginContainerWidget(self._plugin_widget, True, False)
         if context.serial_number() > 1:
