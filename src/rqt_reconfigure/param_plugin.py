@@ -38,15 +38,15 @@ from rqt_py_common.plugin_container_widget import PluginContainerWidget
 from rqt_reconfigure.param_widget import ParamWidget
 
 
-class Param(Plugin):
+class ParamPlugin(Plugin):
 
     def __init__(self, context):
         """
         :type context: qt_gui.PluginContext
         """
 
-        super(Param, self).__init__(context)
-        self.setObjectName('Param')
+        super(ParamPlugin, self).__init__(context)
+        self.setObjectName('ParamPlugin')
 
 
         self._plugin_widget = ParamWidget(context)

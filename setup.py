@@ -12,7 +12,6 @@ setup(
     name=package_name,
     version='1.0.1',
     package_dir={'': 'src'},
-    scripts=['scripts/rqt_reconfigure'],
     packages=[package_name],
     data_files=[
         ('lib/' + package_name, ['scripts/' + package_name]),
@@ -50,4 +49,9 @@ setup(
     ),
     license='BSD',
     tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'rqt_reconfigure = rqt_reconfigure.main:main',
+        ],
+    },
 )
