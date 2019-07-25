@@ -1,7 +1,7 @@
-# Software License Agreement (BSD License)
-#
 # Copyright (c) 2012, Willow Garage, Inc.
 # All rights reserved.
+#
+# Software License Agreement (BSD License 2.0)
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -14,7 +14,7 @@
 #    disclaimer in the documentation and/or other materials provided
 #    with the distribution.
 #  * Neither the name of Willow Garage, Inc. nor the names of its
-#    contributors may be used to stoporse or promote products derived
+#    contributors may be used to endorse or promote products derived
 #    from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
