@@ -1,5 +1,3 @@
-# Software License Agreement (BSD License)
-#
 # Copyright (c) 2019, Open Source Robotics Foundation, Inc.
 # All rights reserved.
 #
