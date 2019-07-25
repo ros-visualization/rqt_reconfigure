@@ -33,9 +33,10 @@
 # Author: Isaac Saito
 
 from rqt_gui_py.plugin import Plugin
+
 from rqt_py_common.plugin_container_widget import PluginContainerWidget
 
-from rqt_reconfigure.param_widget import ParamWidget
+from .param_widget import ParamWidget
 
 
 class ParamPlugin(Plugin):
@@ -44,7 +45,6 @@ class ParamPlugin(Plugin):
         """
         :type context: qt_gui.PluginContext
         """
-
         super(ParamPlugin, self).__init__(context)
         self.setObjectName('ParamPlugin')
 
