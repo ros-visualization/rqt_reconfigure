@@ -36,7 +36,6 @@ from collections import OrderedDict
 import os
 
 from ament_index_python import get_resource
-
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
