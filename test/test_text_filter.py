@@ -35,6 +35,7 @@
 import unittest
 
 from python_qt_binding.QtCore import QRegExp, Qt
+
 from rqt_reconfigure.text_filter import TextFilter
 
 

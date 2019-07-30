@@ -37,6 +37,7 @@ from python_qt_binding.QtWidgets import QWidget
 
 from ament_index_python import get_resource
 
+
 class TextFilterWidget(QWidget):
     """
     Taken from rqt_console.TextFilterWidget. Only modification from it is .ui
