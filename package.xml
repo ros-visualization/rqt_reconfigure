@@ -29,6 +29,7 @@
   <build_depend>roslint</build_depend>
   <exec_depend>dynamic_reconfigure</exec_depend>
   <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
+  <exec_depend>python-yaml</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>rqt_console</exec_depend>
   <exec_depend>rqt_gui</exec_depend>
