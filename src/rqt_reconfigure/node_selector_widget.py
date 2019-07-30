@@ -55,8 +55,8 @@ import rosservice
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
 
 from rqt_reconfigure import logging
-from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.filter_children_model import FilterChildrenModel
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 from rqt_reconfigure.treenode_item_model import TreenodeItemModel
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
 
@@ -180,14 +180,13 @@ class NodeSelectorWidget(QWidget):
         self.selectionModel.select(index_current, QItemSelectionModel.Deselect)
 
         try:
-            reconf_widget = self._nodeitems[
+            param_client_widget = self._nodeitems[
                 rosnode_name_selected].get_param_client_widget()
         except ROSException as e:
             raise e
 
         # Signal to notify other pane that also contains node widget.
-        self.sig_node_selected.emit(reconf_widget)
-        # self.sig_node_selected.emit(self._nodeitems[rosnode_name_selected])
+        self.sig_node_selected.emit(param_client_widget)
 
     def _selection_selected(self, index_current, rosnode_name_selected):
         """Intended to be called from _selection_changed_slot."""
@@ -275,8 +274,9 @@ class NodeSelectorWidget(QWidget):
                 self._selection_selected(index_current, rosnode_name_selected)
             except ROSException as e:
                 # TODO: print to sysmsg pane
-                err_msg = e.message + '. Connection to node=' + \
-                    format(rosnode_name_selected) + ' failed'
+                err_msg = 'Connection to node={} failed:\n{}'.format(
+                    rosnode_name_selected, e.message
+                )
                 self._signal_msg.emit(err_msg)
                 logging.error(err_msg)
 
@@ -329,7 +329,9 @@ class NodeSelectorWidget(QWidget):
                 # Instantiate QStandardItem. Inside, dyn_reconf client will
                 # be generated too.
                 treenodeitem_toplevel = TreenodeQstdItem(
-                    node_name_grn, TreenodeQstdItem.NODE_FULLPATH)
+                    node_name_grn,
+                    TreenodeQstdItem.NODE_FULLPATH
+                )
                 _treenode_names = treenodeitem_toplevel.get_treenode_names()
 
                 # Using OrderedDict here is a workaround for StdItemModel
