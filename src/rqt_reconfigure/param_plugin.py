@@ -36,7 +36,7 @@ from rqt_gui_py.plugin import Plugin
 
 from rqt_py_common.plugin_container_widget import PluginContainerWidget
 
-from .param_widget import ParamWidget
+from rqt_reconfigure.param_widget import ParamWidget
 
 
 class ParamPlugin(Plugin):

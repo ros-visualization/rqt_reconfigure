@@ -42,7 +42,7 @@ from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QMenu, QWidget
 from ament_index_python import get_resource
 
-from . import logging
+from rqt_reconfigure import logging
 
 from rclpy.parameter import Parameter
 

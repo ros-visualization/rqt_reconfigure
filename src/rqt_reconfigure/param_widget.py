@@ -140,8 +140,8 @@ class ParamWidget(QWidget):
                 self.sig_selected.emit(grn)
             else:
                 logging.warn(
-                    "Could not find a node named '%s'",
-                    str(grn)
+                    'Could not find a node'
+                    " named '{}'".format(str(grn))
                 )
 
     def shutdown(self):

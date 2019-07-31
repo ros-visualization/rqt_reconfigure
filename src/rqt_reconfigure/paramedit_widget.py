@@ -43,7 +43,7 @@ from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
 
 from rqt_py_common.layout_util import LayoutUtil
 
-from . import logging
+from rqt_reconfigure import logging
 
 
 class ParameditWidget(QWidget):
@@ -89,7 +89,8 @@ class ParameditWidget(QWidget):
         Callback when user chooses a node.
         """
         node_grn = param_client_widget.get_node_grn()
-        logging.debug('ParamEditWidget.show str(node_grn)=' + str(node_grn))
+        logging.debug('ParameditWidget.show'
+                      ' str(node_grn)={}'.format(str(node_grn)))
 
         if node_grn not in self._param_client_widgets:
             self._param_client_widgets[node_grn] = param_client_widget
@@ -101,7 +102,7 @@ class ParameditWidget(QWidget):
             # LayoutUtil.clear_layout(self.vlayout)
 
             # Re-add the rest of existing items to layout.
-            # for k, v in self._param_clients.items():
+            # for k, v in self._param_client_widgets.items():
             #     logging.info('added to layout k={} v={}'.format(k, v))
             #     self.vlayout.addWidget(v)
 

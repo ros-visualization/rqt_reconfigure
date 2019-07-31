@@ -193,7 +193,8 @@ class ParamClientWidget(QWidget):
             self._param_client.set_parameters(parameters)
         except Exception as e:
             logging.warn(
-                "Parameter loading wasn't successful because: " + str(e)
+                "Parameter loading wasn't successful"
+                ' because: {}'.format(e)
             )
 
     def collect_paramnames(self, config):

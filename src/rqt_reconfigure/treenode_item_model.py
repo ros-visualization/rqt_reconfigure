@@ -36,7 +36,7 @@ from __future__ import division
 
 from python_qt_binding.QtGui import QStandardItemModel
 
-from . import logging
+from rqt_reconfigure import logging
 
 
 class TreenodeItemModel(QStandardItemModel):
