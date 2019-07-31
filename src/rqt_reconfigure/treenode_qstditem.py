@@ -62,7 +62,6 @@ class TreenodeQstdItem(ReadonlyItem):
         self._raw_param_name = grn_current_treenode
         self._list_treenode_names = self._raw_param_name.split('/')[1:]
         self._toplevel_treenode_name = self._list_treenode_names[0]
-
         super(TreenodeQstdItem, self).__init__(grn_current_treenode)
 
         self._context = context

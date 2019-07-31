@@ -79,33 +79,33 @@ class ParamWidget(QWidget):
         #       from a .ui that is used in this class failed. So for now,
         #       I decided not use .ui in this class.
         #       If someone can tackle this I'd appreciate.
-        hlayout_top = QHBoxLayout(self)
-        hlayout_top.setContentsMargins(QMargins(0, 0, 0, 0))
+        _hlayout_top = QHBoxLayout(self)
+        _hlayout_top.setContentsMargins(QMargins(0, 0, 0, 0))
         self._splitter = QSplitter(self)
-        hlayout_top.addWidget(self._splitter)
+        _hlayout_top.addWidget(self._splitter)
 
-        vlayout_nodesel_widget = QWidget()
-        vlayout_nodesel_side = QVBoxLayout()
-        hlayout_filter_widget = QWidget(self)
-        hlayout_filter = QHBoxLayout()
+        _vlayout_nodesel_widget = QWidget()
+        _vlayout_nodesel_side = QVBoxLayout()
+        _hlayout_filter_widget = QWidget(self)
+        _hlayout_filter = QHBoxLayout()
         self._text_filter = TextFilter()
         self.filter_lineedit = TextFilterWidget(self._text_filter)
         self.filterkey_label = QLabel('&Filter key:')
         self.filterkey_label.setBuddy(self.filter_lineedit)
-        hlayout_filter.addWidget(self.filterkey_label)
-        hlayout_filter.addWidget(self.filter_lineedit)
-        hlayout_filter_widget.setLayout(hlayout_filter)
+        _hlayout_filter.addWidget(self.filterkey_label)
+        _hlayout_filter.addWidget(self.filter_lineedit)
+        _hlayout_filter_widget.setLayout(_hlayout_filter)
         self._nodesel_widget = NodeSelectorWidget(
             self, context, self.sig_sysmsg
         )
-        vlayout_nodesel_side.addWidget(hlayout_filter_widget)
-        vlayout_nodesel_side.addWidget(self._nodesel_widget)
-        vlayout_nodesel_side.setSpacing(1)
-        vlayout_nodesel_widget.setLayout(vlayout_nodesel_side)
+        _vlayout_nodesel_side.addWidget(_hlayout_filter_widget)
+        _vlayout_nodesel_side.addWidget(self._nodesel_widget)
+        _vlayout_nodesel_side.setSpacing(1)
+        _vlayout_nodesel_widget.setLayout(_vlayout_nodesel_side)
 
         param_edit_widget = ParameditWidget()
 
-        self._splitter.insertWidget(0, vlayout_nodesel_widget)
+        self._splitter.insertWidget(0, _vlayout_nodesel_widget)
         self._splitter.insertWidget(1, param_edit_widget)
         # 1st column, _vlayout_nodesel_widget, to minimize width.
         # 2nd col to keep the possible max width.

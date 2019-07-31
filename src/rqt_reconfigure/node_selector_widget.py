@@ -330,7 +330,6 @@ class NodeSelectorWidget(QWidget):
 
                 # Instantiate QStandardItem. Inside, dyn_reconf client will
                 # be generated too.
-
                 treenodeitem_toplevel = TreenodeQstdItem(
                     self._context, node_name_grn,
                     TreenodeQstdItem.NODE_FULLPATH

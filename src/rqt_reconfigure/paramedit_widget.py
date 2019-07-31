@@ -36,7 +36,6 @@ from collections import OrderedDict
 import os
 
 from ament_index_python import get_resource
-
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Signal
 from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
@@ -155,7 +154,6 @@ class ParameditWidget(QWidget):
 
     def _node_disabled(self, node_grn):
         logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
-        # self._checkbox.setChecked(value) # TODO(Gonzo) signal doesn't work
 
         # Signal to notify other GUI components (eg. nodes tree pane) that
         # a node widget is disabled.

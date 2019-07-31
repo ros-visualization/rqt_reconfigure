@@ -1,4 +1,4 @@
-# Copyright (c) 2012, Willow Garage, Inc.
+# Copyright (c) 2019 Open Source Robotics Foundation, Inc.
 # All rights reserved.
 #
 # Software License Agreement (BSD License 2.0)
@@ -44,8 +44,7 @@ from rclpy.qos import qos_profile_parameter_events
 class ParamClient(object):
 
     def __init__(self, node, remote_node_name, param_change_callback=None):
-        """
-        """
+
         self._node = node
         self._remote_node_name = remote_node_name
         self._get_params_client = self._node.create_client(

@@ -1,4 +1,4 @@
-# Copyright (c) 2012, Willow Garage, Inc.
+# Copyright (c) 2019 Open Source Robotics Foundation, Inc.
 # All rights reserved.
 #
 # Software License Agreement (BSD License 2.0)
@@ -30,7 +30,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Isaac Saito, Ze'ev Klapow
+# Author: Gonzalo de Pedro
 
 from python_qt_binding.QtCore import QSize, Qt, Signal, QMargins
 from python_qt_binding.QtGui import QFont, QIcon
@@ -73,11 +73,6 @@ class ParamClientWidget(QWidget):
             context.node, node_name, self._handle_param_event
         )
 
-        # TODO: .ui file needs to be back into usage in later phase.
-        # ui_file = os.path.join(rp.get_path('rqt_reconfigure'),
-        #                        'resource', 'singlenode_parameditor.ui')
-        # loadUi(ui_file, self)
-
         verticalLayout = QVBoxLayout(self)
         verticalLayout.setContentsMargins(QMargins(0, 0, 0, 0))
 
@@ -114,10 +109,6 @@ class ParamClientWidget(QWidget):
             self._param_client.get_parameters(param_names),
             self._param_client.describe_parameters(param_names)
         )
-
-        # Labels should not stretch
-        # self.grid.setColumnStretch(1, 1)
-        # self.setLayout(self.grid)
 
         # Save and load buttons
         button_widget = QWidget(self)
