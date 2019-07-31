@@ -88,7 +88,8 @@ class ParameditWidget(QWidget):
         @param param_client_widget:
         """
         node_grn = param_client_widget.get_node_grn()
-        logging.debug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
+        logging.debug('ParameditWidget.show'
+                      ' str(node_grn)={}'.format(str(node_grn)))
 
         if node_grn not in self._param_client_widgets.keys():
             # Add param widget if there isn't already one.

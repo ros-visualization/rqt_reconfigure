@@ -63,7 +63,7 @@ class ParamClientWidget(GroupWidget):
         :type node_name: str
         """
         group_desc = reconf.get_group_descriptions()
-        logging.debug('ParamClientWidget.group_desc=%s', group_desc)
+        logging.debug('ParamClientWidget.group_desc={}'.format(group_desc))
         super(ParamClientWidget, self).__init__(ParamUpdater(reconf),
                                                 group_desc, node_name)
 
@@ -108,13 +108,13 @@ class ParamClientWidget(GroupWidget):
             for widget in self.editor_widgets:
                 if isinstance(widget, EditorWidget):
                     if widget.param_name in names:
-                        logging.debug('EDITOR widget.param_name=%s',
-                                      widget.param_name)
+                        logging.debug('EDITOR widget.param_name={}'.format(
+                                      widget.param_name))
                         widget.update_value(config[widget.param_name])
                 elif isinstance(widget, GroupWidget):
                     cfg = find_cfg(config, widget.param_name)
-                    logging.debug('GROUP widget.param_name=%s',
-                                  widget.param_name)
+                    logging.debug('GROUP widget.param_name={}'.format(
+                                  widget.param_name))
                     widget.update_group(cfg)
 
     def _handle_load_clicked(self):
@@ -147,18 +147,18 @@ class ParamClientWidget(GroupWidget):
             self.reconf.update_configuration(configuration)
         except ServiceException as e:
             logging.warn(
-                "Call for reconfiguration wasn't successful because: %s",
-                e.message
+                "Call for reconfiguration wasn't successful"
+                ' because: {}'.format(e.message)
             )
         except DynamicReconfigureParameterException as e:
             logging.warn(
-                "Reconfiguration wasn't successful because: %s",
-                e.message
+                "Reconfiguration wasn't successful"
+                ' because: {}'.format(e.message)
             )
         except DynamicReconfigureCallbackException as e:
             logging.warn(
-                "Reconfiguration wasn't successful because: %s",
-                e.message
+                "Reconfiguration wasn't successful"
+                ' because: {}'.format(e.message)
             )
 
     def close(self):

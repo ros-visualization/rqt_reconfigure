@@ -145,8 +145,8 @@ class ParamWidget(QWidget):
                 self.sig_selected.emit(rn)
             else:
                 logging.warn(
-                    "Could not find a dynamic reconfigure client named '%s'",
-                    str(rn)
+                    'Could not find a dynamic reconfigure client'
+                    " named '{}'".format(str(rn))
                 )
 
     def shutdown(self):

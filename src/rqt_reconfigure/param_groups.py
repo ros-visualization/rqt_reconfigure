@@ -173,8 +173,8 @@ class GroupWidget(QWidget):
             if param['edit_method']:
                 widget = EnumEditor(self.updater, param)
             elif param['type'] in EDITOR_TYPES:
-                logging.debug('GroupWidget i_debug=%d param type =%s',
-                              i_debug, param['type'])
+                logging.debug('GroupWidget i_debug={} param type ={}'.format(
+                              i_debug, param['type']))
                 editor_type = EDITOR_TYPES[param['type']]
                 widget = eval(editor_type)(self.updater, param)
 
@@ -182,7 +182,7 @@ class GroupWidget(QWidget):
             self._param_names.append(param['name'])
 
             logging.debug(
-                'groups._create_node_widgets num editors=%d', i_debug)
+                'groups._create_node_widgets num editors={}'.format(i_debug))
 
             end = time.time() * 1000
             time_elap = end - begin
@@ -202,13 +202,14 @@ class GroupWidget(QWidget):
                     self.updater, group, self._toplevel_treenode_name)
 
             self.editor_widgets.append(widget)
-            logging.debug('groups._create_node_widgets name=%s', name)
+            logging.debug('groups._create_node_widgets name={}'.format(name))
 
         for i, ed in enumerate(self.editor_widgets):
             ed.display(self.grid)
 
-        logging.debug('GroupWdgt._create_node_widgets len(editor_widgets)=%d',
-                      len(self.editor_widgets))
+        logging.debug('GroupWdgt._create_node_widgets'
+                      ' len(editor_widgets)={}'.format(
+                          len(self.editor_widgets)))
 
     def display(self, grid):
         grid.addRow(self)
