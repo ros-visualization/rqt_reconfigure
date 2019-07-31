@@ -46,8 +46,8 @@ from rospy.exceptions import ROSException
 
 from rqt_py_common.data_items import ReadonlyItem
 
-from . import logging
-from .param_client_widget import ParamClientWidget
+from rqt_reconfigure import logging
+from rqt_reconfigure.param_client_widget import ParamClientWidget
 
 
 class ParamserverConnectThread(threading.Thread):
@@ -224,7 +224,7 @@ class TreenodeQstdItem(ReadonlyItem):
             item = ReadonlyItem(param_name)
             item.setBackground(brush)
             param_names_items.append(item)
-        logging.debug('enable_param_items len of paramnames={}'.format(
+        logging.debug('enable_param_items len of param_names={}'.format(
             len(param_names_items)
         ))
         self.appendColumn(param_names_items)
@@ -245,7 +245,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
         self._toplevel_treenode_name = self._list_treenode_names[0]
 
-        logging.debug('paramname={} nodename={} _list_params[-1]={}'.format(
+        logging.debug('param_name={} node_name={} _list_params[-1]={}'.format(
             param_name, self._toplevel_treenode_name,
             self._list_treenode_names[-1]
         ))

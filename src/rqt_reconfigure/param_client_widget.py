@@ -44,10 +44,10 @@ from rospy.service import ServiceException
 
 import yaml
 
-from . import logging
-from .param_editors import EditorWidget
-from .param_groups import find_cfg, GroupWidget
-from .param_updater import ParamUpdater
+from rqt_reconfigure import logging
+from rqt_reconfigure.param_editors import EditorWidget
+from rqt_reconfigure.param_groups import find_cfg, GroupWidget
+from rqt_reconfigure.param_updater import ParamUpdater
 
 
 class ParamClientWidget(GroupWidget):

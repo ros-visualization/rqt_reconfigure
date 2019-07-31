@@ -109,22 +109,22 @@ class ParamWidget(QWidget):
         _vlayout_nodesel_side.setSpacing(1)
         _vlayout_nodesel_widget.setLayout(_vlayout_nodesel_side)
 
-        reconf_widget = ParameditWidget(rp)
+        param_edit_widget = ParameditWidget(rp)
 
         self._splitter.insertWidget(0, _vlayout_nodesel_widget)
-        self._splitter.insertWidget(1, reconf_widget)
+        self._splitter.insertWidget(1, param_edit_widget)
         # 1st column, _vlayout_nodesel_widget, to minimize width.
         # 2nd col to keep the possible max width.
         self._splitter.setStretchFactor(0, 0)
         self._splitter.setStretchFactor(1, 1)
 
         # Signal from paramedit widget to node selector widget.
-        reconf_widget.sig_node_disabled_selected.connect(
+        param_edit_widget.sig_node_disabled_selected.connect(
             self._nodesel_widget.node_deselected
         )
         # Pass name of node to editor widget
         self._nodesel_widget.sig_node_selected.connect(
-            reconf_widget.show_reconf
+            param_edit_widget.show_reconf
         )
 
         if not node:

@@ -37,7 +37,7 @@ import time
 
 from rospy import ServiceException
 
-from . import logging
+from rqt_reconfigure import logging
 
 
 class ParamUpdater(threading.Thread):

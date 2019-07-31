@@ -41,7 +41,7 @@ from python_qt_binding.QtWidgets import QVBoxLayout, QWidget, QWidgetItem
 
 from rqt_py_common.layout_util import LayoutUtil
 
-from . import logging
+from rqt_reconfigure import logging
 
 
 class ParameditWidget(QWidget):
@@ -62,7 +62,7 @@ class ParameditWidget(QWidget):
                                'resource', 'paramedit_pane.ui')
         loadUi(ui_file, self, {'ParameditWidget': ParameditWidget})
 
-        self._param_clients = OrderedDict()
+        self._param_client_widgets = OrderedDict()
 
         # Adding the list of Items
         self.vlayout = QVBoxLayout(self.scrollarea_holder_widget)
@@ -90,12 +90,12 @@ class ParameditWidget(QWidget):
         node_grn = param_client_widget.get_node_grn()
         logging.debug('ParameditWidget.show str(node_grn)=%s', str(node_grn))
 
-        if node_grn not in self._param_clients.keys():
+        if node_grn not in self._param_client_widgets.keys():
             # Add param widget if there isn't already one.
 
             # Client gets renewed every time different node_grn was clicked.
 
-            self._param_clients.__setitem__(node_grn, param_client_widget)
+            self._param_client_widgets.__setitem__(node_grn, param_client_widget)
             self.vlayout.addWidget(param_client_widget)
             param_client_widget.sig_node_disabled_selected.connect(
                 self._node_disabled)
@@ -105,18 +105,18 @@ class ParameditWidget(QWidget):
             # LayoutUtil.clear_layout(self.vlayout)
 
             # Re-add the rest of existing items to layout.
-            # for k, v in self._param_clients.items():
+            # for k, v in self._param_client_widgets.items():
             #     logging.info('added to layout k={} v={}'.format(k, v))
             #     self.vlayout.addWidget(v)
 
         # Add color to alternate the rim of the widget.
         LayoutUtil.alternate_color(
-            self._param_clients.values(),
+            self._param_client_widgets.values(),
             [self.palette().window().color().lighter(125),
              self.palette().window().color().darker(125)])
 
     def close(self):
-        for dc in self._param_clients:
+        for dc in self._param_client_widgets:
             # Clear out the old widget
             dc.close()
             dc = None
@@ -136,7 +136,7 @@ class ParameditWidget(QWidget):
 
     def _remove_node(self, node_grn):
         try:
-            i = self._param_clients.keys().index(node_grn)
+            i = list(self._param_client_widgets.keys()).index(node_grn)
         except ValueError:
             # ValueError occurring here means that the specified key is not
             # found, most likely already removed, which is possible in the
@@ -152,10 +152,10 @@ class ParameditWidget(QWidget):
         item = self.vlayout.itemAt(i)
         if isinstance(item, QWidgetItem):
             item.widget().close()
-        w = self._param_clients.pop(node_grn)
+        w = self._param_client_widgets.pop(node_grn)
 
         logging.debug('popped={} Len of left clients={}'.format(
-            w, len(self._param_clients)
+            w, len(self._param_client_widgets)
         ))
 
     def _node_disabled(self, node_grn):

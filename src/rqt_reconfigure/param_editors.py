@@ -43,7 +43,7 @@ from python_qt_binding.QtWidgets import QMenu, QWidget
 
 import rospkg
 
-from . import logging
+from rqt_reconfigure import logging
 
 EDITOR_TYPES = {
     'bool': 'BooleanEditor',

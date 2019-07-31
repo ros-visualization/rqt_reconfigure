@@ -40,10 +40,10 @@ from python_qt_binding.QtWidgets import (QFormLayout, QGroupBox,
                                          QHBoxLayout, QLabel, QPushButton,
                                          QTabWidget, QVBoxLayout, QWidget)
 
-from . import logging
+from rqt_reconfigure import logging
 # *Editor classes that are not explicitly used within this .py file still need
 # to be imported. They are invoked implicitly during runtime.
-from .param_editors import (  # noqa: F401
+from rqt_reconfigure.param_editors import (  # noqa: F401
     BooleanEditor, DoubleEditor, EDITOR_TYPES, EditorWidget, EnumEditor,
     IntegerEditor, StringEditor
 )
