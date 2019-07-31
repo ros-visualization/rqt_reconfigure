@@ -287,7 +287,7 @@ class NodeSelectorWidget(QWidget):
                                            rosnode_name_selected)
             except Exception as e:
                 self._signal_msg.emit(e)
-                logging.error(e.message)
+                logging.error(e)
 
     def get_nodeitems(self):
         """
@@ -306,7 +306,7 @@ class NodeSelectorWidget(QWidget):
         try:
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
-            self._logger.error(e.message)
+            self._logger.error(e)
             # TODO: print to sysmsg pane
             raise e  # TODO Make sure 'raise' here returns or finalizes  func.
 
