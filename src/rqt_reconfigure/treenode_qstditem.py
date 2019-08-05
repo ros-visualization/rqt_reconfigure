@@ -45,14 +45,18 @@ from rqt_reconfigure.param_client_widget import ParamClientWidget
 
 class TreenodeQstdItem(ReadonlyItem):
     """
-    Extending ReadonlyItem - the display content of this item shouldn't be
-    modified.
+    Extending ReadonlyItem.
+
+    the display content of this item shouldn't be modified.
     """
 
     NODE_FULLPATH = 1
 
     def __init__(self, context, *args):
         """
+
+        Tree node initialization.
+
         :param args[0]: str (will become 1st arg of QStandardItem)
         :param args[1]: integer value that indicates whether this class
                                is node that has GRN (Graph Resource Names, see
@@ -78,6 +82,8 @@ class TreenodeQstdItem(ReadonlyItem):
 
     def get_param_client_widget(self):
         """
+        Get the param_client_widget.
+
         @rtype: ParamClientWidget (QWidget)
         @return: None if param_client is not yet generated.
         @raise ROSException:
@@ -87,10 +93,13 @@ class TreenodeQstdItem(ReadonlyItem):
             self._param_client_widget = ParamClientWidget(
                 self._context, self._raw_param_name
             )
-            # Creating the ParamClientWidget transfers ownership of the
-            # _param_client to it. If it is destroyed from Qt, we need to
-            # clear our reference to it and stop the param server thread we
-            # had.
+            """
+            Creating the ParamClientWidget transfers ownership of the
+            _param_client to it. If it is destroyed from Qt, we need to
+            clear our reference to it and stop the param server thread we
+            had.
+            """
+
             self._param_client_widget.destroyed.connect(self.reset)
             logging.debug('In get_param_client_widget 5')
         return self._param_client_widget
@@ -98,6 +107,7 @@ class TreenodeQstdItem(ReadonlyItem):
     def enable_param_items(self):
         """
         Create QStdItem per parameter and addColumn them to myself.
+
         :rtype: None if _param_client is not initiated.
         """
         if not self._param_client_widget:
@@ -119,18 +129,21 @@ class TreenodeQstdItem(ReadonlyItem):
 
     def get_treenode_names(self):
         """
+        Get tree node names.
+
         :rtype: List of string. Null if param
         """
-        # TODO: what if self._list_treenode_names is empty or null?
         return self._list_treenode_names
 
     def get_node_name(self):
         """
+        Get the node name.
+
         :return: A value of single tree node (ie. NOT the fullpath node name).
                  Ex. suppose fullpath name is /top/sub/subsub/subsubsub and you
                      are at 2nd from top, the return value is subsub.
         """
         return self._toplevel_treenode_name
 
-    def type(self):
+    def type(self):  # noqa: A003
         return QStandardItem.UserType

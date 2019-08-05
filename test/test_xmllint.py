@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from glob import glob
+
 import os
 
 from ament_xmllint.main import main
-from glob import glob
+
 import pytest
 
 

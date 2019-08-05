@@ -46,7 +46,9 @@ from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
 
 class FilterChildrenModel(QSortFilterProxyModel):
     """
-    Extending QSortFilterProxyModel, this provides methods to filter children
+    Extending QSortFilterProxyModel.
+
+    this provides methods to filter children
     tree nodes.
 
     QSortFilterProxyModel filters top-down direction starting from the
@@ -86,6 +88,9 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
     def _filter_row_recur(self, src_row, src_parent_qmindex):
         """
+
+        Filter row recursively.
+
         :type src_row: int
         :type src_parent_qmindex: QModelIndex
         """
@@ -147,9 +152,6 @@ class FilterChildrenModel(QSortFilterProxyModel):
         return False
 
     def _show_params_view(self, src_row, curr_qitem):
-        """
-        :type curr_qitem: QStandardItem
-        """
         logging.debug('_show_params_view data={}'.format(
             curr_qitem.data(Qt.DisplayRole)
         ))

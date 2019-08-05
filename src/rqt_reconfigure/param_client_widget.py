@@ -32,35 +32,42 @@
 #
 # Author: Gonzalo de Pedro
 
-from python_qt_binding.QtCore import QSize, Qt, Signal, QMargins
+from python_qt_binding.QtCore import QMargins, QSize, Qt, Signal
 from python_qt_binding.QtGui import QFont, QIcon
-from python_qt_binding.QtWidgets import (QFileDialog, QHBoxLayout,
-                                         QFormLayout, QLabel,
+from python_qt_binding.QtWidgets import (QFileDialog, QFormLayout,
+                                         QHBoxLayout, QLabel,
                                          QPushButton, QVBoxLayout,
                                          QWidget)
+
 import rclpy
-import yaml
 
 from rqt_reconfigure import logging
+
 from rqt_reconfigure.param_api import create_param_client
-# *Editor classes that are not explicitly used within this .py file still need
-# to be imported. They are invoked implicitly during runtime.
+
+"""
+ *Editor classes that are not explicitly used within this .py file still need
+ to be imported. They are invoked implicitly during runtime.
+ """
+
 from rqt_reconfigure.param_editors import (BooleanEditor,  # noqa: F401
-                                           DoubleEditor, EditorWidget,
-                                           EDITOR_TYPES, IntegerEditor,
+                                           DoubleEditor, EDITOR_TYPES,
+                                           EditorWidget, IntegerEditor,
                                            StringEditor)
+
+import yaml
 
 
 class ParamClientWidget(QWidget):
-    """
-    Represents a widget where users can view and modify ROS params.
-    """
+    # Represents a widget where users can view and modify ROS params.
 
     sig_node_disabled_selected = Signal(str)
     sig_node_state_change = Signal(bool)
 
     def __init__(self, context, node_name):
         """
+        Initializaze things.
+
         :type node_name: str
         """
         super(ParamClientWidget, self).__init__()
@@ -224,9 +231,6 @@ class ParamClientWidget(QWidget):
         grid.addRow(self)
 
     def get_treenode_names(self):
-        '''
-        :rtype: str[]
-        '''
         return list(self._editor_widgets.keys())
 
     def _node_disable_bt_clicked(self):

@@ -42,9 +42,6 @@ from rqt_reconfigure.param_widget import ParamWidget
 class ParamPlugin(Plugin):
 
     def __init__(self, context):
-        """
-        :type context: qt_gui.PluginContext
-        """
         super(ParamPlugin, self).__init__(context)
         self.setObjectName('ParamPlugin')
 

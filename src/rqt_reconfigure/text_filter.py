@@ -76,7 +76,8 @@ class TextFilter(MessageFilter):
 
     def set_text(self, text):
         """
-        Setter for _text
+        Setter for _text.
+
         :param text: text to set ''str''
         :emits filter_changed_signal: If _enabled is true
         """

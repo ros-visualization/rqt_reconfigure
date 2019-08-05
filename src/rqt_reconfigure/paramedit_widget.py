@@ -47,8 +47,10 @@ from rqt_reconfigure import logging
 
 class ParameditWidget(QWidget):
     """
-    This class represents a pane where parameter editor widgets of multiple
-    nodes are shown. In rqt_reconfigure, this pane occupies right half of the
+    This class represents a pane.
+
+    Parameter editor widgets of multiple nodes are shown.
+    In rqt_reconfigure, this pane occupies right half of the
     entire visible area.
     """
 
@@ -56,7 +58,6 @@ class ParameditWidget(QWidget):
     sig_node_disabled_selected = Signal(str)
 
     def __init__(self):
-        """"""
         super(ParameditWidget, self).__init__()
 
         _, package_path = get_resource('packages', 'rqt_reconfigure')
@@ -75,18 +76,13 @@ class ParameditWidget(QWidget):
         self.destroyed.connect(self.close)
 
     def _set_index_widgets(self, view, paramitems_dict):
-        """
-        @deprecated: Causes error
-        """
         i = 0
         for p in paramitems_dict:
             view.setIndexWidget(i, p)
             i += 1
 
     def show(self, param_client_widget):
-        """
-        Callback when user chooses a node.
-        """
+        # Callback when user chooses a node.
         node_grn = param_client_widget.get_node_grn()
         logging.debug('ParameditWidget.show'
                       ' str(node_grn)={}'.format(str(node_grn)))
@@ -100,10 +96,12 @@ class ParameditWidget(QWidget):
             self._remove_node(node_grn)
             # LayoutUtil.clear_layout(self.vlayout)
 
-            # Re-add the rest of existing items to layout.
-            # for k, v in self._param_client_widgets.items():
-            #     logging.info('added to layout k={} v={}'.format(k, v))
-            #     self.vlayout.addWidget(v)
+            """"
+             Re-add the rest of existing items to layout.
+             for k, v in self._param_client_widgets.items():
+                 logging.info('added to layout k={} v={}'.format(k, v))
+                 self.vlayout.addWidget(v)
+            """
 
         # Add color to alternate the rim of the widget.
         LayoutUtil.alternate_color(
@@ -118,29 +116,25 @@ class ParameditWidget(QWidget):
         self._paramedit_scrollarea.deleteLater()
 
     def filter_param(self, filter_key):
-        """
-        :type filter_key:
-        """
         # TODO Pick nodes that match filter_key.
-
-        # TODO For the nodes that are kept in previous step, call
-        #      ParamClientWidget.filter_param for all of its existing
-        #      instances.
+        #  TODO For the nodes that are kept in previous step, call ParamClientWidget.filter_param
         pass
 
     def _remove_node(self, node_grn):
         try:
             i = list(self._param_client_widgets.keys()).index(node_grn)
         except ValueError:
-            # ValueError occurring here means that the specified key is not
-            # found, most likely already removed, which is possible in the
-            # following situation/sequence:
-            #
-            # Node widget on ParameditWidget removed by clicking disable button
-            # --> Node deselected on tree widget gets updated
-            # --> Tree widget detects deselection
-            # --> Tree widget emits deselection signal, which is captured by
-            #     ParameditWidget's slot. Thus reaches this method again.
+            """
+            ValueError occurring here means that the specified key is not
+             found, most likely already removed, which is possible in the
+             following situation/sequence:
+
+             Node widget on ParameditWidget removed by clicking disable button
+             --> Node deselected on tree widget gets updated
+             --> Tree widget detects deselection
+             --> Tree widget emits deselection signal, which is captured by
+                 ParameditWidget's slot. Thus reaches this method again.
+            """
             return
 
         item = self._vlayout.itemAt(i)
@@ -155,8 +149,10 @@ class ParameditWidget(QWidget):
     def _node_disabled(self, node_grn):
         logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
 
-        # Signal to notify other GUI components (eg. nodes tree pane) that
-        # a node widget is disabled.
+        """
+         Signal to notify other GUI components (eg. nodes tree pane) that
+         a node widget is disabled.
+        """
         self.sig_node_disabled_selected.emit(node_grn)
 
         # Remove the selected node widget from the internal list of nodes.

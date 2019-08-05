@@ -41,7 +41,10 @@ from rqt_reconfigure import logging
 
 class TreenodeItemModel(QStandardItemModel):
     """
-    This class is made only for this purpose; to hold QStandardItem instances
+
+    This class is made only for this purpose.
+
+    To hold QStandardItem instances
     associated with QModelIndex. QStandardItemModel has methods to return it
     by index called itemFromIndex, but in some cases the method doesn't work
     for unknown reasons. Ref. question asked:
@@ -59,6 +62,8 @@ class TreenodeItemModel(QStandardItemModel):
     def get_index_from_grn(self, grn):
         """
 
+        Get the index from grn.
+
         :type grn: str
         :rtype: QPersistentModelIndex. None if the corresponding item isn't
                 found.
@@ -67,10 +72,6 @@ class TreenodeItemModel(QStandardItemModel):
         return self._indexes.get(grn)
 
     def set_item_from_index(self, grn, qpindex):
-        """
-        :type grn: str
-        :type qpindex: QPersistentModelIndex
-        """
         logging.debug('set_item_from_index grn={} qpindex={}'.format(
             grn, qpindex
         ))
