@@ -364,7 +364,6 @@ class NodeSelectorWidget(QWidget):
     def _add_children_treenode(self, treenodeitem_toplevel,
                                treenodeitem_parent, child_names_left):
         """
-
         Add childen treenode.
 
         Evaluate current treenode and the previous treenode at the same depth.
@@ -447,7 +446,6 @@ class NodeSelectorWidget(QWidget):
 
     def set_filter(self, filter_):
         """
-
         Pass fileter instance to the child proxymodel.
 
         :type filter_: BaseFilter

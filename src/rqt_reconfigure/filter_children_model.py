@@ -88,7 +88,6 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
     def _filter_row_recur(self, src_row, src_parent_qmindex):
         """
-
         Filter row recursively.
 
         :type src_row: int

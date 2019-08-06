@@ -46,9 +46,9 @@ from rqt_reconfigure import logging
 from rqt_reconfigure.param_api import create_param_client
 
 """
- *Editor classes that are not explicitly used within this .py file still need
+ Editor classes that are not explicitly used within this .py file still need
  to be imported. They are invoked implicitly during runtime.
- """
+"""
 
 from rqt_reconfigure.param_editors import (BooleanEditor,  # noqa: F401
                                            DoubleEditor, EDITOR_TYPES,

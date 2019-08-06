@@ -41,7 +41,6 @@ from rqt_reconfigure import logging
 
 class TreenodeItemModel(QStandardItemModel):
     """
-
     This class is made only for this purpose.
 
     To hold QStandardItem instances
@@ -61,7 +60,6 @@ class TreenodeItemModel(QStandardItemModel):
 
     def get_index_from_grn(self, grn):
         """
-
         Get the index from grn.
 
         :type grn: str
