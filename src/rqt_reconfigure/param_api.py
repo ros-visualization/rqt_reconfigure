@@ -32,10 +32,10 @@
 
 from rcl_interfaces.msg import Parameter as ParameterMsg
 from rcl_interfaces.msg import ParameterEvent
-from rcl_interfaces.srv import ListParameters
-from rcl_interfaces.srv import GetParameters
-from rcl_interfaces.srv import SetParameters
 from rcl_interfaces.srv import DescribeParameters
+from rcl_interfaces.srv import GetParameters
+from rcl_interfaces.srv import ListParameters
+from rcl_interfaces.srv import SetParameters
 
 from rclpy.parameter import Parameter
 from rclpy.qos import qos_profile_parameter_events

@@ -33,18 +33,20 @@
 # Author: Isaac Saito, Ze'ev Klapow
 
 from decimal import Decimal
+
 import math
 import os
+
+from ament_index_python import get_resource
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QLocale, Signal
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QMenu, QWidget
-from ament_index_python import get_resource
-
-from rqt_reconfigure import logging
 
 from rclpy.parameter import Parameter
+
+from rqt_reconfigure import logging
 
 # These .ui files are frequently loaded multiple times. Since file access
 # costs a lot, only load each file once.
@@ -70,9 +72,7 @@ class EditorWidget(QWidget):
         self.cmenu = QMenu()
 
     def update_remote(self, value):
-        """
-        Update the value on Parameter Server.
-        """
+        # Update the value on Parameter Server.
         self._param_client.set_parameters([self.parameter])
 
     def update_local(self, value):
@@ -99,7 +99,7 @@ class EditorWidget(QWidget):
 
     def display(self, grid):
         """
-        Should be overridden in subclass.
+        Must be overridden in subclass.
 
         :type grid: QFormLayout
         """
@@ -114,9 +114,7 @@ class EditorWidget(QWidget):
         grid.removeRow(self)
 
     def close(self):
-        """
-        Should be overridden in subclass.
-        """
+        # Should be overridden in subclass.
         pass
 
     def contextMenuEvent(self, e):
@@ -388,15 +386,11 @@ class DoubleEditor(EditorWidget):
         self.update(self._get_value_textfield())
 
     def _get_value_textfield(self):
-        """@return: Current value in text field."""
         return self._ifunc(
             self._slider_horizontal.sliderPosition() / self.scale
         ) if self.scale else 0
 
     def _get_value_slider(self, value):
-        """
-        @rtype: double
-        """
         return int(round((self._func(value)) * self.scale))
 
     def update_local(self, value):

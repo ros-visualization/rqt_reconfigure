@@ -32,15 +32,17 @@
 
 import os
 
+from ament_index_python import get_resource
+
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
-
-from ament_index_python import get_resource
 
 
 class TextFilterWidget(QWidget):
     """
-    Taken from rqt_console.TextFilterWidget. Only modification from it is .ui
+    Taken from rqt_console.TextFilterWidget.
+
+    Only modification from it is .ui
     file in use that takes more generic form (only textfiedl).
     """
 
@@ -72,7 +74,8 @@ class TextFilterWidget(QWidget):
 
     def set_text(self, text):
         """
-        Setter for the text edit widget
+        Setter for the text edit widget.
+
         :param text: text to be placed in text_edit, ''str''
         """
         self.text_edit.setText(text)
@@ -83,6 +86,7 @@ class TextFilterWidget(QWidget):
     def repopulate(self):
         """
         Stub function.
+
         If the widget had any dynamically adjustable data it would requery it
         in this function.
         """

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from setuptools import setup
 import sys
+
+from setuptools import setup
 
 
 if sys.version_info < (3, 5):
@@ -32,7 +33,7 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    author='Isaac Saito, Ze\'ev Klapow',
+    author="Isaac Saito, Ze'ev Klapow",
     maintainer='Scott K Logan',
     maintainer_email='logans@cottsay.net',
     keywords=['ROS'],
@@ -43,7 +44,7 @@ setup(
         'Topic :: Software Development',
     ],
     description=(
-        'This rqt plugin succeeds former dynamic_reconfigure\'s GUI ' +
+        "This rqt plugin succeeds former dynamic_reconfigure's GUI " +
         '(reconfigure_gui), and provides the way to view and edit the parameters ' +
         'that are accessible via dynamic_reconfigure.'
     ),

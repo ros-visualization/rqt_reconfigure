@@ -35,8 +35,12 @@
 from __future__ import division
 
 from collections import OrderedDict
+
 import os
+
 import time
+
+from ament_index_python import get_resource
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, Signal
@@ -45,8 +49,6 @@ try:
 except ImportError:
     from python_qt_binding.QtGui import QItemSelectionModel  # Qt 4
 from python_qt_binding.QtWidgets import QHeaderView, QWidget
-
-from ament_index_python import get_resource
 
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
 
@@ -66,6 +68,8 @@ class NodeSelectorWidget(QWidget):
 
     def __init__(self, parent, context, signal_msg=None):
         """
+        Init node selector widget.
+
         @param signal_msg: Signal to carries a system msg that is shown on GUI.
         @type signal_msg: QtCore.Signal
         """
@@ -173,9 +177,7 @@ class NodeSelectorWidget(QWidget):
                 qindex_tobe_selected, QItemSelectionModel.Select)
 
     def _selection_deselected(self, index_current, rosnode_name_selected):
-        """
-        Intended to be called from _selection_changed_slot.
-        """
+        # Intended to be called from _selection_changed_slot.
         self.selectionModel.select(index_current, QItemSelectionModel.Deselect)
 
         try:
@@ -188,7 +190,7 @@ class NodeSelectorWidget(QWidget):
         self.sig_node_selected.emit(param_client_widget)
 
     def _selection_selected(self, index_current, rosnode_name_selected):
-        """Intended to be called from _selection_changed_slot."""
+        # Intended to be called from _selection_changed_slot.
         logging.debug('_selection_changed_slot row={} col={} data={}'.format(
             index_current.row(), index_current.column(),
             index_current.data(Qt.DisplayRole)))
@@ -233,7 +235,9 @@ class NodeSelectorWidget(QWidget):
 
     def _selection_changed_slot(self, selected, deselected):
         """
-        Sends "open ROS Node box" signal ONLY IF the selected treenode is the
+        Send "open ROS Node box" signal.
+
+        ONLY IF the selected treenode is the
         terminal treenode.
         Receives args from signal QItemSelectionModel.selectionChanged.
 
@@ -291,14 +295,14 @@ class NodeSelectorWidget(QWidget):
 
     def get_nodeitems(self):
         """
+        Get node items.
+
         :rtype: OrderedDict 1st elem is node's GRN name,
                 2nd is TreenodeQstdItem instance
         """
         return self._nodeitems
 
     def _update_nodetree_pernode(self):
-        """
-        """
 
         # TODO(Isaac): 11/25/2012 dynamic_reconfigure only returns params that
         #             are associated with nodes. In order to handle independent
@@ -360,6 +364,8 @@ class NodeSelectorWidget(QWidget):
     def _add_children_treenode(self, treenodeitem_toplevel,
                                treenodeitem_parent, child_names_left):
         """
+        Add childen treenode.
+
         Evaluate current treenode and the previous treenode at the same depth.
         If the name of both nodes is the same, current node instance is
         ignored (that means children will be added to the same parent). If not,
@@ -441,14 +447,14 @@ class NodeSelectorWidget(QWidget):
     def set_filter(self, filter_):
         """
         Pass fileter instance to the child proxymodel.
+
         :type filter_: BaseFilter
         """
         self._proxy_model.set_filter(filter_)
 
     def _test_sel_index(self, selected, deselected):
-        """
-        Method for Debug only
-        """
+        # Method for Debug only.
+
         # index_current = self.selectionModel.currentIndex()
         src_model = self._item_model
         index_current = None

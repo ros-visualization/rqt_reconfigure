@@ -39,7 +39,9 @@ from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
 
 class TestTreenodeQstdItem(unittest.TestCase):
     """
-    :author: Isaac Saito
+    TreeNodeQstdItem test.
+
+    :author: Isaac Saito.
     """
 
     _nodename_raw = '/base_hokuyo_node'

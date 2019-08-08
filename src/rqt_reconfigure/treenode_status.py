@@ -41,6 +41,7 @@ except ImportError:
 
 class TreenodeStatus(QModelIndex):
     """
+    TreeNodeStatus.
 
     This class contains very similar information with
     rqt_reconfigure.ParameterItem. The purpose of this class is to enable
@@ -59,6 +60,8 @@ class TreenodeStatus(QModelIndex):
 
     def __init__(self, nodename_full=None, qmindex=None):
         """
+        Initialize tree_node.
+
         :param index_id: default value is -1, which indicates "not set". This
                          can be set.
         :param nodename_full: default value is None, which indicates "not set".

@@ -60,6 +60,8 @@ class ParamWidget(QWidget):
 
     def __init__(self, context, node=None):
         """
+        Init param widget.
+
         This class is intended to be called by rqt plugin framework class.
         Currently (12/12/2012) the whole widget is splitted into 2 panes:
         one on left allows you to choose the node(s) you work on. Right side
@@ -159,9 +161,6 @@ class ParamWidget(QWidget):
             self._splitter.setSizes([100, 100, 200])
 
     def get_filter_text(self):
-        """
-        :rtype: QString
-        """
         return self.filter_lineedit.text()
 
     def _filter_key_changed(self):
