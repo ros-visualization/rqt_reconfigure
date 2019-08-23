@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.3 (2019-08-23)
+------------------
+* Drop ROS 1 info from package description (`#54 <https://github.com/ros-visualization/rqt_reconfigure/issues/54>`_)
+  Signed-off-by: Scott K Logan <logans@cottsay.net>
+* Contributors: Scott K Logan
+
 1.0.2 (2019-08-23)
 ------------------
 * Use a consistent formatting method when logging (`#49 <https://github.com/ros-visualization/rqt_reconfigure/issues/49>`_)
