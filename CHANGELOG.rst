@@ -2,6 +2,27 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2019-08-23)
+------------------
+* Use a consistent formatting method when logging (`#49 <https://github.com/ros-visualization/rqt_reconfigure/issues/49>`_)
+  This will improve logging function compatibility between ROS 1 and
+  ROS 2.
+  Signed-off-by: Scott K Logan <logans@cottsay.net>
+* Re-format license headers to conform to ROS templates (`#39 <https://github.com/ros-visualization/rqt_reconfigure/issues/39>`_)
+  This change adds a line to the license headers specifying the name of
+  the license that follows. It also re-formats the recently added LICENSE
+  and CONTRIBUTING.md files to match the templates.
+  Signed-off-by: Scott K Logan <logans@cottsay.net>
+* Rename DynreconfClientWidget => ParamClientWidget (`#36 <https://github.com/ros-visualization/rqt_reconfigure/issues/36>`_)
+* Add ament tests
+* Add LICENSE and CONTRIBUTING.md (`#37 <https://github.com/ros-visualization/rqt_reconfigure/issues/37>`_)
+* Format per linter suggestions and run tests (`#35 <https://github.com/ros-visualization/rqt_reconfigure/issues/35>`_)
+* Fix some linter errors and get tests running (`#33 <https://github.com/ros-visualization/rqt_reconfigure/issues/33>`_)
+* Pull logging methods into a separate file (`#34 <https://github.com/ros-visualization/rqt_reconfigure/issues/34>`_)
+* Update to package.xml format 2 (`#32 <https://github.com/ros-visualization/rqt_reconfigure/issues/32>`_)
+* Migration to ROS2
+* Contributors: Gonzalo de Pedro, Gonzo, Michel Hidalgo, Scott K Logan, Timon Engelke
+
 0.4.10 (2018-04-19)
 -------------------
 * Lazy load dynamic_reconfigure client for each node
