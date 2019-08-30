@@ -30,6 +30,8 @@ setup(
         ]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name, ['plugin.xml']),
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
