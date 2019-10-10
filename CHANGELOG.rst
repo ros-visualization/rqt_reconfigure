@@ -2,6 +2,10 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.4 (2019-10-10)
+------------------
+* install package marker (#55) (`#55 <https://github.com/ros-visualization/rqt_reconfigure/pull/55>`_)
+
 1.0.3 (2019-08-23)
 ------------------
 * Drop ROS 1 info from package description (`#54 <https://github.com/ros-visualization/rqt_reconfigure/issues/54>`_)
