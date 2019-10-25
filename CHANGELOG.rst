@@ -2,38 +2,35 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.1 (2019-10-25)
+------------------
+* Reproduce python2 behavior in NoneType comparison (`#60 <https://github.com/ros-visualization/rqt_reconfigure/issues/60>`_)
+  Re-applied after the behavior was regressed in
+  e55cfa1c9b2ba1ec97626bc330d6e97f3237f795
+* Contributors: Scott K Logan, Timon Engelke
+
 0.5.0 (2019-10-22)
 ------------------
 * Use a consistent formatting method when logging (`#49 <https://github.com/ros-visualization/rqt_reconfigure/issues/49>`_)
   This will improve logging function compatibility between ROS 1 and
   ROS 2.
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Superficial changes to align ROS 1 and ROS 2 branches (`#47 <https://github.com/ros-visualization/rqt_reconfigure/issues/47>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Add explicit PyYAML dependency (`#45 <https://github.com/ros-visualization/rqt_reconfigure/issues/45>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Another round of license formatting alignment (`#43 <https://github.com/ros-visualization/rqt_reconfigure/issues/43>`_)
   This change removes a superfluous license specification in license
   headers and makes the formatting in the test files' headers the same as
   the source files'.
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Re-format license headers to conform to ROS templates (`#39 <https://github.com/ros-visualization/rqt_reconfigure/issues/39>`_)
   This change adds a line to the license headers specifying the name of
   the license that follows. It also re-formats the recently added LICENSE
   and CONTRIBUTING.md files to match the templates.
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Rename DynreconfClientWidget => ParamClientWidget (`#36 <https://github.com/ros-visualization/rqt_reconfigure/issues/36>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Add LICENSE and CONTRIBUTING.md (`#37 <https://github.com/ros-visualization/rqt_reconfigure/issues/37>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Format per linter suggestions and run tests (`#35 <https://github.com/ros-visualization/rqt_reconfigure/issues/35>`_)
 * Reproduce python2 behavior in NoneType comparison (`#30 <https://github.com/ros-visualization/rqt_reconfigure/issues/30>`_)
 * Fix some linter errors and get tests running (`#33 <https://github.com/ros-visualization/rqt_reconfigure/issues/33>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Pull logging methods into a separate file (`#34 <https://github.com/ros-visualization/rqt_reconfigure/issues/34>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Update to package.xml format 2 (`#32 <https://github.com/ros-visualization/rqt_reconfigure/issues/32>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Contributors: Scott K Logan, Timon Engelke
 
 0.4.10 (2018-04-19)
