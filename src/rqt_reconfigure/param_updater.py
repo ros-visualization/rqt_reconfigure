@@ -69,7 +69,7 @@ class ParamUpdater(threading.Thread):
         logging.debug(' ParamUpdater started')
 
         while not self._stop_flag:
-            if _timestamp_last_commit >= self._timestamp_last_pending:
+            if self._timestamp_last_pending is None or _timestamp_last_commit >= self._timestamp_last_pending:
                 with self._condition_variable:
                     logging.debug(' ParamUpdater loop 1.1')
                     self._condition_variable.wait()
