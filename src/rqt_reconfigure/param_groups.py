@@ -251,7 +251,7 @@ class BoxGroup(GroupWidget):
     def __init__(self, updater, config, nodename):
         super(BoxGroup, self).__init__(updater, config, nodename)
 
-        self.box = QGroupBox(self.param_name)
+        self.box = QGroupBox(self.param_name.replace("\_", " "))
         self.box.setLayout(self.grid)
 
     def display(self, grid):
@@ -296,7 +296,7 @@ class TabGroup(GroupWidget):
         self.wid = QWidget()
         self.wid.setLayout(self.grid)
 
-        parent.tab_bar.addTab(self.wid, self.param_name)
+        parent.tab_bar.addTab(self.wid, self.param_name.replace("\_", " "))
 
     def display(self, grid):
         if not self.parent.tab_bar_shown:
@@ -330,7 +330,7 @@ class ApplyGroup(BoxGroup):
         self.updater = ApplyGroup.ApplyUpdater(updater, self.update_group)
         super(ApplyGroup, self).__init__(self.updater, config, nodename)
 
-        self.button = QPushButton('Apply %s' % self.param_name)
+        self.button = QPushButton('Apply %s' % self.param_name.replace("\_", " "))
         self.button.clicked.connect(self.updater.apply_update)
 
         self.grid.addRow(self.button)
