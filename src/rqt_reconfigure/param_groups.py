@@ -190,7 +190,7 @@ class GroupWidget(QWidget):
                 editor_type, i_debug, time_elap))
             i_debug += 1
 
-        for name, group in config['groups'].items():
+        for name, group in sorted(config['groups'].items()):
             if group['type'] == 'tab':
                 widget = TabGroup(
                     self, self.updater, group, self._toplevel_treenode_name)
