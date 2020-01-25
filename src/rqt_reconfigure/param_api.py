@@ -127,9 +127,11 @@ def _has_params(node, node_name):
 
 def find_nodes_with_params(node):
     return list(
-            filter(lambda node_name: _has_params(node, node_name),
-                   [
-                        ns + ('/' if not ns.endswith('/') else '') + node_name
-                        for node_name, ns in node.get_node_names_and_namespaces()
-                   ])
+        filter(
+            lambda node_name: _has_params(node, node_name),
+            (
+                ns + ('/' if not ns.endswith('/') else '') + node_name
+                for node_name, ns in node.get_node_names_and_namespaces()
             )
+        )
+    )
