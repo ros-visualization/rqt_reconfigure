@@ -195,6 +195,8 @@ class StringEditor(EditorWidget):
         self._update_signal.emit(value)
 
     def edit_finished(self):
+        # Filter non-ASCII characters
+        self._paramval_lineedit.setText(self._paramval_lineedit.text().encode('ascii', 'ignore').decode())
         logging.debug('StringEditor edit_finished val={}'.format(
             self._paramval_lineedit.text()))
         self._update_paramserver(self._paramval_lineedit.text())
