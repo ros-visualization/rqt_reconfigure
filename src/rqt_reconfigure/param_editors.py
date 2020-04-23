@@ -37,7 +37,7 @@ import math
 import os
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import QLocale, Signal
+from python_qt_binding.QtCore import QEvent, QLocale, Signal
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QMenu, QWidget
 
@@ -246,6 +246,14 @@ class IntegerEditor(EditorWidget):
         self.cmenu.addAction(self.tr('Set to Minimum')
                              ).triggered.connect(self._set_to_min)
 
+        # Don't process wheel events when not focused
+        self._slider_horizontal.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Wheel and not obj.hasFocus():
+            return True
+        return super(EditorWidget, self).eventFilter(obj, event)
+
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText(str(
@@ -352,6 +360,14 @@ class DoubleEditor(EditorWidget):
         self.cmenu.addAction(self.tr('Set to NaN')
                              ).triggered.connect(self._set_to_nan)
 
+        # Don't process wheel events when not focused
+        self._slider_horizontal.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Wheel and not obj.hasFocus():
+            return True
+        return super(EditorWidget, self).eventFilter(obj, event)
+
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText('{0:f}'.format(Decimal(str(
@@ -441,6 +457,14 @@ class EnumEditor(EditorWidget):
 
         # Bind the context menu
         self._combobox.contextMenuEvent = self.contextMenuEvent
+
+        # Don't process wheel events when not focused
+        self._combobox.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Wheel and not obj.hasFocus():
+            return True
+        return super(EditorWidget, self).eventFilter(obj, event)
 
     def selected(self, index):
         self._update_paramserver(self.values[index])
