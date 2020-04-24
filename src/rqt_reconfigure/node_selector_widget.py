@@ -153,7 +153,7 @@ class NodeSelectorWidget(QWidget):
                 # Deselect the index.
                 self.selectionModel.select(index, QItemSelectionModel.Deselect)
 
-    def node_selected(self, grn):
+    def node_selected(self, grn, scroll_to=False):
         """
         Select the index that corresponds to the given GRN.
 
@@ -168,6 +168,8 @@ class NodeSelectorWidget(QWidget):
             if grn == grn_from_index:
                 # Select the index.
                 self.selectionModel.select(index, QItemSelectionModel.Select)
+                if scroll_to:
+                    self._node_selector_view.scrollTo(index)
                 break
 
     def _enumerate_indexes(self, parent=QModelIndex()):
@@ -493,3 +495,19 @@ class NodeSelectorWidget(QWidget):
                     None, index_parent.data(Qt.DisplayRole),
                     index_deselected.data(Qt.DisplayRole),
                     curr_qstd_item))
+
+    def save_settings(self, instance_settings):
+        expanded_nodes = []
+        for index in self._enumerate_indexes():
+            if self._node_selector_view.isExpanded(index):
+                grn = RqtRosGraph.get_upper_grn(index, '')
+                if grn:
+                    expanded_nodes.append(grn)
+        instance_settings.set_value('expanded_nodes', expanded_nodes)
+
+    def restore_settings(self, instance_settings):
+        expanded_nodes = instance_settings.value('expanded_nodes', [])
+        if expanded_nodes:
+            for index in self._enumerate_indexes():
+                if RqtRosGraph.get_upper_grn(index, '') in expanded_nodes:
+                    self._node_selector_view.setExpanded(index, True)

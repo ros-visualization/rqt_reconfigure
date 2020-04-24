@@ -60,7 +60,7 @@ class ParamWidget(QWidget):
     sig_sysprogress = Signal(str)
 
     # To make selections from CLA
-    sig_selected = Signal(str)
+    sig_selected = Signal(str, bool)
 
     def __init__(self, context, node=None):
         """
@@ -109,22 +109,22 @@ class ParamWidget(QWidget):
         _vlayout_nodesel_side.setSpacing(1)
         _vlayout_nodesel_widget.setLayout(_vlayout_nodesel_side)
 
-        param_edit_widget = ParameditWidget(rp)
+        self._param_edit_widget = ParameditWidget(rp)
 
         self._splitter.insertWidget(0, _vlayout_nodesel_widget)
-        self._splitter.insertWidget(1, param_edit_widget)
+        self._splitter.insertWidget(1, self._param_edit_widget)
         # 1st column, _vlayout_nodesel_widget, to minimize width.
         # 2nd col to keep the possible max width.
         self._splitter.setStretchFactor(0, 0)
         self._splitter.setStretchFactor(1, 1)
 
         # Signal from paramedit widget to node selector widget.
-        param_edit_widget.sig_node_disabled_selected.connect(
+        self._param_edit_widget.sig_node_disabled_selected.connect(
             self._nodesel_widget.node_deselected
         )
         # Pass name of node to editor widget
         self._nodesel_widget.sig_node_selected.connect(
-            param_edit_widget.show_reconf
+            self._param_edit_widget.show_reconf
         )
 
         if not node:
@@ -138,16 +138,10 @@ class ParamWidget(QWidget):
             self._filter_key_changed
         )
 
-        # Open any clients indicated from command line
+        # Signal from widget to open a new editor widget
         self.sig_selected.connect(self._nodesel_widget.node_selected)
-        for rn in [rospy.resolve_name(c) for c in context.argv()]:
-            if rn in self._nodesel_widget.get_paramitems():
-                self.sig_selected.emit(rn)
-            else:
-                logging.warn(
-                    'Could not find a dynamic reconfigure client'
-                    " named '{}'".format(str(rn))
-                )
+
+        self._explicit_nodes_to_select = [rospy.resolve_name(c) for c in context.argv()]
 
     def shutdown(self):
         # TODO: Needs implemented. Trigger dynamic_reconfigure to unlatch
@@ -156,12 +150,35 @@ class ParamWidget(QWidget):
 
     def save_settings(self, plugin_settings, instance_settings):
         instance_settings.set_value('splitter', self._splitter.saveState())
+        self.filter_lineedit.save_settings(instance_settings)
+        self._nodesel_widget.save_settings(instance_settings)
+        instance_settings.set_value(
+            'selected_nodes', list(self._param_edit_widget.get_active_grns()))
 
     def restore_settings(self, plugin_settings, instance_settings):
         if instance_settings.contains('splitter'):
             self._splitter.restoreState(instance_settings.value('splitter'))
         else:
             self._splitter.setSizes([100, 100, 200])
+        self.filter_lineedit.restore_settings(instance_settings)
+        self._nodesel_widget.restore_settings(instance_settings)
+
+        # Ignore previously open nodes if we were given an explicit list
+        if self._explicit_nodes_to_select:
+            nodes_to_select = self._explicit_nodes_to_select
+            explicit = True
+        else:
+            nodes_to_select = instance_settings.value('selected_nodes') or []
+            explicit = False
+
+        for rn in nodes_to_select:
+            if rn in self._nodesel_widget.get_paramitems():
+                self.sig_selected.emit(rn, explicit)
+            elif explicit:
+                logging.warn(
+                    'Could not find a dynamic reconfigure client'
+                    " named '{}'".format(str(rn))
+                )
 
     def get_filter_text(self):
         """
