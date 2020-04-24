@@ -1,7 +1,4 @@
 <?xml version="1.0"?>
-<?xml-model
-  href="http://download.ros.org/schema/package_format3.xsd"
-  schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>rqt_reconfigure</name>
   <version>0.5.1</version>
@@ -34,7 +31,8 @@
   <build_depend>roslint</build_depend>
   <exec_depend>dynamic_reconfigure</exec_depend>
   <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
-  <exec_depend>python-yaml</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>rqt_console</exec_depend>
   <exec_depend>rqt_gui</exec_depend>
