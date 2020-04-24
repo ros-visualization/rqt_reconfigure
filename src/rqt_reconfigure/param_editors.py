@@ -408,6 +408,7 @@ class DoubleEditor(EditorWidget):
 
 class EnumEditor(EditorWidget):
     _update_signal = Signal(int)
+    _invalid_value_signal = Signal(str)
 
     def __init__(self, updater, config):
         super(EnumEditor, self).__init__(updater, config)
@@ -442,15 +443,41 @@ class EnumEditor(EditorWidget):
         # Bind the context menu
         self._combobox.contextMenuEvent = self.contextMenuEvent
 
+        # Add the invalid value handler
+        self._invalid_value_signal.connect(self._handle_invalid_value)
+
     def selected(self, index):
-        self._update_paramserver(self.values[index])
+        try:
+            value = self.values[index]
+        except IndexError:
+            logging.error("Invalid selection '{}' for parameter '{}'".format(
+                self._combobox.itemText(index), self.param_name))
+        else:
+            self._update_paramserver(value)
 
     def update_value(self, value):
         super(EnumEditor, self).update_value(value)
-        self._update_signal.emit(self.values.index(value))
+        try:
+            index = self.values.index(value)
+        except ValueError:
+            self._invalid_value_signal.emit('invalid ({})'.format(value))
+        else:
+            self._update_signal.emit(index)
+
+    def _handle_invalid_value(self, value):
+        # Block all signals so we don't loop
+        self._combobox.blockSignals(True)
+        if self._combobox.count() > len(self.values):
+            self._combobox.setItemText(len(self.values), value)
+        else:
+            self._combobox.addItem(value)
+        self._combobox.setCurrentIndex(len(self.values))
+        self._combobox.blockSignals(False)
 
     def _update_gui(self, idx):
         # Block all signals so we don't loop
         self._combobox.blockSignals(True)
         self._combobox.setCurrentIndex(idx)
+        # Remove any previous invalid value
+        self._combobox.removeItem(len(self.values))
         self._combobox.blockSignals(False)
