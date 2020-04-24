@@ -34,6 +34,7 @@
 
 from dynamic_reconfigure import (DynamicReconfigureCallbackException,
                                  DynamicReconfigureParameterException)
+from dynamic_reconfigure.encoding import Config
 
 from python_qt_binding.QtCore import QMargins
 from python_qt_binding.QtGui import QIcon
@@ -48,6 +49,17 @@ from rqt_reconfigure import logging
 from rqt_reconfigure.param_editors import EditorWidget
 from rqt_reconfigure.param_groups import find_cfg, GroupWidget
 from rqt_reconfigure.param_updater import ParamUpdater
+
+
+def config_constructor(loader, node):
+    mapping = loader.construct_mapping(node, deep=True)
+    assert 'state' in mapping
+    return Config(mapping.get('dictitems', {}))
+
+
+yaml.add_constructor(
+    u'tag:yaml.org,2002:python/object/new:dynamic_reconfigure.encoding.Config',
+    config_constructor, Loader=yaml.SafeLoader)
 
 
 class ParamClientWidget(GroupWidget):
@@ -140,7 +152,7 @@ class ParamClientWidget(GroupWidget):
     def load_param(self, filename):
         with open(filename, 'r') as f:
             configuration = {}
-            for doc in yaml.load_all(f.read()):
+            for doc in yaml.safe_load_all(f.read()):
                 configuration.update(doc)
 
         try:
