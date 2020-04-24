@@ -228,7 +228,7 @@ class GroupWidget(QWidget):
                 if widget.param_name in names:
                     widget.update_value(config[widget.param_name])
             elif isinstance(widget, GroupWidget):
-                cfg = find_cfg(config, widget.param_name)
+                cfg = find_cfg(config, widget.param_name) or config
                 widget.update_group(cfg)
 
     def close(self):
