@@ -146,7 +146,7 @@ class NodeSelectorWidget(QWidget):
         indexes_selected = self.selectionModel.selectedIndexes()
         for index in indexes_selected:
             grn_from_selectedindex = RqtRosGraph.get_upper_grn(index, '')
-            logging.debug(' Compare given grn={} grn from selected={}'.format(
+            logging.debug(' Compare given grn={} from selected={}'.format(
                 grn, grn_from_selectedindex))
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_selectedindex:
@@ -162,7 +162,7 @@ class NodeSelectorWidget(QWidget):
         # Iterate over all of the indexes
         for index in self._enumerate_indexes():
             grn_from_index = RqtRosGraph.get_upper_grn(index, '')
-            logging.debug(' Compare given grn={} grn from selected={}'.format(
+            logging.debug(' Compare given grn={} from selected={}'.format(
                 grn, grn_from_index))
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_index:
