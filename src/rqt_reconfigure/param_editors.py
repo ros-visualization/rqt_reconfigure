@@ -191,12 +191,13 @@ class StringEditor(EditorWidget):
 
     def update_value(self, value):
         super(StringEditor, self).update_value(value)
-        logging.debug('StringEditor update_value={}'.format(value))
+        logging.debug('StringEditor update_value={}'.format(
+            value.encode(errors='replace').decode()))
         self._update_signal.emit(value)
 
     def edit_finished(self):
         logging.debug('StringEditor edit_finished val={}'.format(
-            self._paramval_lineedit.text()))
+            self._paramval_lineedit.text().encode(errors='replace').decode()))
         self._update_paramserver(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
