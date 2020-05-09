@@ -43,9 +43,11 @@ import dynamic_reconfigure as dyn_reconf
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, Signal
 try:
-    from python_qt_binding.QtCore import QItemSelectionModel  # Qt 5
+    from python_qt_binding.QtCore import (  # Qt 5
+        QItemSelectionModel, QModelIndex)
 except ImportError:
-    from python_qt_binding.QtGui import QItemSelectionModel  # Qt 4
+    from python_qt_binding.QtGui import (  # Qt 4
+        QItemSelectionModel, QModelIndex)
 from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
 from rospy.exceptions import ROSException
@@ -140,17 +142,11 @@ class NodeSelectorWidget(QWidget):
 
         :type grn: str
         """
-        # Obtain the corresponding index.
-        qindex_tobe_deselected = self._item_model.get_index_from_grn(grn)
-        logging.debug('NodeSelWidt node_deselected qindex={} data={}'.format(
-            qindex_tobe_deselected,
-            qindex_tobe_deselected.data(Qt.DisplayRole)))
-
         # Obtain all indices currently selected.
         indexes_selected = self.selectionModel.selectedIndexes()
         for index in indexes_selected:
             grn_from_selectedindex = RqtRosGraph.get_upper_grn(index, '')
-            logging.debug(' Compare given grn={} grn from selected={}'.format(
+            logging.debug(' Compare given grn={} from selected={}'.format(
                 grn, grn_from_selectedindex))
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_selectedindex:
@@ -163,15 +159,25 @@ class NodeSelectorWidget(QWidget):
 
         :type grn: str
         """
-        # Obtain the corresponding index.
-        qindex_tobe_selected = self._item_model.get_index_from_grn(grn)
-        logging.debug('NodeSelWidt node_selected qindex={} data={}'.format(
-            qindex_tobe_selected, qindex_tobe_selected.data(Qt.DisplayRole)))
+        # Iterate over all of the indexes
+        for index in self._enumerate_indexes():
+            grn_from_index = RqtRosGraph.get_upper_grn(index, '')
+            logging.debug(' Compare given grn={} from selected={}'.format(
+                grn, grn_from_index))
+            # If GRN retrieved from selected index matches the given one.
+            if grn == grn_from_index:
+                # Select the index.
+                self.selectionModel.select(index, QItemSelectionModel.Select)
+                break
 
-        # Select the index.
-        if qindex_tobe_selected:
-            self.selectionModel.select(
-                qindex_tobe_selected, QItemSelectionModel.Select)
+    def _enumerate_indexes(self, parent=QModelIndex()):
+        model = self.selectionModel.model()
+        for row in range(0, model.rowCount(parent)):
+            index = model.index(row, 0, parent)
+            yield index
+            if model.hasChildren(index):
+                for child in self._enumerate_indexes(index):
+                    yield child
 
     def _selection_deselected(self, index_current, rosnode_name_selected):
         """
