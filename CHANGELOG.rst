@@ -2,6 +2,18 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.2 (2020-05-08)
+------------------
+* Fix node selection from command line (`#77 <https://github.com/cottsay/rqt_reconfigure/issues/77>`_)
+* Handle non-ASCII characters in log messages in Python 2 (`#72 <https://github.com/cottsay/rqt_reconfigure/issues/72>`_)
+* Don't process scroll events unless specifically focused (`#73 <https://github.com/cottsay/rqt_reconfigure/issues/73>`_)
+* Implement a custom YAML constructor for dyn_re Config (`#74 <https://github.com/cottsay/rqt_reconfigure/issues/74>`_)
+* Fix loopback propagation for sub-groups of 'apply' groups (`#75 <https://github.com/cottsay/rqt_reconfigure/issues/75>`_)
+* Update package build to support ROS Noetic (`#70 <https://github.com/cottsay/rqt_reconfigure/issues/70>`_)
+* Fix YAML dependency python version (`#78 <https://github.com/cottsay/rqt_reconfigure/issues/78>`_)
+* Add sorting for tabs (`#62 <https://github.com/cottsay/rqt_reconfigure/issues/62>`_)
+* Contributors: Alejandro Hernández Cordero, Flova, Scott K Logan
+
 0.5.1 (2019-10-25)
 ------------------
 * Reproduce python2 behavior in NoneType comparison (`#60 <https://github.com/ros-visualization/rqt_reconfigure/issues/60>`_)
