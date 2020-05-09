@@ -34,7 +34,8 @@
 
 import time
 
-from python_qt_binding.QtCore import QMargins, QObject, QSize, Qt, Signal
+from python_qt_binding.QtCore import (QEvent, QMargins, QObject, QSize, Qt,
+                                      Signal)
 from python_qt_binding.QtGui import QFont, QIcon
 from python_qt_binding.QtWidgets import (QFormLayout, QGroupBox,
                                          QHBoxLayout, QLabel, QPushButton,
@@ -228,7 +229,7 @@ class GroupWidget(QWidget):
                 if widget.param_name in names:
                     widget.update_value(config[widget.param_name])
             elif isinstance(widget, GroupWidget):
-                cfg = find_cfg(config, widget.param_name)
+                cfg = find_cfg(config, widget.param_name) or config
                 widget.update_group(cfg)
 
     def close(self):
@@ -293,10 +294,18 @@ class TabGroup(GroupWidget):
         if not self.parent.tab_bar:
             self.parent.tab_bar = QTabWidget()
 
+            # Don't process wheel events when not focused
+            self.parent.tab_bar.tabBar().installEventFilter(self)
+
         self.wid = QWidget()
         self.wid.setLayout(self.grid)
 
         parent.tab_bar.addTab(self.wid, self.param_name)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Wheel and not obj.hasFocus():
+            return True
+        return super(GroupWidget, self).eventFilter(obj, event)
 
     def display(self, grid):
         if not self.parent.tab_bar_shown:
