@@ -15,7 +15,6 @@ setup(
     package_dir={'': 'src'},
     packages=[package_name],
     data_files=[
-        ('lib/' + package_name, ['scripts/' + package_name]),
         ('share/' + package_name + '/resource', [
             'resource/editor_bool.ui',
             'resource/editor_enum.ui',
@@ -52,4 +51,9 @@ setup(
     ),
     license='BSD',
     tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'rqt_reconfigure = ' + package_name + '.main:main',
+        ],
+    },
 )
