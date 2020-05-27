@@ -32,6 +32,10 @@
 #
 # Author: Gonzalo de Pedro
 
+import os
+
+from ament_index_python.resources import get_resource
+
 from python_qt_binding.QtCore import QMargins, QSize, Qt, Signal
 from python_qt_binding.QtGui import QFont, QIcon
 from python_qt_binding.QtWidgets import (QFileDialog, QFormLayout,
@@ -79,6 +83,14 @@ class ParamClientWidget(QWidget):
         self._param_client = create_param_client(
             context.node, node_name, self._handle_param_event
         )
+
+        pkg_name = 'rqt_reconfigure'
+        _, package_path = get_resource('packages', pkg_name)
+        icon_paths = QIcon.themeSearchPaths()
+        icon_paths.append(os.path.join(
+            package_path, 'share', pkg_name, 'resource', 'icons', 'rqt_icons'))
+        QIcon.setThemeSearchPaths(icon_paths)
+        QIcon.setThemeName('rqt_icons')
 
         verticalLayout = QVBoxLayout(self)
         verticalLayout.setContentsMargins(QMargins(0, 0, 0, 0))
