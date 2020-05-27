@@ -53,7 +53,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'rqt_reconfigure = ' + package_name + '.main:main',
+            package_name + ' = ' + package_name + '.main:main',
         ],
     },
 )
