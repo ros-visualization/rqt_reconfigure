@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.5 (2020-06-02)
+------------------
+* Fix new flake8 warning (`#65 <https://github.com/ros-visualization/rqt_reconfigure/issues/65>`_)
+* Contributors: Dirk Thomas
+
 1.0.4 (2019-10-10)
 ------------------
 * install package marker (#55) (`#55 <https://github.com/ros-visualization/rqt_reconfigure/pull/55>`_)
