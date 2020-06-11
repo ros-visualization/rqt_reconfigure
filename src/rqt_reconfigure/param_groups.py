@@ -34,7 +34,8 @@
 
 import time
 
-from python_qt_binding.QtCore import QEvent, QMargins, QSize, Qt, Signal
+from python_qt_binding.QtCore import (QEvent, QMargins, QObject, QSize, Qt,
+                                      Signal)
 from python_qt_binding.QtGui import QFont, QIcon
 from python_qt_binding.QtWidgets import (QFormLayout, QGroupBox,
                                          QHBoxLayout, QLabel, QPushButton,
@@ -318,9 +319,12 @@ class TabGroup(GroupWidget):
 
 
 class ApplyGroup(BoxGroup):
-    class ApplyUpdater:
+    class ApplyUpdater(QObject):
+
+        pending_updates = Signal(bool)
 
         def __init__(self, updater, loopback):
+            super(ApplyGroup.ApplyUpdater, self).__init__()
             self.updater = updater
             self.loopback = loopback
             self._configs_pending = {}
@@ -329,10 +333,12 @@ class ApplyGroup(BoxGroup):
             for name, value in config.items():
                 self._configs_pending[name] = value
             self.loopback(config)
+            self.pending_updates.emit(bool(self._configs_pending))
 
         def apply_update(self):
             self.updater.update(self._configs_pending)
             self._configs_pending = {}
+            self.pending_updates.emit(False)
 
     def __init__(self, updater, config, nodename):
         self.updater = ApplyGroup.ApplyUpdater(updater, self.update_group)
@@ -341,4 +347,14 @@ class ApplyGroup(BoxGroup):
         self.button = QPushButton('Apply %s' % self.param_name)
         self.button.clicked.connect(self.updater.apply_update)
 
+        self.button.setEnabled(False)
+        self.updater.pending_updates.connect(self._pending_cb)
+
         self.grid.addRow(self.button)
+
+    def _pending_cb(self, pending_updates):
+        if not pending_updates and self.button.hasFocus():
+            # Explicitly clear focus to prevent focus from being
+            # passed to the next in the chain automatically
+            self.button.clearFocus()
+        self.button.setEnabled(pending_updates)
