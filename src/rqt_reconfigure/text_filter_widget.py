@@ -85,10 +85,10 @@ class TextFilterWidget(QWidget):
         """
         pass
 
-    def save_settings(self, settings):
-        settings.set_value('text', self._parentfilter._text)
+    def save_settings(self, instance_settings):
+        instance_settings.set_value('text', self._parentfilter._text)
 
-    def restore_settings(self, settings):
-        text = settings.value('text', '')
+    def restore_settings(self, instance_settings):
+        text = instance_settings.value('text', '')
         self.set_text(text)
         self.handle_text_changed()

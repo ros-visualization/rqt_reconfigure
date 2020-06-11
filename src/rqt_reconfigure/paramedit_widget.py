@@ -124,6 +124,9 @@ class ParameditWidget(QWidget):
 
         self._paramedit_scrollarea.deleteLater()
 
+    def get_active_grns(self):
+        return self._param_client_widgets.keys()
+
     def filter_param(self, filter_key):
         """
         :type filter_key:
