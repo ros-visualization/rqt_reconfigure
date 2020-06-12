@@ -183,7 +183,7 @@ class ParamClientWidget(QWidget):
         with open(filename, 'r') as f:
             parameters = [
                 rclpy.parameter.Parameter(name=name, value=value)
-                for doc in yaml.load_all(f.read())
+                for doc in yaml.safe_load_all(f.read())
                 for name, value in doc.items()
             ]
 
