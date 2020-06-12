@@ -2,6 +2,15 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.3 (2020-06-12)
+------------------
+* Support PEP 338 invocation of rqt_reconfigure (`#86 <https://github.com/cottsay/rqt_reconfigure/issues/86>`_)
+* Save instance state in rqt settings (`#79 <https://github.com/cottsay/rqt_reconfigure/issues/79>`_)
+* Only enable apply group button when effective (`#76 <https://github.com/cottsay/rqt_reconfigure/issues/76>`_)
+* Handle invalid enum values (`#80 <https://github.com/cottsay/rqt_reconfigure/issues/80>`_)
+* Fix shebang line for Python 3 (`#84 <https://github.com/cottsay/rqt_reconfigure/issues/84>`_)
+* Contributors: Mikael Arguedas, Scott K Logan
+
 0.5.2 (2020-05-08)
 ------------------
 * Fix node selection from command line (`#77 <https://github.com/cottsay/rqt_reconfigure/issues/77>`_)
