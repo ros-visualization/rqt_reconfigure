@@ -36,10 +36,10 @@ from rqt_gui.main import Main
 from rqt_reconfigure.param_plugin import ParamPlugin
 
 
-def main():
+def main(argv=sys.argv):
     plugin = 'rqt_reconfigure.param_plugin.ParamPlugin'
     main = Main(filename=plugin)
-    sys.exit(main.main(sys.argv,
+    sys.exit(main.main(argv,
                        standalone=plugin,
                        plugin_argument_provider=ParamPlugin.add_arguments))
 
