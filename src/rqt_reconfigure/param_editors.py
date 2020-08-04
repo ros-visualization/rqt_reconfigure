@@ -40,7 +40,7 @@ import os
 from ament_index_python import get_resource
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import QLocale, Signal
+from python_qt_binding.QtCore import QEvent, QLocale, Signal
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QMenu, QWidget
 
@@ -255,6 +255,14 @@ class IntegerEditor(EditorWidget):
             self._slider_horizontal.setEnabled(False)
             self.cmenu.setEnabled(False)
 
+        # Don't process wheel events when not focused
+        self._slider_horizontal.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Wheel and not obj.hasFocus():
+            return True
+        return super(EditorWidget, self).eventFilter(obj, event)
+
     def _slider_moved(self):
         # This is a "local" edit - only change the text
         self._paramval_lineEdit.setText(str(
@@ -369,6 +377,14 @@ class DoubleEditor(EditorWidget):
             self._paramval_lineEdit.setEnabled(False)
             self._slider_horizontal.setEnabled(False)
             self.cmenu.setEnabled(False)
+
+        # Don't process wheel events when not focused
+        self._slider_horizontal.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Wheel and not obj.hasFocus():
+            return True
+        return super(EditorWidget, self).eventFilter(obj, event)
 
     def _slider_moved(self):
         # This is a "local" edit - only change the text
