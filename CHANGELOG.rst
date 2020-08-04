@@ -2,6 +2,17 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.6 (2020-08-03)
+------------------
+* Save instance state in rqt settings (`#90 <https://github.com/ros-visualization/rqt_reconfigure/issues/90>`_)
+* Use safe YAML loader (`#89 <https://github.com/ros-visualization/rqt_reconfigure/issues/89>`_)
+* Don't process scroll events unless specifically focused (`#88 <https://github.com/ros-visualization/rqt_reconfigure/issues/88>`_)
+* Fix node selection from command line (`#87 <https://github.com/ros-visualization/rqt_reconfigure/issues/87>`_)
+* Add pytest.ini so local tests don't display warning (`#91 <https://github.com/ros-visualization/rqt_reconfigure/issues/91>`_)
+* Support PEP 338 invocation of rqt_reconfigure (`#85 <https://github.com/ros-visualization/rqt_reconfigure/issues/85>`_)
+* Fixed package to run with ros2 run (`#81 <https://github.com/ros-visualization/rqt_reconfigure/issues/81>`_)
+* Contributors: Alejandro Hernández Cordero, Chris Lalancette, Scott K Logan
+
 1.0.5 (2020-06-02)
 ------------------
 * Fix new flake8 warning (`#65 <https://github.com/ros-visualization/rqt_reconfigure/issues/65>`_)
@@ -14,7 +25,6 @@ Changelog for package rqt_reconfigure
 1.0.3 (2019-08-23)
 ------------------
 * Drop ROS 1 info from package description (`#54 <https://github.com/ros-visualization/rqt_reconfigure/issues/54>`_)
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Contributors: Scott K Logan
 
 1.0.2 (2019-08-23)
@@ -22,12 +32,10 @@ Changelog for package rqt_reconfigure
 * Use a consistent formatting method when logging (`#49 <https://github.com/ros-visualization/rqt_reconfigure/issues/49>`_)
   This will improve logging function compatibility between ROS 1 and
   ROS 2.
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Re-format license headers to conform to ROS templates (`#39 <https://github.com/ros-visualization/rqt_reconfigure/issues/39>`_)
   This change adds a line to the license headers specifying the name of
   the license that follows. It also re-formats the recently added LICENSE
   and CONTRIBUTING.md files to match the templates.
-  Signed-off-by: Scott K Logan <logans@cottsay.net>
 * Rename DynreconfClientWidget => ParamClientWidget (`#36 <https://github.com/ros-visualization/rqt_reconfigure/issues/36>`_)
 * Add ament tests
 * Add LICENSE and CONTRIBUTING.md (`#37 <https://github.com/ros-visualization/rqt_reconfigure/issues/37>`_)
