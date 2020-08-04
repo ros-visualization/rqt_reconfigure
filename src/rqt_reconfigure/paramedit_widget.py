@@ -115,6 +115,9 @@ class ParameditWidget(QWidget):
         self._param_client_widgets.clear()
         self._paramedit_scrollarea.deleteLater()
 
+    def get_active_grns(self):
+        return self._param_client_widgets.keys()
+
     def filter_param(self, filter_key):
         # TODO Pick nodes that match filter_key.
         #  TODO For the nodes that are kept in previous step, call ParamClientWidget.filter_param
