@@ -321,8 +321,8 @@ class NodeSelectorWidget(QWidget):
             num_nodes = len(nodes)
             elapsedtime_overall = 0.0
             for node_name_grn in nodes:
-                # Skip this grn if we already have it
-                if node_name_grn in self._nodeitems:
+                # Skip this grn if we already have it or if node_name_grn is empty
+                if node_name_grn in self._nodeitems or node_name_grn == '':
                     i_node_curr += 1
                     continue
 
