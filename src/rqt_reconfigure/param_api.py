@@ -138,7 +138,7 @@ def create_param_client(node, remote_node_name, param_change_callback=None):
     return ParamClient(node, remote_node_name, param_change_callback)
 
 
-def has_parameters(node, node_name, node_namespace):
+def _has_parameters(node, node_name, node_namespace):
     # Get all of the service provided by a node (node_name)
     for service_name, service_types in node.get_service_names_and_types_by_node(node_name, node_namespace):
         # Make sure the node supports the ListParameters service
@@ -150,7 +150,7 @@ def find_nodes_with_params(node):
     names_and_namespaces = node.get_node_names_and_namespaces()
     node_list = []
     for node_name, node_namespace in names_and_namespaces:
-        if has_parameters(node, node_name, node_namespace):
+        if _has_parameters(node, node_name, node_namespace):
             full_name = node_namespace + ('/' if not node_namespace.endswith('/') else '') + node_name
             node_list.append(full_name)
     return node_list
