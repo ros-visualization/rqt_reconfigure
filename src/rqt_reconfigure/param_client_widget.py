@@ -111,11 +111,14 @@ class ParamClientWidget(QWidget):
         verticalLayout.addWidget(widget_nodeheader)
         verticalLayout.addWidget(grid_widget, 1)
         # Again, these UI operation above needs to happen in .ui file.
-        param_names = self._param_client.list_parameters()
-        self.add_editor_widgets(
-            self._param_client.get_parameters(param_names),
-            self._param_client.describe_parameters(param_names)
-        )
+        try:
+            param_names = self._param_client.list_parameters()
+            self.add_editor_widgets(
+                self._param_client.get_parameters(param_names),
+                self._param_client.describe_parameters(param_names)
+            )
+        except Exception as e:
+            logging.warn('Failed to retrieve parameters from node: ' + str(e))
 
         # Save and load buttons
         button_widget = QWidget(self)
@@ -144,10 +147,14 @@ class ParamClientWidget(QWidget):
     ):
         # TODO: Think about replacing callback architecture with signals.
         if new_parameters:
-            new_descriptors = self._param_client.describe_parameters(
-                names=[p.name for p in new_parameters]
-            )
-            self.add_editor_widgets(new_parameters, new_descriptors)
+            try:
+                new_descriptors = self._param_client.describe_parameters(
+                    names=[p.name for p in new_parameters]
+                )
+                self.add_editor_widgets(new_parameters, new_descriptors)
+            except Exception as e:
+                logging.warn('Failed to get information about parameters: ' + str(e))
+
         if changed_parameters:
             self.update_editor_widgets(changed_parameters)
         if deleted_parameters:

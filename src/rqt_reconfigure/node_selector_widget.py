@@ -84,6 +84,10 @@ class NodeSelectorWidget(QWidget):
         _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure', 'resource',
                                'node_selector.ui')
+
+        # Give ROS a bit of time to discover the nodes before populating the node list. Otherwise,
+        # the user has to immediately click the Refresh button to see all of the nodes
+        time.sleep(2)
         loadUi(ui_file, self)
 
         # List of the available nodes. Since the list should be updated over
