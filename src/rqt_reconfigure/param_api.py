@@ -130,6 +130,7 @@ class ParamClient(object):
         future = client.call_async(request)
         future.add_done_callback(unblock)
         if not event.wait(self._timeout):
+            future.cancel()
             raise AsyncServiceCallFailed(hint='the target node may not be spinning')
         return future.result()
 
