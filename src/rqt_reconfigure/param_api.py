@@ -32,6 +32,8 @@
 
 import threading
 
+import rclpy
+
 from rcl_interfaces.msg import Parameter as ParameterMsg
 from rcl_interfaces.msg import ParameterEvent
 from rcl_interfaces.srv import DescribeParameters
@@ -55,7 +57,6 @@ class ParamClient(object):
 
         self._node = node
         self._remote_node_name = remote_node_name
-        self._timeout = 0.5
         self._get_params_client = self._node.create_client(
             GetParameters, '{remote_node_name}/get_parameters'.format_map(locals())
         )
@@ -86,13 +87,13 @@ class ParamClient(object):
 
     def list_parameters(self):
         list_params_request = ListParameters.Request()
-        list_params_response = self._async_call(self._list_params_client, list_params_request)
+        list_params_response = self._call_service(self._list_params_client, list_params_request)
         return list_params_response.result.names
 
     def get_parameters(self, names):
         get_params_request = GetParameters.Request()
         get_params_request.names = names
-        get_params_response = self._async_call(self._get_params_client, get_params_request)
+        get_params_response = self._call_service(self._get_params_client, get_params_request)
         return [
             Parameter.from_parameter_msg(ParameterMsg(name=name, value=value))
             for name, value in zip(names, get_params_response.values)
@@ -101,13 +102,14 @@ class ParamClient(object):
     def describe_parameters(self, names):
         describe_params_request = DescribeParameters.Request()
         describe_params_request.names = names
-        describe_params_response = self._async_call(self._describe_params_client, describe_params_request)
+        describe_params_response = self._call_service(self._describe_params_client,
+                                                      describe_params_request)
         return describe_params_response.descriptors
 
     def set_parameters(self, parameters):
         set_params_request = SetParameters.Request()
         set_params_request.parameters = [p.to_parameter_msg() for p in parameters]
-        return self._async_call(self._set_params_client, set_params_request)
+        return self._call_service(self._set_params_client, set_params_request)
 
     def close(self):
         self._node.destroy_subscription(self._param_events_subscription)
@@ -116,22 +118,20 @@ class ParamClient(object):
         self._node.destroy_client(self._set_params_client)
         self._node.destroy_client(self._get_params_client)
 
-    def _async_call(self, client, request):
+    def _call_service(self, client, request, timeout=1.0):
         if not client.service_is_ready():
-            if not client.wait_for_service(self._timeout):
+            if not client.wait_for_service(timeout):
                 raise AsyncServiceCallFailed(hint='timed out waiting for service')
 
         # It is possible that a node has the parameter services but is not
-        # spinning. In that is the case, the async client call will time out.
-        event = threading.Event()
-        def unblock(future):
-            nonlocal event
-            event.set()
+        # spinning. In that is the case, the client call will time out.
         future = client.call_async(request)
-        future.add_done_callback(unblock)
-        if not event.wait(self._timeout):
-            future.cancel()
+        rclpy.spin_until_future_complete(self._node, future, None, timeout)
+
+        result = future.result()
+        if result is None:
             raise AsyncServiceCallFailed(hint='the target node may not be spinning')
+
         return future.result()
 
 
@@ -141,18 +141,21 @@ def create_param_client(node, remote_node_name, param_change_callback=None):
 
 def _has_parameters(node, node_name, node_namespace):
     # Get all of the service provided by a node (node_name)
-    for service_name, service_types in node.get_service_names_and_types_by_node(node_name, node_namespace):
+    for service_name, service_types in node.get_service_names_and_types_by_node(
+            node_name, node_namespace):
+
         # Make sure the node supports the ListParameters service
         if 'rcl_interfaces/srv/ListParameters' in service_types:
             return True
     return False
+
 
 def find_nodes_with_params(node):
     names_and_namespaces = node.get_node_names_and_namespaces()
     node_list = []
     for node_name, node_namespace in names_and_namespaces:
         if _has_parameters(node, node_name, node_namespace):
-            full_name = node_namespace + ('/' if not node_namespace.endswith('/') else '') + node_name
+            full_name = node_namespace + (
+                '/' if not node_namespace.endswith('/') else '') + node_name
             node_list.append(full_name)
     return node_list
-
