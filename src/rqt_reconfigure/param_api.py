@@ -43,6 +43,7 @@ from rclpy.qos import qos_profile_parameter_events
 
 
 class AsyncServiceCallFailed(Exception):
+
     def __init__(self, message='asynchronous service call failed', hint=''):
         self.message = message if not hint else message + ': ' + hint
         super().__init__(self.message)
