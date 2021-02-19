@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.7 (2021-02-19)
+------------------
 * Fix a flake8 warning. (`#99 <https://github.com/ros-visualization/rqt_reconfigure/issues/99>`_)
 * Use timeouts in service calls to avoid hangs (`#98 <https://github.com/ros-visualization/rqt_reconfigure/issues/98>`_)
 * Add maintainer to package.xml (`#95 <https://github.com/ros-visualization/rqt_reconfigure/issues/95>`_)
