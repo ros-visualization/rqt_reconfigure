@@ -2,6 +2,13 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix a flake8 warning. (`#99 <https://github.com/ros-visualization/rqt_reconfigure/issues/99>`_)
+* Use timeouts in service calls to avoid hangs (`#98 <https://github.com/ros-visualization/rqt_reconfigure/issues/98>`_)
+* Add maintainer to package.xml (`#95 <https://github.com/ros-visualization/rqt_reconfigure/issues/95>`_)
+* Contributors: Chris Lalancette, Michael Jeronimo
+
 1.0.6 (2020-08-03)
 ------------------
 * Save instance state in rqt settings (`#90 <https://github.com/ros-visualization/rqt_reconfigure/issues/90>`_)

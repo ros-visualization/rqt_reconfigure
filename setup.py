@@ -11,7 +11,7 @@ if sys.version_info < (3, 5):
 package_name = 'rqt_reconfigure'
 setup(
     name=package_name,
-    version='1.0.5',
+    version='1.0.7',
     package_dir={'': 'src'},
     packages=[package_name],
     data_files=[
