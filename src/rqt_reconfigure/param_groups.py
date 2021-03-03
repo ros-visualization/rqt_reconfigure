@@ -216,21 +216,22 @@ class GroupWidget(QWidget):
         grid.addRow(self)
 
     def update_group(self, config):
-        if 'state' in config:
-            old_state = self.state
-            self.state = config['state']
-            if self.state != old_state:
-                self.sig_node_state_change.emit(self.state)
+        if config:
+            if 'state' in config:
+                old_state = self.state
+                self.state = config['state']
+                if self.state != old_state:
+                    self.sig_node_state_change.emit(self.state)
 
-        names = [name for name in config.keys()]
+            names = [name for name in config.keys()]
 
-        for widget in self.editor_widgets:
-            if isinstance(widget, EditorWidget):
-                if widget.param_name in names:
-                    widget.update_value(config[widget.param_name])
-            elif isinstance(widget, GroupWidget):
-                cfg = find_cfg(config, widget.param_name) or config
-                widget.update_group(cfg)
+            for widget in self.editor_widgets:
+                if isinstance(widget, EditorWidget):
+                    if widget.param_name in names:
+                        widget.update_value(config[widget.param_name])
+                elif isinstance(widget, GroupWidget):
+                    cfg = find_cfg(config, widget.param_name) or config
+                    widget.update_group(cfg)
 
     def close(self):
         for w in self.editor_widgets:
