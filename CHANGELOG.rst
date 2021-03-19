@@ -2,6 +2,14 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.4 (2021-03-19)
+------------------
+* Replace deprecated isAlive with is_alive (`#102 <https://github.com/ros-visualization/rqt_reconfigure/issues/102>`_)
+* Update param_groups.py (`#101 <https://github.com/ros-visualization/rqt_reconfigure/issues/101>`_)
+* Address rqt_reconfigure crashing with IndexError (`#93 <https://github.com/ros-visualization/rqt_reconfigure/issues/93>`_)
+* Update the package.xml files with the latest Open Robotics maintainers (`#94 <https://github.com/ros-visualization/rqt_reconfigure/issues/94>`_)
+* Contributors: Michael Jeronimo, Rafael Olaechea, Timon Engelke, augustinmanecy
+
 0.5.3 (2020-06-12)
 ------------------
 * Support PEP 338 invocation of rqt_reconfigure (`#86 <https://github.com/cottsay/rqt_reconfigure/issues/86>`_)
