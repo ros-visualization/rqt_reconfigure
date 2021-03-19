@@ -194,7 +194,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
             if not self._param_client:
                 if self._paramserver_connect_thread:
-                    if self._paramserver_connect_thread.isAlive():
+                    if self._paramserver_connect_thread.is_alive():
                         self._paramserver_connect_thread.join(1)
                 self._paramserver_connect_thread = ParamserverConnectThread(
                     self, self._raw_param_name)
@@ -204,7 +204,7 @@ class TreenodeQstdItem(ReadonlyItem):
         with self._lock:
             if self._paramserver_connect_thread:
                 # Try to stop the thread
-                if self._paramserver_connect_thread.isAlive():
+                if self._paramserver_connect_thread.is_alive():
                     self._paramserver_connect_thread.join(1)
                 del self._paramserver_connect_thread
                 self._paramserver_connect_thread = None
