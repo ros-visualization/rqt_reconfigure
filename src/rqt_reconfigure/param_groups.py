@@ -216,6 +216,8 @@ class GroupWidget(QWidget):
         grid.addRow(self)
 
     def update_group(self, config):
+        if not config:
+            return
         if 'state' in config:
             old_state = self.state
             self.state = config['state']
