@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.8 (2021-05-10)
+------------------
 * Cleanups to the install scripts. (`#103 <https://github.com/ros-visualization/rqt_reconfigure/issues/103>`_)
 * Contributors: Chris Lalancette
 
