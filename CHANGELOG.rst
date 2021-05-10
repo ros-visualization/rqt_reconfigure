@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Cleanups to the install scripts. (`#103 <https://github.com/ros-visualization/rqt_reconfigure/issues/103>`_)
+* Contributors: Chris Lalancette
+
 1.0.7 (2021-02-19)
 ------------------
 * Fix a flake8 warning. (`#99 <https://github.com/ros-visualization/rqt_reconfigure/issues/99>`_)
