@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.5 (2022-04-20)
+------------------
 * Show enum item description as tooltip (`#113 <https://github.com/ros-visualization/rqt_reconfigure/issues/113>`_)
 * Contributors: Matthijs van der Burgh
 
