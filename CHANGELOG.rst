@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Show enum item description as tooltip (`#113 <https://github.com/ros-visualization/rqt_reconfigure/issues/113>`_)
+* Contributors: Matthijs van der Burgh
+
 0.5.4 (2021-03-19)
 ------------------
 * Replace deprecated isAlive with is_alive (`#102 <https://github.com/ros-visualization/rqt_reconfigure/issues/102>`_)
