@@ -37,7 +37,7 @@ import math
 import os
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import QEvent, QLocale, Signal
+from python_qt_binding.QtCore import QEvent, QLocale, Qt, Signal
 from python_qt_binding.QtGui import QDoubleValidator, QIntValidator
 from python_qt_binding.QtWidgets import QMenu, QWidget
 
@@ -441,12 +441,15 @@ class EnumEditor(EditorWidget):
         # Setup the enum items
         self.names = [item['name'] for item in enum]
         self.values = [item['value'] for item in enum]
+        self.descriptions = [item['description'] for item in enum]
 
         items = ['%s (%s)' % (self.names[i], self.values[i])
                  for i in range(0, len(self.names))]
 
         # Add items to the combo box
         self._combobox.addItems(items)
+        for i in range(self._combobox.count()):
+            self._combobox.setItemData(i, self.descriptions[i], Qt.ToolTipRole)
 
         # Initialize to the default
         self._combobox.setCurrentIndex(self.values.index(config['default']))
