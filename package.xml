@@ -5,9 +5,9 @@
   <description>
     This rqt plugin provides a way to view and edit parameters on nodes.
   </description>
-  <maintainer email="logans@cottsay.net">Scott K Logan</maintainer>
-  <maintainer email="michael.jeronimo@openrobotics.org">Michael Jeronimo</maintainer>
-
+  
+  <maintainer email="dharini@openrobotics.org">Dharini Dutia</maintainer>
+  
   <license>BSD</license>
 
   <!-- Some tests are ASL 2.0 -->
@@ -19,6 +19,8 @@
 
   <author>Isaac Saito</author>
   <author>Ze'ev Klapow</author>
+  <author email="logans@cottsay.net">Scott K Logan</author>
+  <author email="michael.jeronimo@openrobotics.org">Michael Jeronimo</author>
 
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
