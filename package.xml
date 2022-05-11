@@ -13,14 +13,15 @@
     on dynamic_reconfigure that allows access to only those params latched
     to nodes.
   </description>
-  <maintainer email="logans@cottsay.net">Scott K Logan</maintainer>
-  <maintainer email="michael.jeronimo@openrobotics.org">Michael Jeronimo</maintainer>
+  <maintainer email="dharini@openrobotics.org">Dharini Dutia</maintainer>
   <license>BSD</license>
   <url type="website">http://wiki.ros.org/rqt_reconfigure</url>
   <url type="repository">https://github.com/ros-visualization/rqt_reconfigure</url>
   <url type="bugtracker">https://github.com/ros-visualization/rqt_reconfigure/issues</url>
   <author>Isaac Saito</author>
   <author>Ze'ev Klapow</author>
+  <author email="logans@cottsay.net">Scott K Logan</author>
+  <author email="michael.jeronimo@openrobotics.org">Michael Jeronimo</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
