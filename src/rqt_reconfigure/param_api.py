@@ -124,7 +124,7 @@ class ParamClient(object):
         # It is possible that a node has the parameter services but is not
         # spinning. In that is the case, the client call will time out.
         future = client.call_async(request)
-        rclpy.spin_until_future_complete(self._node, future, None, timeout)
+        rclpy.spin_until_complete(self._node, future, None, timeout)
 
         result = future.result()
         if result is None:
