@@ -314,12 +314,6 @@ class DoubleEditor(EditorWidget):
         loadUi(ui_num, self)
 
         if(len(self.descriptor.floating_point_range) > 0):
-            # config step
-            self._step = float(self.descriptor.floating_point_range[0].step)
-            self._slider_horizontal.setSingleStep(self._step)
-            self._slider_horizontal.setTickInterval(self._step)
-            self._slider_horizontal.setPageStep(self._step)
-
             # Handle unbounded doubles nicely
             self._min = float(self.descriptor.floating_point_range[0].from_value)
             self._min_val_label.setText(str(self._min))
@@ -333,6 +327,12 @@ class DoubleEditor(EditorWidget):
             # If we have no range, disable the slider
             self.scale = (self._func(self._max) - self._func(self._min))
             self.scale = 100 / self.scale
+
+            # config step
+            self._step = float(self.descriptor.floating_point_range[0].step)
+            self._slider_horizontal.setSingleStep(self._get_value_slider(self._step))
+            self._slider_horizontal.setTickInterval(self._get_value_slider(self._step))
+            self._slider_horizontal.setPageStep(self._get_value_slider(self._step))
 
             # Set ranges
             self._slider_horizontal.setRange(self._get_value_slider(self._min),
