@@ -3,7 +3,7 @@ from setuptools import setup
 package_name = 'rqt_reconfigure'
 setup(
     name=package_name,
-    version='1.0.8',
+    version='1.1.1',
     package_dir={'': 'src'},
     packages=[package_name],
     data_files=[
