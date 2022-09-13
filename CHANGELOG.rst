@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix float slider step size (`#117 <https://github.com/ros-visualization/rqt_reconfigure/issues/117>`_) (`#119 <https://github.com/ros-visualization/rqt_reconfigure/issues/119>`_)
+* Contributors: mergify[bot]
+
 1.0.8 (2021-05-10)
 ------------------
 * Cleanups to the install scripts. (`#103 <https://github.com/ros-visualization/rqt_reconfigure/issues/103>`_)
@@ -22,7 +27,7 @@ Changelog for package rqt_reconfigure
 * Fix node selection from command line (`#87 <https://github.com/ros-visualization/rqt_reconfigure/issues/87>`_)
 * Add pytest.ini so local tests don't display warning (`#91 <https://github.com/ros-visualization/rqt_reconfigure/issues/91>`_)
 * Support PEP 338 invocation of rqt_reconfigure (`#85 <https://github.com/ros-visualization/rqt_reconfigure/issues/85>`_)
-* Fixed package to run with ros2 run (`#81 <https://github.com/ros-visualization/rqt_reconfigure/issues/81>`_)
+* Fixed package to run with ros2 run (`#81 <https://github.com/ros-visualization/rqt_reconfigure/issues/81>`__)
 * Contributors: Alejandro Hernández Cordero, Chris Lalancette, Scott K Logan
 
 1.0.5 (2020-06-02)
@@ -166,7 +171,7 @@ Changelog for package rqt_reconfigure
 
 0.2.17 (2013-07-04)
 -------------------
-* Improvement; "GUI hangs for awhile or completely, when any one of nodes doesn't return any value" (`#81 <https://github.com/ros-visualization/rqt_common_plugins/issues/81>`_)
+* Improvement; "GUI hangs for awhile or completely, when any one of nodes doesn't return any value" (`#81 <https://github.com/ros-visualization/rqt_common_plugins/issues/81>`__)
 
 0.2.16 (2013-04-09 13:33)
 -------------------------
