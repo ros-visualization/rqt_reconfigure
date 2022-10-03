@@ -32,9 +32,8 @@
 #
 # Author: Isaac Saito, Ze'ev Klapow
 
-from decimal import Decimal
-
 import array
+from decimal import Decimal
 import json
 import math
 import os
@@ -488,7 +487,7 @@ class ArrayEditor(EditorWidget):
             self._paramval_lineedit.text()))
         params_string = self._paramval_lineedit.text()
         if self.parameter.from_parameter_msg:
-            params_string = params_string.replace('\'', '"')
+            params_string = params_string.replace("'", '"')
         params_list = json.loads(params_string)
 
         if isinstance(self.parameter.value, array.array):
