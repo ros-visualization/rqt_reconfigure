@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2022-11-02)
+------------------
 * Cleanup mislabeled BSD license (`#66 <https://github.com/ros-visualization/rqt_reconfigure/issues/66>`_)
 * Add support for array types (`#108 <https://github.com/ros-visualization/rqt_reconfigure/issues/108>`__)
 * Contributors: Shrijit Singh, Tully Foote
