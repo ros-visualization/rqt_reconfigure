@@ -350,7 +350,9 @@ class DoubleEditor(EditorWidget):
             self._slider_horizontal.setTracking(False)
             self._slider_horizontal.valueChanged.connect(self._slider_changed)
         else:
-            self._paramval_lineEdit.setValidator(QDoubleValidator())
+            validator = QDoubleValidator()
+            validator.setLocale(QLocale(QLocale.C))
+            self._paramval_lineEdit.setValidator(validator)
             self._min_val_label.setVisible(False)
             self._max_val_label.setVisible(False)
             self._slider_horizontal.setVisible(False)
