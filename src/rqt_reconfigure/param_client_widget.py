@@ -41,6 +41,8 @@ from rqt_reconfigure import logging
 
 from rqt_reconfigure.param_api import create_param_client
 
+from rclpy.parameter import Parameter
+
 """
  Editor classes that are not explicitly used within this .py file still need
  to be imported. They are invoked implicitly during runtime.
@@ -221,10 +223,10 @@ class ParamClientWidget(QWidget):
 
     def add_editor_widgets(self, parameters, descriptors):
         for parameter, descriptor in zip(parameters, descriptors):
-            if parameter.type_ not in EDITOR_TYPES:
+            if Parameter.Type(descriptor.type) not in EDITOR_TYPES:
                 continue
             logging.debug('Adding editor widget for {}'.format(parameter.name))
-            editor_widget = EDITOR_TYPES[parameter.type_](
+            editor_widget = EDITOR_TYPES[Parameter.Type(descriptor.type)](
                 self._param_client, parameter, descriptor
             )
             self._editor_widgets[parameter.name] = editor_widget
