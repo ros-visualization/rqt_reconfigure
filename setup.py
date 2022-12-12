@@ -27,8 +27,8 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     author="Isaac Saito, Ze'ev Klapow",
-    maintainer='Scott K Logan',
-    maintainer_email='logans@cottsay.net',
+    maintainer='Dharini Dutia',
+    maintainer_email='dharini@openrobotics.org',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',
