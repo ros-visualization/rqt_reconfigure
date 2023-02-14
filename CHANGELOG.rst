@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.1 (2023-02-14)
+------------------
 * [rolling] Update maintainers - 2022-11-07 (`#122 <https://github.com/ros-visualization/rqt_reconfigure/issues/122>`_)
 * Contributors: Audrow Nash
 
