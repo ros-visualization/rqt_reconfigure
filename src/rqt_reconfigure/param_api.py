@@ -26,6 +26,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from threading import Event
+
 from rcl_interfaces.msg import Parameter as ParameterMsg
 from rcl_interfaces.msg import ParameterEvent
 from rcl_interfaces.srv import DescribeParameters
@@ -33,10 +35,8 @@ from rcl_interfaces.srv import GetParameters
 from rcl_interfaces.srv import ListParameters
 from rcl_interfaces.srv import SetParameters
 
-import rclpy
 from rclpy.parameter import Parameter
 from rclpy.qos import qos_profile_parameter_events
-
 
 class AsyncServiceCallFailed(Exception):
 
@@ -119,8 +119,11 @@ class ParamClient(object):
 
         # It is possible that a node has the parameter services but is not
         # spinning. In that is the case, the client call will time out.
+        event = Event()
         future = client.call_async(request)
-        rclpy.spin_until_future_complete(self._node, future, None, timeout)
+        future.add_done_callback(lambda _: event.set())
+
+        event.wait(timeout)
 
         result = future.result()
         if result is None:
