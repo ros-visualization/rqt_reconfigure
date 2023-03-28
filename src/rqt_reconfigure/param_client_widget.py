@@ -51,6 +51,9 @@ from rqt_reconfigure.param_editors import (BooleanEditor,  # noqa: F401
                                            EditorWidget, IntegerEditor,
                                            StringEditor)
 
+from rqt_reconfigure.text_filter import TextFilter
+from rqt_reconfigure.text_filter_widget import TextFilterWidget
+
 import yaml
 
 
@@ -102,9 +105,20 @@ class ParamClientWidget(QWidget):
         bt_disable_node.pressed.connect(self._node_disable_bt_clicked)
         h_layout_nodeheader.addWidget(bt_disable_node)
 
+        filter_widget = QWidget(self)
+        filter_h_layout = QHBoxLayout()
+        self.text_filter = TextFilter()
+        self.text_filter_widget = TextFilterWidget(self.text_filter)
+        self.filter_label = QLabel('&Filter param:')
+        self.filter_label.setBuddy(self.text_filter_widget)
+        filter_h_layout.addWidget(self.filter_label)
+        filter_h_layout.addWidget(self.text_filter_widget)
+        filter_widget.setLayout(filter_h_layout)
+
         grid_widget = QWidget(self)
         self.grid = QFormLayout(grid_widget)
         verticalLayout.addWidget(widget_nodeheader)
+        verticalLayout.addWidget(filter_widget)
         verticalLayout.addWidget(grid_widget, 1)
         # Again, these UI operation above needs to happen in .ui file.
         try:
@@ -133,6 +147,10 @@ class ParamClientWidget(QWidget):
         button_header.addWidget(save_button)
         button_header.addWidget(load_button)
 
+        self.text_filter.filter_changed_signal.connect(
+            self._filter_key_changed
+        )
+
         self.setMinimumWidth(150)
 
     def get_node_grn(self):
@@ -149,7 +167,8 @@ class ParamClientWidget(QWidget):
                 )
                 self.add_editor_widgets(new_parameters, new_descriptors)
             except Exception as e:
-                logging.warn('Failed to get information about parameters: ' + str(e))
+                logging.warn(
+                    'Failed to get information about parameters: ' + str(e))
 
         if changed_parameters:
             self.update_editor_widgets(changed_parameters)
@@ -248,6 +267,26 @@ class ParamClientWidget(QWidget):
 
         self.deleteLater()
 
-    def filter_param(self, filter_key):
-        # TODO impl
-        pass
+    def _filter_key_changed(self):
+        self._filter_param(self.text_filter.get_text())
+
+    def _filter_param(self, filter_key):
+        try:
+            param_names = self._param_client.list_parameters()
+            param_names_filtered = \
+                list(filter(lambda p: filter_key in p, param_names)) if filter_key else param_names
+            client_params_remove = self._param_client.get_parameters(
+                list(self._editor_widgets.keys()))
+            self.remove_editor_widgets(client_params_remove)
+            client_params_filtered = self._param_client.get_parameters(
+                param_names_filtered
+            )
+            client_params_desc = self._param_client.describe_parameters(
+                param_names_filtered
+            )
+            self.add_editor_widgets(
+                client_params_filtered,
+                client_params_desc
+            )
+        except Exception as e:
+            logging.warn('Failed to retrieve parameters from node: ' + str(e))
