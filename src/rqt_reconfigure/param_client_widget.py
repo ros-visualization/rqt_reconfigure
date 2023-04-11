@@ -37,11 +37,11 @@ from python_qt_binding.QtWidgets import (QFileDialog, QFormLayout,
 
 import rclpy
 
+from rclpy.parameter import Parameter
+
 from rqt_reconfigure import logging
 
 from rqt_reconfigure.param_api import create_param_client
-
-from rclpy.parameter import Parameter
 
 """
  Editor classes that are not explicitly used within this .py file still need
