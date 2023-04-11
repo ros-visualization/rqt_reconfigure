@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* get parameter type from descriptor
+* Contributors: Christian Rauch, Dharini Dutia
+
 1.3.1 (2023-02-14)
 ------------------
 * [rolling] Update maintainers - 2022-11-07 (`#122 <https://github.com/ros-visualization/rqt_reconfigure/issues/122>`_)
