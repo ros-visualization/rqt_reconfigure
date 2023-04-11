@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.2 (2023-04-11)
+------------------
 * get parameter type from descriptor
 * Contributors: Christian Rauch, Dharini Dutia
 
