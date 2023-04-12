@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* reorder imports to fix flake8 warning (`#129 <https://github.com/ros-visualization/rqt_reconfigure/issues/129>`_)
+* Fixed validator locale when float value is not bound in a range. (`#121 <https://github.com/ros-visualization/rqt_reconfigure/issues/121>`_)
+* Contributors: Aris Synodinos, Christian Rauch
+
 1.3.2 (2023-04-11)
 ------------------
 * get parameter type from descriptor
