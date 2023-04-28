@@ -2,6 +2,9 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.3.3 (2023-04-12)
 ------------------
 * reorder imports to fix flake8 warning (`#129 <https://github.com/ros-visualization/rqt_reconfigure/issues/129>`_)
