@@ -376,10 +376,9 @@ class NodeSelectorWidget(QWidget):
         function gets called recursively going 1 level deeper.
 
         :type treenodeitem_toplevel: TreenodeQstdItem
-        :type treenodeitem_parent: TreenodeQstdItem.
+        :type treenodeitem_parent: TreenodeQstdItem
         :type child_names_left: List of str
-        :param child_names_left: List of strings that is sorted in hierarchical
-                                 order of params.
+        :param child_names_left: List of strings that is sorted in hierarchical order.
         """
         # TODO(Isaac): Consider moving this method to rqt_py_common.
 
@@ -388,8 +387,13 @@ class NodeSelectorWidget(QWidget):
         stditem_currentnode = TreenodeQstdItem(self._context, grn_curr,
                                                TreenodeQstdItem.NODE_FULLPATH)
 
-        # item at the bottom is your most recent node.
-        row_index_parent = treenodeitem_parent.rowCount() - 1
+        for i in range(treenodeitem_parent.rowCount()):
+            if treenodeitem_parent.child(i).text() == name_currentnode:
+                row_index_parent = i
+                break
+        else:
+            # Item at the bottom is your most recent node
+            row_index_parent = treenodeitem_parent.rowCount() - 1
 
         # Obtain and instantiate prev node in the same depth.
         name_prev = ''
@@ -425,6 +429,39 @@ class NodeSelectorWidget(QWidget):
             # TODO: Accept even non-terminal treenode as long as it's ROS Node.
             self._item_model.set_item_from_index(grn_curr, stditem.index())
 
+    def _remove_children_treenode(self, treenodeitem_toplevel,
+                                  treenodeitem_parent, child_names_left):
+        """
+        Remove child treenode.
+
+        :type treenodeitem_toplevel: TreenodeQstdItem
+        :type treenodeitem_parent: TreenodeQstdItem
+        :type child_names_left: List of str
+        :param child_names_left: List of strings that is sorted in hierarchical order.
+        """
+        name_currentnode = child_names_left.pop(0)
+
+        for i in range(treenodeitem_parent.rowCount()):
+            if treenodeitem_parent.child(i).text() == name_currentnode:
+                row_index_parent = i
+                break
+        else:
+            grn_curr = treenodeitem_toplevel.get_raw_param_name()
+            raise RuntimeError(
+                f'Failed to remove node {grn_curr}: No treenode {name_currentnode}')
+
+        if not child_names_left:  # Leaf node
+            treenodeitem_parent.removeRow(row_index_parent)
+            return
+
+        self._remove_children_treenode(treenodeitem_toplevel,
+                                       treenodeitem_parent.child(row_index_parent),
+                                       child_names_left)
+
+        # After a child has been removed, if none is left, remove the parent as well
+        if treenodeitem_parent.child(row_index_parent).rowCount() == 0:
+            treenodeitem_parent.removeRow(row_index_parent)
+
     def _prune_nodetree_pernode(self):
         try:
             nodes = find_nodes_with_params(self._context.node)
@@ -432,15 +469,15 @@ class NodeSelectorWidget(QWidget):
             logging.error('Reconfigure GUI cannot connect to master.')
             raise e  # TODO Make sure 'raise' here returns or finalizes func.
 
-        for i in reversed(range(0, self._rootitem.rowCount())):
-            candidate_for_removal = \
-                self._rootitem.child(i).get_raw_param_name()
-            if candidate_for_removal not in nodes:
-                logging.debug(
-                    'Removing {} because the server is no longer available.'.
-                    format(candidate_for_removal))
-                self._rootitem.removeRow(i)
-                self._nodeitems.pop(candidate_for_removal).reset()
+        for candidate_for_removal in list(self._nodeitems.keys()):
+            if candidate_for_removal in nodes:
+                continue
+            logging.debug(f'Removing {candidate_for_removal} because '
+                          'the server is no longer available.')
+            treenode = self._nodeitems[candidate_for_removal]
+            treenode_names = treenode.get_treenode_names()
+            self._remove_children_treenode(treenode, self._rootitem, treenode_names)
+            self._nodeitems.pop(candidate_for_removal).reset()
 
     def _refresh_nodes(self):
         self._prune_nodetree_pernode()
