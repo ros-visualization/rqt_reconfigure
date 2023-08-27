@@ -68,7 +68,7 @@ class NodeSelectorWidget(QWidget):
         """
         Init node selector widget.
 
-        @param signal_msg: Signal to carries a system msg that is shown on GUI.
+        @param signal_msg: Signal to carry a system msg that is shown on GUI.
         @type signal_msg: QtCore.Signal
         """
         super(NodeSelectorWidget, self).__init__()
@@ -83,8 +83,8 @@ class NodeSelectorWidget(QWidget):
         loadUi(ui_file, self)
 
         # List of the available nodes. Since the list should be updated over
-        # time and we don't want to create node instance per every update
-        # cycle, This list instance should better be capable of keeping track.
+        # time, and we don't want to create node instance per every update
+        # cycle, this list instance should better be capable of keeping track.
         self._nodeitems = OrderedDict()
         # Dictionary. 1st elem is node's GRN name,
         # 2nd is TreenodeQstdItem instance.
@@ -158,7 +158,7 @@ class NodeSelectorWidget(QWidget):
 
         :type grn: str
         """
-        # Iterate over all of the indexes
+        # Iterate over all the indexes
         for index in self._enumerate_indexes():
             grn_from_index = RqtRosGraph.get_upper_grn(index, '')
             logging.debug(' Compare given grn={} from selected={}'.format(
@@ -225,7 +225,6 @@ class NodeSelectorWidget(QWidget):
         # Only when it's a terminal we move forward.
 
         item_child = self._nodeitems[rosnode_name_selected]
-        item_widget = None
         try:
             item_widget = item_child.get_param_client_widget()
         except Exception as e:
@@ -261,7 +260,7 @@ class NodeSelectorWidget(QWidget):
             # Setting length criteria as 1 is only a workaround, to avoid
             # Node boxes on right-hand side disappears when filter key doesn't
             # match them.
-            # Indeed this workaround leaves another issue. Question for
+            # Indeed, this workaround leaves another issue. Question for
             # permanent solution is asked here http://goo.gl/V4DT1
             index_current = deselected.indexes()[0]
 
@@ -314,7 +313,7 @@ class NodeSelectorWidget(QWidget):
         try:
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
-            self._logger.error(e)
+            logging.error(e)
             # TODO: print to sysmsg pane
             raise e  # TODO Make sure 'raise' here returns or finalizes  func.
 
@@ -368,7 +367,7 @@ class NodeSelectorWidget(QWidget):
     def _add_children_treenode(self, treenodeitem_toplevel,
                                treenodeitem_parent, child_names_left):
         """
-        Add childen treenode.
+        Add children treenode.
 
         Evaluate current treenode and the previous treenode at the same depth.
         If the name of both nodes is the same, current node instance is
@@ -399,7 +398,6 @@ class NodeSelectorWidget(QWidget):
             stditem_prev = treenodeitem_parent.child(row_index_parent)
             name_prev = stditem_prev.text()
 
-        stditem = None
         # If the name of both nodes is the same, current node instance is
         # ignored (that means children will be added to the same parent)
         if name_prev != name_currentnode:

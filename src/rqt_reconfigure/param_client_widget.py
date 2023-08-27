@@ -116,7 +116,8 @@ class ParamClientWidget(QWidget):
                 self._param_client.describe_parameters(param_names)
             )
         except Exception as e:
-            logging.warn('Failed to retrieve parameters from node: ' + str(e))
+            logging.warn(
+                f'Failed to retrieve parameters from node {self._node_grn}: {e}')
 
         # Save and load buttons
         button_widget = QWidget(self)
