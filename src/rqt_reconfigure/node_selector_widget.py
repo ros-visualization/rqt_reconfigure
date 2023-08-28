@@ -68,7 +68,7 @@ class NodeSelectorWidget(QWidget):
         """
         Init node selector widget.
 
-        @param signal_msg: Signal to carries a system msg that is shown on GUI.
+        @param signal_msg: Signal to carry a system msg that is shown on GUI.
         @type signal_msg: QtCore.Signal
         """
         super(NodeSelectorWidget, self).__init__()
@@ -83,8 +83,8 @@ class NodeSelectorWidget(QWidget):
         loadUi(ui_file, self)
 
         # List of the available nodes. Since the list should be updated over
-        # time and we don't want to create node instance per every update
-        # cycle, This list instance should better be capable of keeping track.
+        # time, and we don't want to create node instance per every update
+        # cycle, this list instance should better be capable of keeping track.
         self._nodeitems = OrderedDict()
         # Dictionary. 1st elem is node's GRN name,
         # 2nd is TreenodeQstdItem instance.
@@ -184,11 +184,8 @@ class NodeSelectorWidget(QWidget):
         # Intended to be called from _selection_changed_slot.
         self.selectionModel.select(index_current, QItemSelectionModel.Deselect)
 
-        try:
-            param_client_widget = self._nodeitems[
-                rosnode_name_selected].get_param_client_widget()
-        except Exception as e:
-            raise e
+        param_client_widget = self._nodeitems[
+            rosnode_name_selected].get_param_client_widget()
 
         # Signal to notify other pane that also contains node widget.
         self.sig_node_selected.emit(param_client_widget)
@@ -225,11 +222,7 @@ class NodeSelectorWidget(QWidget):
         # Only when it's a terminal we move forward.
 
         item_child = self._nodeitems[rosnode_name_selected]
-        item_widget = None
-        try:
-            item_widget = item_child.get_param_client_widget()
-        except Exception as e:
-            raise e
+        item_widget = item_child.get_param_client_widget()
         logging.debug('item_selected={} child={} widget={}'.format(
                       index_current, item_child, item_widget))
         self.sig_node_selected.emit(item_widget)
@@ -241,11 +234,10 @@ class NodeSelectorWidget(QWidget):
         """
         Send "open ROS Node box" signal.
 
-        ONLY IF the selected treenode is the
-        terminal treenode.
+        ONLY IF the selected treenode is the terminal treenode.
         Receives args from signal QItemSelectionModel.selectionChanged.
 
-        :param selected: All indexs where selected (could be multiple)
+        :param selected: All indices that were selected (could be multiple)
         :type selected: QItemSelection
         :type deselected: QItemSelection
         """
@@ -261,7 +253,7 @@ class NodeSelectorWidget(QWidget):
             # Setting length criteria as 1 is only a workaround, to avoid
             # Node boxes on right-hand side disappears when filter key doesn't
             # match them.
-            # Indeed this workaround leaves another issue. Question for
+            # Indeed, this workaround leaves another issue. Question for
             # permanent solution is asked here http://goo.gl/V4DT1
             index_current = deselected.indexes()[0]
 
@@ -314,7 +306,7 @@ class NodeSelectorWidget(QWidget):
         try:
             nodes = find_nodes_with_params(self._context.node)
         except Exception as e:
-            self._logger.error(e)
+            logging.error(e)
             # TODO: print to sysmsg pane
             raise e  # TODO Make sure 'raise' here returns or finalizes  func.
 
@@ -368,7 +360,7 @@ class NodeSelectorWidget(QWidget):
     def _add_children_treenode(self, treenodeitem_toplevel,
                                treenodeitem_parent, child_names_left):
         """
-        Add childen treenode.
+        Add children treenode.
 
         Evaluate current treenode and the previous treenode at the same depth.
         If the name of both nodes is the same, current node instance is
@@ -377,10 +369,9 @@ class NodeSelectorWidget(QWidget):
         function gets called recursively going 1 level deeper.
 
         :type treenodeitem_toplevel: TreenodeQstdItem
-        :type treenodeitem_parent: TreenodeQstdItem.
+        :type treenodeitem_parent: TreenodeQstdItem
         :type child_names_left: List of str
-        :param child_names_left: List of strings that is sorted in hierarchical
-                                 order of params.
+        :param child_names_left: List of strings that is sorted in hierarchical order.
         """
         # TODO(Isaac): Consider moving this method to rqt_py_common.
 
@@ -389,8 +380,13 @@ class NodeSelectorWidget(QWidget):
         stditem_currentnode = TreenodeQstdItem(self._context, grn_curr,
                                                TreenodeQstdItem.NODE_FULLPATH)
 
-        # item at the bottom is your most recent node.
-        row_index_parent = treenodeitem_parent.rowCount() - 1
+        for i in range(treenodeitem_parent.rowCount()):
+            if treenodeitem_parent.child(i).text() == name_currentnode:
+                row_index_parent = i
+                break
+        else:
+            # Item at the bottom is your most recent node
+            row_index_parent = treenodeitem_parent.rowCount() - 1
 
         # Obtain and instantiate prev node in the same depth.
         name_prev = ''
@@ -399,7 +395,6 @@ class NodeSelectorWidget(QWidget):
             stditem_prev = treenodeitem_parent.child(row_index_parent)
             name_prev = stditem_prev.text()
 
-        stditem = None
         # If the name of both nodes is the same, current node instance is
         # ignored (that means children will be added to the same parent)
         if name_prev != name_currentnode:
@@ -427,6 +422,39 @@ class NodeSelectorWidget(QWidget):
             # TODO: Accept even non-terminal treenode as long as it's ROS Node.
             self._item_model.set_item_from_index(grn_curr, stditem.index())
 
+    def _remove_children_treenode(self, treenodeitem_toplevel,
+                                  treenodeitem_parent, child_names_left):
+        """
+        Remove child treenode.
+
+        :type treenodeitem_toplevel: TreenodeQstdItem
+        :type treenodeitem_parent: TreenodeQstdItem
+        :type child_names_left: List of str
+        :param child_names_left: List of strings that is sorted in hierarchical order.
+        """
+        name_currentnode = child_names_left.pop(0)
+
+        for i in range(treenodeitem_parent.rowCount()):
+            if treenodeitem_parent.child(i).text() == name_currentnode:
+                row_index_parent = i
+                break
+        else:
+            grn_curr = treenodeitem_toplevel.get_raw_param_name()
+            raise RuntimeError(
+                f'Failed to remove node {grn_curr}: No treenode {name_currentnode}')
+
+        if not child_names_left:  # Leaf node
+            treenodeitem_parent.removeRow(row_index_parent)
+            return
+
+        self._remove_children_treenode(treenodeitem_toplevel,
+                                       treenodeitem_parent.child(row_index_parent),
+                                       child_names_left)
+
+        # After a child has been removed, if none is left, remove the parent as well
+        if treenodeitem_parent.child(row_index_parent).rowCount() == 0:
+            treenodeitem_parent.removeRow(row_index_parent)
+
     def _prune_nodetree_pernode(self):
         try:
             nodes = find_nodes_with_params(self._context.node)
@@ -434,15 +462,15 @@ class NodeSelectorWidget(QWidget):
             logging.error('Reconfigure GUI cannot connect to master.')
             raise e  # TODO Make sure 'raise' here returns or finalizes func.
 
-        for i in reversed(range(0, self._rootitem.rowCount())):
-            candidate_for_removal = \
-                self._rootitem.child(i).get_raw_param_name()
-            if candidate_for_removal not in nodes:
-                logging.debug(
-                    'Removing {} because the server is no longer available.'.
-                    format(candidate_for_removal))
-                self._rootitem.removeRow(i)
-                self._nodeitems.pop(candidate_for_removal).reset()
+        for candidate_for_removal in list(self._nodeitems.keys()):
+            if candidate_for_removal in nodes:
+                continue
+            logging.debug(f'Removing {candidate_for_removal} because '
+                          'the server is no longer available.')
+            treenode = self._nodeitems[candidate_for_removal]
+            treenode_names = treenode.get_treenode_names()
+            self._remove_children_treenode(treenode, self._rootitem, treenode_names)
+            self._nodeitems.pop(candidate_for_removal).reset()
 
     def _refresh_nodes(self):
         self._prune_nodetree_pernode()
@@ -450,7 +478,7 @@ class NodeSelectorWidget(QWidget):
 
     def set_filter(self, filter_):
         """
-        Pass fileter instance to the child proxymodel.
+        Pass filter instance to the child proxymodel.
 
         :type filter_: BaseFilter
         """
