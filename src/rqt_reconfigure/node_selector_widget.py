@@ -184,11 +184,8 @@ class NodeSelectorWidget(QWidget):
         # Intended to be called from _selection_changed_slot.
         self.selectionModel.select(index_current, QItemSelectionModel.Deselect)
 
-        try:
-            param_client_widget = self._nodeitems[
-                rosnode_name_selected].get_param_client_widget()
-        except Exception as e:
-            raise e
+        param_client_widget = self._nodeitems[
+            rosnode_name_selected].get_param_client_widget()
 
         # Signal to notify other pane that also contains node widget.
         self.sig_node_selected.emit(param_client_widget)
@@ -225,10 +222,7 @@ class NodeSelectorWidget(QWidget):
         # Only when it's a terminal we move forward.
 
         item_child = self._nodeitems[rosnode_name_selected]
-        try:
-            item_widget = item_child.get_param_client_widget()
-        except Exception as e:
-            raise e
+        item_widget = item_child.get_param_client_widget()
         logging.debug('item_selected={} child={} widget={}'.format(
                       index_current, item_child, item_widget))
         self.sig_node_selected.emit(item_widget)
@@ -240,11 +234,10 @@ class NodeSelectorWidget(QWidget):
         """
         Send "open ROS Node box" signal.
 
-        ONLY IF the selected treenode is the
-        terminal treenode.
+        ONLY IF the selected treenode is the terminal treenode.
         Receives args from signal QItemSelectionModel.selectionChanged.
 
-        :param selected: All indexs where selected (could be multiple)
+        :param selected: All indices that were selected (could be multiple)
         :type selected: QItemSelection
         :type deselected: QItemSelection
         """
@@ -485,7 +478,7 @@ class NodeSelectorWidget(QWidget):
 
     def set_filter(self, filter_):
         """
-        Pass fileter instance to the child proxymodel.
+        Pass filter instance to the child proxymodel.
 
         :type filter_: BaseFilter
         """
