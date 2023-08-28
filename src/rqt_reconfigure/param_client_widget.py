@@ -130,7 +130,11 @@ class ParamClientWidget(QWidget):
                 self._param_client.describe_parameters(param_names)
             )
         except Exception as e:
+<<<<<<< HEAD
             logging.warning(
+=======
+            logging.warn(
+>>>>>>> 0d8fd9a (Fix handling of namespaces in the node tree  (#132))
                 f'Failed to retrieve parameters from node {self._node_grn}: {e}')
 
         # Save and load buttons

@@ -222,8 +222,13 @@ class NodeSelectorWidget(QWidget):
 
         item_child = self._nodeitems[rosnode_name_selected]
         item_widget = item_child.get_param_client_widget()
+<<<<<<< HEAD
         logging.debug(
             f'item_selected={index_current} child={item_child} widget={item_widget}')
+=======
+        logging.debug('item_selected={} child={} widget={}'.format(
+                      index_current, item_child, item_widget))
+>>>>>>> 0d8fd9a (Fix handling of namespaces in the node tree  (#132))
         self.sig_node_selected.emit(item_widget)
 
         # Show the node as selected.

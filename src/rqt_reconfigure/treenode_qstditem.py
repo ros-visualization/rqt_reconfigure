@@ -32,7 +32,12 @@ from __future__ import division
 
 import copy
 
+<<<<<<< HEAD
 from python_qt_binding.QtGui import QBrush, QColorConstants, QStandardItem
+=======
+from python_qt_binding.QtCore import Qt
+from python_qt_binding.QtGui import QBrush, QStandardItem
+>>>>>>> 0d8fd9a (Fix handling of namespaces in the node tree  (#132))
 
 from rqt_py_common.data_items import ReadonlyItem
 
