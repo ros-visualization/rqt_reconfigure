@@ -158,7 +158,7 @@ class NodeSelectorWidget(QWidget):
 
         :type grn: str
         """
-        # Iterate over all the indexes
+        # Iterate over all of the indexes
         for index in self._enumerate_indexes():
             grn_from_index = RqtRosGraph.get_upper_grn(index, '')
             logging.debug(' Compare given grn={} from selected={}'.format(

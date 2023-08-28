@@ -134,7 +134,7 @@ def create_param_client(node, remote_node_name, param_change_callback=None):
 
 
 def _has_parameters(node, node_name, node_namespace):
-    # Get all the service provided by a node (node_name)
+    # Get all of the services provided by a node (node_name)
     for service_name, service_types in node.get_service_names_and_types_by_node(
             node_name, node_namespace):
 
