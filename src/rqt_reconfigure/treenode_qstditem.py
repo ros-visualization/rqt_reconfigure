@@ -34,6 +34,8 @@
 
 from __future__ import division
 
+import copy
+
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtGui import QBrush, QStandardItem
 
@@ -133,7 +135,7 @@ class TreenodeQstdItem(ReadonlyItem):
 
         :rtype: List of string. Null if param
         """
-        return self._list_treenode_names
+        return copy.copy(self._list_treenode_names)
 
     def get_node_name(self):
         """
