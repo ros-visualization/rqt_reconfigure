@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix handling of namespaces in the node tree  (`#132 <https://github.com/ros-visualization/rqt_reconfigure/issues/132>`_)
+* Contributors: Nick Lamprianidis
+
 1.4.0 (2023-04-28)
 ------------------
 
