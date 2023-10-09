@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixed executor conflict (`#126 <https://github.com/ros-visualization/rqt_reconfigure/issues/126>`_)
+* Contributors: Aleksander Szymański
+
 1.6.0 (2023-10-04)
 ------------------
 * Add param filtering (`#128 <https://github.com/ros-visualization/rqt_reconfigure/issues/128>`_)
