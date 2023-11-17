@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2023-11-17)
+------------------
 * Fixed executor conflict (`#135 <https://github.com/ros-visualization/rqt_reconfigure/issues/135>`_)
 * Contributors: Aleksander Szymański
 
