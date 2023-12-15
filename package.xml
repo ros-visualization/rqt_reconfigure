@@ -24,7 +24,7 @@
   <author>Ze'ev Klapow</author>
 
   <exec_depend>ament_index_python</exec_depend>
-  <exec_depend version_gte="1.3.0">python_qt_binding</exec_depend>
+  <exec_depend version_gte="0.2.9">python_qt_binding</exec_depend>
   <exec_depend>python3-yaml</exec_depend>
   <exec_depend>qt_gui_py_common</exec_depend>
   <exec_depend>rclpy</exec_depend>
