@@ -201,7 +201,7 @@ class IntegerEditor(EditorWidget):
             'editor_number.ui')
         loadUi(ui_int, self)
 
-        if(len(self.descriptor.integer_range) > 0):
+        if len(self.descriptor.integer_range) > 0:
             # Set ranges
             self._min = int(self.descriptor.integer_range[0].from_value)
             self._max = int(self.descriptor.integer_range[0].to_value)
@@ -310,7 +310,7 @@ class DoubleEditor(EditorWidget):
         )
         loadUi(ui_num, self)
 
-        if(len(self.descriptor.floating_point_range) > 0):
+        if len(self.descriptor.floating_point_range) > 0:
             # Handle unbounded doubles nicely
             self._min = float(self.descriptor.floating_point_range[0].from_value)
             self._min_val_label.setText(str(self._min))
