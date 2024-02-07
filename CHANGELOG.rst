@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Explicitly add a pytest test dependency. (`#141 <https://github.com/ros-visualization/rqt_reconfigure/issues/141>`_)
+* Remove unnecessary parentheses around if statements. (`#140 <https://github.com/ros-visualization/rqt_reconfigure/issues/140>`_)
+* Contributors: Chris Lalancette
+
 1.6.1 (2023-10-09)
 ------------------
 * Fixed executor conflict (`#126 <https://github.com/ros-visualization/rqt_reconfigure/issues/126>`_)
