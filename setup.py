@@ -9,6 +9,7 @@ setup(
     data_files=[
         ('share/' + package_name + '/resource', [
             'resource/editor_bool.ui',
+            'resource/editor_drop_down_list.ui',
             'resource/editor_enum.ui',
             'resource/editor_number.ui',
             'resource/editor_string.ui',
