@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add xml-model (`#125 <https://github.com/ros-visualization/rqt_reconfigure/issues/125>`_)
+* Update maintainer (`#114 <https://github.com/ros-visualization/rqt_reconfigure/issues/114>`_)
+* Contributors: Dharini Dutia, Matthijs van der Burgh, quarkytale
+
 0.5.5 (2022-04-20)
 ------------------
 * Show enum item description as tooltip (`#113 <https://github.com/ros-visualization/rqt_reconfigure/issues/113>`_)
