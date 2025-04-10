@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.6 (2025-04-10)
+------------------
 * Add xml-model (`#125 <https://github.com/ros-visualization/rqt_reconfigure/issues/125>`_)
 * Update maintainer (`#114 <https://github.com/ros-visualization/rqt_reconfigure/issues/114>`_)
 * Contributors: Dharini Dutia, Matthijs van der Burgh, quarkytale
