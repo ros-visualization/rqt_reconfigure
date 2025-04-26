@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Bump cmake_minimum_required to avoid deprecation (`#152 <https://github.com/ros-visualization/rqt_reconfigure/issues/152>`_)
+* Contributors: Arne Hitzmann
+
 0.5.6 (2025-04-10)
 ------------------
 * Add xml-model (`#125 <https://github.com/ros-visualization/rqt_reconfigure/issues/125>`_)
