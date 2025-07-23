@@ -71,9 +71,15 @@ class EditorWidget(QWidget):
     def update_remote(self, value):
         # Update the value on Parameter Server.
         try:
-            self._param_client.set_parameters([self.parameter])
+            result = self._param_client.set_parameters([self.parameter])
+            for res in result.results:
+                if not res.successful:
+                    logging.warn('Failed to set parameters for node: ' + res.reason)
+                    return False
         except Exception as e:
             logging.warn('Failed to set parameters for node: ' + str(e))
+            return False
+        return True
 
     def update_local(self, value):
         """
@@ -95,7 +101,8 @@ class EditorWidget(QWidget):
         old_value = self.parameter.value
         self.update_local(value)
         if self.parameter.value != old_value:
-            self.update_remote(value)
+            if not self.update_remote(value):
+                self.update_local(old_value)
 
     def display(self, grid):
         """
