@@ -41,9 +41,11 @@ setup(
         'that are accessible via dynamic_reconfigure.'
     ),
     license='BSD',
-    'test': [
+    extras_require={
+        'test': [
             'pytest',
         ],
+    },
     entry_points={
         'console_scripts': [
             package_name + ' = ' + package_name + '.__main__:main',
