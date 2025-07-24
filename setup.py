@@ -32,7 +32,6 @@ setup(
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
@@ -42,7 +41,9 @@ setup(
         'that are accessible via dynamic_reconfigure.'
     ),
     license='BSD',
-    tests_require=['pytest'],
+    'test': [
+            'pytest',
+        ],
     entry_points={
         'console_scripts': [
             package_name + ' = ' + package_name + '.__main__:main',
