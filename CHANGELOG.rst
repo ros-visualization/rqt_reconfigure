@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.8.1 (2025-07-25)
+------------------
+* fix setuptools deprecation (`#153 <https://github.com/ros-visualization/rqt_reconfigure/issues/153>`_)
+* If updating remote fails, reflect the failure locally (`#144 <https://github.com/ros-visualization/rqt_reconfigure/issues/144>`_)
+* Contributors: Jonathan Selling, mosfet80
+
 1.8.0 (2025-04-28)
 ------------------
 * Remove CODEOWNERS (`#147 <https://github.com/ros-visualization/rqt_reconfigure/issues/147>`_)
