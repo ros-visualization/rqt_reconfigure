@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.8.2 (2025-11-24)
+------------------
+* Cleanup mislabeled BSD license (`#157 <https://github.com/ros-visualization/rqt_reconfigure/issues/157>`_)
+* Contributors: Alejandro Hernández Cordero
+
 1.8.1 (2025-07-25)
 ------------------
 * fix setuptools deprecation (`#153 <https://github.com/ros-visualization/rqt_reconfigure/issues/153>`_)
