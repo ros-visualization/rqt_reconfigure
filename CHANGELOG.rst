@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.3 (2026-01-21)
+------------------
 * fix setuptools deprecation (backport `#153 <https://github.com/ros-visualization/rqt_reconfigure/issues/153>`_) (`#155 <https://github.com/ros-visualization/rqt_reconfigure/issues/155>`_)
   fix setuptools deprecation (`#153 <https://github.com/ros-visualization/rqt_reconfigure/issues/153>`_)
   (cherry picked from commit edf9209370dded4f2caae0c0dac1b67e75c4f914)
