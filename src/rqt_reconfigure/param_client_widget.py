@@ -94,7 +94,7 @@ class ParamClientWidget(QWidget):
         font.setBold(True)
         font.setPointSize(10)
         nodename_qlabel.setFont(font)
-        nodename_qlabel.setAlignment(Qt.AlignCenter)
+        nodename_qlabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         nodename_qlabel.setText(node_name)
         h_layout_nodeheader.addWidget(nodename_qlabel)
 

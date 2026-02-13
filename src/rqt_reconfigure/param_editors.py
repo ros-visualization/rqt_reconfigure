@@ -266,7 +266,7 @@ class IntegerEditor(EditorWidget):
         self._slider_horizontal.installEventFilter(self)
 
     def eventFilter(self, obj, event):
-        if event.type() == QEvent.Wheel and not obj.hasFocus():
+        if event.type() == QEvent.Type.Wheel and not obj.hasFocus():
             return True
         return super(EditorWidget, self).eventFilter(obj, event)
 
@@ -391,7 +391,7 @@ class DoubleEditor(EditorWidget):
         self._slider_horizontal.installEventFilter(self)
 
     def eventFilter(self, obj, event):
-        if event.type() == QEvent.Wheel and not obj.hasFocus():
+        if event.type() == QEvent.Type.Wheel and not obj.hasFocus():
             return True
         return super(EditorWidget, self).eventFilter(obj, event)
 

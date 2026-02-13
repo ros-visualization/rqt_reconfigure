@@ -32,8 +32,7 @@ from __future__ import division
 
 import copy
 
-from python_qt_binding.QtCore import Qt
-from python_qt_binding.QtGui import QBrush, QStandardItem
+from python_qt_binding.QtGui import QBrush, QColorConstants, QStandardItem
 
 from rqt_py_common.data_items import ReadonlyItem
 
@@ -112,7 +111,7 @@ class TreenodeQstdItem(ReadonlyItem):
             return None
         param_names = self._param_client_widget.get_treenode_names()
         param_names_items = []
-        brush = QBrush(Qt.lightGray)
+        brush = QBrush(QColorConstants.LightGray)
         for param_name in param_names:
             item = ReadonlyItem(param_name)
             item.setBackground(brush)
