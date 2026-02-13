@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.3 (2026-02-13)
+------------------
 * fix setuptools deprecation (backport `#153 <https://github.com/ros-visualization/rqt_reconfigure/issues/153>`_) (`#156 <https://github.com/ros-visualization/rqt_reconfigure/issues/156>`_)
 * add arraytypes into humble (`#145 <https://github.com/ros-visualization/rqt_reconfigure/issues/145>`_)
 * Contributors: Gordon Stevenson, mergify[bot]
