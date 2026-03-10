@@ -26,6 +26,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# flake8: noqa: A005
+
 from rclpy.logging import get_logger
 
 logger = get_logger(__package__)
