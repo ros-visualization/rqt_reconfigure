@@ -245,10 +245,18 @@ class ParamClientWidget(QWidget):
         for parameter, descriptor in zip(parameters, descriptors):
             if Parameter.Type(descriptor.type) not in EDITOR_TYPES:
                 continue
+
+            if len(descriptor.additional_constraints) > 0 and descriptor.additional_constraints[0] == "\n":
+                editor_widget = EDITOR_TYPES["DROP_DOWN_LIST"](
+                    self._param_client, parameter, descriptor
+                )
+
+            else:
+                editor_widget = EDITOR_TYPES[parameter.type_](
+                    self._param_client, parameter, descriptor
+                )
+
             logging.debug('Adding editor widget for {}'.format(parameter.name))
-            editor_widget = EDITOR_TYPES[Parameter.Type(descriptor.type)](
-                self._param_client, parameter, descriptor
-            )
             self._editor_widgets[parameter.name] = editor_widget
             editor_widget.display(self.grid)
 
