@@ -217,19 +217,22 @@ class IntegerEditor(EditorWidget):
             if self._max > 2**31-1 or self._min < -2**31:
                 self.scale = (2**31-1) / (self._max - self._min)
                 logging.warn(
-                    f'The range of this parameter ({self._min} to {self._max}) is too large for the slider to handle. Scaling down to fit within 32 bits with factor {self.scale}.')
+                    f'The range of this parameter ({self._min} to {self._max}) is too large '
+                    f'for the slider to handle. '
+                    f'Scaling down to fit within 32 bits with factor {self.scale}.'
+                )
             else:
                 self.scale = 1
                 # TODO: Fix that the naming of _paramval_lineEdit instance is not
                 #       consistent among Editor's subclasses.
-                self._paramval_lineEdit.setValidator(QIntValidator(self._min,
-                                                    self._max, self))
+                self._paramval_lineEdit.setValidator(QIntValidator(self._min, self._max, self))
 
             self._step = int(self.descriptor.integer_range[0].step)
             self._slider_horizontal.setSingleStep(self._get_value_slider(self._step))
             self._slider_horizontal.setTickInterval(self._get_value_slider(self._step))
             self._slider_horizontal.setPageStep(self._get_value_slider(self._step))
-            self._slider_horizontal.setRange(self._get_value_slider(self._min), self._get_value_slider(self._max))
+            self._slider_horizontal.setRange(self._get_value_slider(self._min),
+                                             self._get_value_slider(self._max))
 
             self._slider_horizontal.setValue(self._get_value_slider(int(self.parameter.value)))
 
@@ -246,7 +249,7 @@ class IntegerEditor(EditorWidget):
                                  ).triggered.connect(self._set_to_max)
             self.cmenu.addAction(self.tr('Set to Minimum')
                                  ).triggered.connect(self._set_to_min)
-            
+
         else:
             self._paramval_lineEdit.setValidator(QIntValidator())
             self._min_val_label.setVisible(False)
@@ -273,12 +276,12 @@ class IntegerEditor(EditorWidget):
 
     def _get_value_textfield(self):
         return self._slider_horizontal.sliderPosition() / self.scale if self.scale else 0
-    
+
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Wheel and not obj.hasFocus():
             return True
         return super(EditorWidget, self).eventFilter(obj, event)
-    
+
     def _clamp_int(self, value):
         return max(-2**31, min(2**31 - 1, value))
 
