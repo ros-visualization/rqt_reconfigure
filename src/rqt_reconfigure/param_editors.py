@@ -423,7 +423,7 @@ class DoubleEditor(EditorWidget):
         if math.isfinite(value):
             return int(round((self._func(value)) * self.scale))
         if math.isinf(value):
-            return int(round((self._func(math.copysign(100, value)))))        
+            return int(round((self._func(math.copysign(100, value)))))
         # nan
         return 0
 
