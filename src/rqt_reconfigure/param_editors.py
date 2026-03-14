@@ -217,7 +217,7 @@ class IntegerEditor(EditorWidget):
             if self._max > 2**31-1 or self._min < -2**31:
                 self.scale = (2**31-1) / (self._max - self._min)
                 logging.warn(
-                    f'The range of this parameter is too large for the slider to handle. Scaling down to fit within 32 bits with factor {self.scale}.')
+                    f'The range of this parameter ({self._min} to {self._max}) is too large for the slider to handle. Scaling down to fit within 32 bits with factor {self.scale}.')
             else:
                 self.scale = 1
                 # TODO: Fix that the naming of _paramval_lineEdit instance is not
