@@ -33,6 +33,7 @@ from decimal import Decimal
 import json
 import math
 import os
+import sys
 
 from ament_index_python import get_resource
 
@@ -334,7 +335,6 @@ class DoubleEditor(EditorWidget):
             'editor_number.ui'
         )
         loadUi(ui_num, self)
-
         if len(self.descriptor.floating_point_range) > 0:
             # Handle unbounded doubles nicely
             self._min = float(self.descriptor.floating_point_range[0].from_value)
@@ -346,9 +346,12 @@ class DoubleEditor(EditorWidget):
             self._func = lambda x: x
             self._ifunc = self._func
 
-            # If we have no range, disable the slider
+            # If we have no range, slider is disabled automatically
             self.scale = (self._func(self._max) - self._func(self._min))
-            self.scale = 100 / self.scale
+            if math.isfinite(self.scale):
+                self.scale = 100 / self.scale
+            else:
+                self.scale = 100 / (sys.float_info.max - sys.float_info.min)
 
             # config step
             self._step = float(self.descriptor.floating_point_range[0].step)
@@ -434,7 +437,13 @@ class DoubleEditor(EditorWidget):
         ) if self.scale else 0
 
     def _get_value_slider(self, value):
-        return int(round((self._func(value)) * self.scale))
+
+        if math.isfinite(value):
+            return int(round((self._func(value)) * self.scale))
+        if math.isinf(value):
+            return int(round((self._func(math.copysign(100, value)))))
+        # nan
+        return 0
 
     def update_local(self, value):
         super(DoubleEditor, self).update_local(value)
