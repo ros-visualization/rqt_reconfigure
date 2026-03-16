@@ -2,6 +2,13 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.8.3 (2026-03-16)
+------------------
+* Harden behavior if double value or limit is Infinity (`#161 <https://github.com/ros-visualization/rqt_reconfigure/issues/161>`_)
+* Scale IntegerEditor if range exceeds int32 (`#160 <https://github.com/ros-visualization/rqt_reconfigure/issues/160>`_)
+* Ignore A005 for future flake8 (`#159 <https://github.com/ros-visualization/rqt_reconfigure/issues/159>`_)
+* Contributors: Christoph Fröhlich, Michael Carlstrom
+
 1.8.2 (2025-11-24)
 ------------------
 * Cleanup mislabeled BSD license (`#157 <https://github.com/ros-visualization/rqt_reconfigure/issues/157>`_)
