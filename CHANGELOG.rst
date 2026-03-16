@@ -2,6 +2,14 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.7.1 (2026-03-16)
+------------------
+* Harden behavior if double value or limit is Infinity (backport `#161 <https://github.com/ros-visualization/rqt_reconfigure/issues/161>`_) (`#165 <https://github.com/ros-visualization/rqt_reconfigure/issues/165>`_)
+* Scale IntegerEditor if range exceeds int32 (backport `#160 <https://github.com/ros-visualization/rqt_reconfigure/issues/160>`_) (`#162 <https://github.com/ros-visualization/rqt_reconfigure/issues/162>`_)
+* fix setuptools deprecation (backport `#153 <https://github.com/ros-visualization/rqt_reconfigure/issues/153>`_) (`#154 <https://github.com/ros-visualization/rqt_reconfigure/issues/154>`_)
+* Remove CODEOWNERS (`#147 <https://github.com/ros-visualization/rqt_reconfigure/issues/147>`_)
+* Contributors: Alejandro Hernández Cordero, mergify[bot]
+
 1.7.0 (2024-04-26)
 ------------------
 
