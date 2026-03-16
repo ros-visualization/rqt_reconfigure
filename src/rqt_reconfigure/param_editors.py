@@ -314,12 +314,7 @@ class DoubleEditor(EditorWidget):
             'editor_number.ui'
         )
         loadUi(ui_num, self)
-<<<<<<< HEAD
-
-        if(len(self.descriptor.floating_point_range) > 0):
-=======
         if len(self.descriptor.floating_point_range) > 0:
->>>>>>> 234ba2c (Harden behavior if double value or limit is Infinity (#161))
             # Handle unbounded doubles nicely
             self._min = float(self.descriptor.floating_point_range[0].from_value)
             self._min_val_label.setText(str(self._min))
