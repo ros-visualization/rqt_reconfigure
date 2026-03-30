@@ -106,7 +106,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
             # of node name. So, get param name.
             text_filter_target = curr_qitem.data(Qt.ItemDataRole.DisplayRole)
 
-        if Version(QT_BINDING_VERSION) > Version('6.0.0'):
+        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
             regex = self.filterRegularExpression()
             pos_hit = regex.match(text_filter_target).hasMatch()
         else:
@@ -126,7 +126,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
             # If the index is the terminal treenode, parameters that hit
             # the query are displayed at the root tree.
-            if Version(QT_BINDING_VERSION) > Version('6.0.0'):
+            if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
                 _child_index = curr_qmindex.model().index(0, 0)
             else:
                 _child_index = curr_qmindex.child(0, 0)
@@ -193,7 +193,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
             logging.info('filter invalidated.')
 
         # By calling setFilterRegExp, filterAccepts* methods get kicked.
-        if Version(QT_BINDING_VERSION) > Version('6.0.0'):
+        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
             self.setFilterRegularExpression(self._filter.get_regexp())
         else:
             self.setFilterRegExp(self._filter.get_regexp())
