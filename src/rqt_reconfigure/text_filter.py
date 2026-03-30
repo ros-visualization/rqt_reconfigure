@@ -28,7 +28,13 @@
 #
 # Author: Isaac Saito
 
-from python_qt_binding.QtCore import QRegExp, Qt
+from packaging.version import Version
+from python_qt_binding import QT_BINDING_VERSION
+if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
+    from python_qt_binding.QtCore import QRegularExpression  # noqa: F401
+else:
+    from python_qt_binding.QtCore import QRegExp  # noqa: F401
+from python_qt_binding.QtCore import Qt
 
 from rqt_console.filters.message_filter import MessageFilter
 
@@ -60,7 +66,10 @@ class TextFilter(MessageFilter):
                 self._regexp is not None    # If None, init process isn't done
                                             # yet and we can ignore the call to
         ):                                  # this method.
-            pos_hit = self._regexp.indexIn(text)
+            if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
+                pos_hit = self._regexp.match(text).hasMatch()
+            else:
+                pos_hit = self._regexp.indexIn(text)
             if pos_hit >= 0:
                 _hit = True
             else:
@@ -79,9 +88,12 @@ class TextFilter(MessageFilter):
         """
         super(TextFilter, self).set_text(text)
 
-        syntax_nr = QRegExp.RegExp
-        syntax = QRegExp.PatternSyntax(syntax_nr)
-        self.regex = QRegExp(text, Qt.CaseInsensitive, syntax)
+        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
+            self.regex = QRegularExpression(text)
+        else:
+            syntax_nr = QRegExp.RegExp
+            syntax = QRegExp.PatternSyntax(syntax_nr)
+            self.regex = QRegExp(text, Qt.CaseSensitivity.CaseSensitive, syntax)
         self.set_regex(self.regex)
 
     def get_text(self):

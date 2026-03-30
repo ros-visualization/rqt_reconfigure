@@ -150,7 +150,9 @@ class NodeSelectorWidget(QWidget):
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_selectedindex:
                 # Deselect the index.
-                self.selectionModel.select(index, QItemSelectionModel.Deselect)
+                self.selectionModel.select(
+                    index,
+                    QItemSelectionModel.SelectionFlag.Deselect)
 
     def node_selected(self, grn, scroll_to=False):
         """
@@ -182,7 +184,7 @@ class NodeSelectorWidget(QWidget):
 
     def _selection_deselected(self, index_current, rosnode_name_selected):
         # Intended to be called from _selection_changed_slot.
-        self.selectionModel.select(index_current, QItemSelectionModel.Deselect)
+        self.selectionModel.select(index_current, QItemSelectionModel.SelectionFlag.Deselect)
 
         param_client_widget = self._nodeitems[
             rosnode_name_selected].get_param_client_widget()
@@ -194,12 +196,12 @@ class NodeSelectorWidget(QWidget):
         # Intended to be called from _selection_changed_slot.
         logging.debug('_selection_changed_slot row={} col={} data={}'.format(
             index_current.row(), index_current.column(),
-            index_current.data(Qt.DisplayRole)))
+            index_current.data(Qt.ItemDataRole.DisplayRole)))
 
         # Determine if it's terminal treenode.
         found_node = False
         for nodeitem in self._nodeitems.values():
-            name_nodeitem = nodeitem.data(Qt.DisplayRole)
+            name_nodeitem = nodeitem.data(Qt.ItemDataRole.DisplayRole)
             name_rosnode_leaf = rosnode_name_selected[
                 rosnode_name_selected.rfind(RqtRosGraph.DELIM_GRN) + 1:]
 
@@ -216,7 +218,7 @@ class NodeSelectorWidget(QWidget):
                 break
         if not found_node:  # Only when it's NOT a terminal we deselect it.
             self.selectionModel.select(index_current,
-                                       QItemSelectionModel.Deselect)
+                                       QItemSelectionModel.SelectionFlag.Deselect)
             return
 
         # Only when it's a terminal we move forward.
@@ -265,7 +267,7 @@ class NodeSelectorWidget(QWidget):
         if rosnode_name_selected not in self._nodeitems.keys():
             # De-select the selected item.
             self.selectionModel.select(index_current,
-                                       QItemSelectionModel.Deselect)
+                                       QItemSelectionModel.SelectionFlag.Deselect)
             return
 
         if selected.indexes():
@@ -508,9 +510,9 @@ class NodeSelectorWidget(QWidget):
                 'sel.d={} par.d={} desel.d={} cur.item={}'
                 .format(
                     index_current, index_parent, index_deselected,
-                    index_current.data(Qt.DisplayRole),
-                    index_parent.data(Qt.DisplayRole),
-                    None,  # index_deselected.data(Qt.DisplayRole)
+                    index_current.data(Qt.ItemDataRole.DisplayRole),
+                    index_parent.data(Qt.ItemDataRole.DisplayRole),
+                    None,  # index_deselected.data(Qt.ItemDataRole.DisplayRole)
                     curr_qstd_item))
         elif deselected.indexes():
             logging.debug(
@@ -518,8 +520,8 @@ class NodeSelectorWidget(QWidget):
                 'sel.d={} par.d={} desel.d={} cur.item={}'
                 .format(
                     index_current, index_parent, index_deselected,
-                    None, index_parent.data(Qt.DisplayRole),
-                    index_deselected.data(Qt.DisplayRole),
+                    None, index_parent.data(Qt.ItemDataRole.DisplayRole),
+                    index_deselected.data(Qt.ItemDataRole.DisplayRole),
                     curr_qstd_item))
 
     def save_settings(self, instance_settings):

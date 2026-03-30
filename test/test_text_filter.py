@@ -30,7 +30,13 @@
 
 import unittest
 
-from python_qt_binding.QtCore import QRegExp, Qt
+from packaging.version import Version
+from python_qt_binding import QT_BINDING_VERSION
+if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
+    from python_qt_binding.QtCore import QRegularExpression  # noqa: F401
+else:
+    from python_qt_binding.QtCore import QRegExp  # noqa: F401
+from python_qt_binding.QtCore import Qt
 
 from rqt_reconfigure.text_filter import TextFilter
 
@@ -42,9 +48,12 @@ class MyTest(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
 
-        syntax_nr = QRegExp.RegExp
-        syntax = QRegExp.PatternSyntax(syntax_nr)
-        self._regExp = QRegExp(self._query_text, Qt.CaseInsensitive, syntax)
+        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
+            self._regExp = QRegularExpression(self._query_text)
+        else:
+            syntax_nr = QRegExp.RegExp
+            syntax = QRegExp.PatternSyntax(syntax_nr)
+            self._regExp = QRegExp(self._query_text, Qt.CaseSensitivity.CaseSensitive, syntax)
 
         self._filter = TextFilter(self._regExp)
         self._filter.set_text(self._query_text)
