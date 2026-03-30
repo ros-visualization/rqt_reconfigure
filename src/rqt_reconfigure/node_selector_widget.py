@@ -152,7 +152,7 @@ class NodeSelectorWidget(QWidget):
                 # Deselect the index.
                 self.selectionModel.select(
                     index,
-                    QItemSelectionModel.SelectionFlag.SelectionFlag.Deselect)
+                    QItemSelectionModel.SelectionFlag.Deselect)
 
     def node_selected(self, grn, scroll_to=False):
         """
