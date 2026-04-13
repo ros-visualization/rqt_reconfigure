@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.8.4 (2026-04-13)
+------------------
+* Support Qt6 (`#158 <https://github.com/ros-visualization/rqt_reconfigure/issues/158>`_)
+* Contributors: Alejandro Hernández Cordero
+
 1.8.3 (2026-03-16)
 ------------------
 * Harden behavior if double value or limit is Infinity (`#161 <https://github.com/ros-visualization/rqt_reconfigure/issues/161>`_)
