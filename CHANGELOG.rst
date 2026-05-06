@@ -2,6 +2,9 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.0 (2026-05-06)
+------------------
+
 1.8.4 (2026-04-13)
 ------------------
 * Support Qt6 (`#158 <https://github.com/ros-visualization/rqt_reconfigure/issues/158>`_)
