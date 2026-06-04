@@ -168,7 +168,8 @@ class NodeSelectorWidget(QWidget):
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_index:
                 # Select the index.
-                self.selectionModel.select(index, QItemSelectionModel.Select)
+                self.selectionModel.select(
+                    index, QItemSelectionModel.SelectionFlag.Select)
                 if scroll_to:
                     self._node_selector_view.scrollTo(index)
                 break
