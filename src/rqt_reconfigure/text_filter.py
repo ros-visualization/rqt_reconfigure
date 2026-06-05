@@ -67,13 +67,9 @@ class TextFilter(MessageFilter):
                                             # yet and we can ignore the call to
         ):                                  # this method.
             if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-                pos_hit = self._regexp.match(text).hasMatch()
+                _hit = self._regexp.match(text).hasMatch()
             else:
-                pos_hit = self._regexp.indexIn(text)
-            if pos_hit >= 0:
-                _hit = True
-            else:
-                _hit = False
+                _hit = self._regexp.indexIn(text) >= 0
         return _hit
 
     def get_regexp(self):
