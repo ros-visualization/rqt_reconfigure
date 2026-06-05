@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.8.5 (2026-06-05)
+------------------
+* Improve qt5/qt6 support (backport `#168 <https://github.com/ros-visualization/rqt_reconfigure/issues/168>`_) (`#169 <https://github.com/ros-visualization/rqt_reconfigure/issues/169>`_)
+* Contributors: mergify[bot]
+
 1.8.4 (2026-04-13)
 ------------------
 * Support Qt6 (`#158 <https://github.com/ros-visualization/rqt_reconfigure/issues/158>`_)
