@@ -28,8 +28,6 @@
 #
 # Author: Isaac Saito
 
-from __future__ import division
-
 from packaging.version import Version
 from python_qt_binding import QT_BINDING_VERSION
 

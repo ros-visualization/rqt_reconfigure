@@ -28,8 +28,6 @@
 #
 # Author: Isaac Saito
 
-from __future__ import division
-
 from python_qt_binding.QtGui import QStandardItemModel
 
 from rqt_reconfigure import logging
