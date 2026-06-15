@@ -29,10 +29,7 @@
 # Author: Isaac Saito
 
 
-try:
-    from python_qt_binding.QtCore import QModelIndex  # Qt 5
-except ImportError:
-    from python_qt_binding.QtGui import QModelIndex  # Qt 4
+from python_qt_binding.QtCore import QModelIndex
 
 
 class TreenodeStatus(QModelIndex):
@@ -66,7 +63,7 @@ class TreenodeStatus(QModelIndex):
         :type nodename_full: str
         :type qmindex: QModelIndex
         """
-        super(TreenodeStatus, self).__init__(qmindex)
+        super().__init__(qmindex)
 
         self._is_eval_done = False
         self._shows = False

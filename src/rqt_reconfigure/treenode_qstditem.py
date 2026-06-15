@@ -61,7 +61,7 @@ class TreenodeQstdItem(ReadonlyItem):
         self._raw_param_name = grn_current_treenode
         self._list_treenode_names = self._raw_param_name.split('/')[1:]
         self._toplevel_treenode_name = self._list_treenode_names[0]
-        super(TreenodeQstdItem, self).__init__(grn_current_treenode)
+        super().__init__(grn_current_treenode)
 
         self._context = context
         self._param_client = None
@@ -114,9 +114,8 @@ class TreenodeQstdItem(ReadonlyItem):
             item = ReadonlyItem(param_name)
             item.setBackground(brush)
             param_names_items.append(item)
-        logging.debug('enable_param_items len of param_names={}'.format(
-            len(param_names_items)
-        ))
+        logging.debug(
+            f'enable_param_items len of param_names={len(param_names_items)}')
         self.appendColumn(param_names_items)
 
     def get_raw_param_name(self):

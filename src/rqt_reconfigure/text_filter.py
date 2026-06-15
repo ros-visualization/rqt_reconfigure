@@ -48,7 +48,7 @@ class TextFilter(MessageFilter):
     """
 
     def __init__(self, qregexp=None):
-        super(TextFilter, self).__init__()
+        super().__init__()
         self._regexp = qregexp
 
     def test_message(self, text):
@@ -73,7 +73,7 @@ class TextFilter(MessageFilter):
         return _hit
 
     def get_regexp(self):
-        return self._regex
+        return self._regexp
 
     def set_text(self, text):
         """
@@ -82,15 +82,15 @@ class TextFilter(MessageFilter):
         :param text: text to set ''str''
         :emits filter_changed_signal: If _enabled is true
         """
-        super(TextFilter, self).set_text(text)
+        super().set_text(text)
 
         if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-            self.regex = QRegularExpression(text)
+            self._regexp = QRegularExpression(text)
         else:
             syntax_nr = QRegExp.RegExp
             syntax = QRegExp.PatternSyntax(syntax_nr)
-            self.regex = QRegExp(text, Qt.CaseSensitivity.CaseSensitive, syntax)
-        self.set_regex(self.regex)
+            self._regexp = QRegExp(text, Qt.CaseSensitivity.CaseSensitive, syntax)
+        self.set_regex(self._regexp)
 
     def get_text(self):
         return self._text
