@@ -28,8 +28,6 @@
 #
 # Author: Isaac Saito
 
-from __future__ import division
-
 import copy
 
 from python_qt_binding.QtGui import QBrush, QColorConstants, QStandardItem
