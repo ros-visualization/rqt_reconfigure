@@ -37,8 +37,8 @@ import time
 from ament_index_python import get_resource
 
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import Qt, Signal
 from python_qt_binding.QtCore import QItemSelectionModel, QModelIndex
+from python_qt_binding.QtCore import Qt, Signal
 from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
