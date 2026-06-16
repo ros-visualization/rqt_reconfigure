@@ -47,7 +47,7 @@ class TreenodeItemModel(QStandardItemModel):
     """
 
     def __init__(self, parent=None):
-        super(TreenodeItemModel, self).__init__(parent)
+        super().__init__(parent)
         self._parent = parent
 
         self._indexes = {}  # { str : QPersistentModelIndex }
@@ -60,11 +60,9 @@ class TreenodeItemModel(QStandardItemModel):
         :rtype: QPersistentModelIndex. None if the corresponding item isn't
                 found.
         """
-        logging.debug('get_index_from_grn all item={}'.format(self._indexes))
+        logging.debug(f'get_index_from_grn all item={self._indexes}')
         return self._indexes.get(grn)
 
     def set_item_from_index(self, grn, qpindex):
-        logging.debug('set_item_from_index grn={} qpindex={}'.format(
-            grn, qpindex
-        ))
+        logging.debug(f'set_item_from_index grn={grn} qpindex={qpindex}')
         self._indexes[grn] = qpindex

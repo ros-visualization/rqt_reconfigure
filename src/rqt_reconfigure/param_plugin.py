@@ -38,14 +38,14 @@ from rqt_reconfigure.param_widget import ParamWidget
 class ParamPlugin(Plugin):
 
     def __init__(self, context):
-        super(ParamPlugin, self).__init__(context)
+        super().__init__(context)
         self.setObjectName('ParamPlugin')
 
         self._plugin_widget = ParamWidget(context)
         self._widget = PluginContainerWidget(self._plugin_widget, True, False)
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() +
-                                        (' (%d)' % context.serial_number()))
+                                        f' ({context.serial_number()})')
         context.add_widget(self._widget)
 
     def shutdown_plugin(self):

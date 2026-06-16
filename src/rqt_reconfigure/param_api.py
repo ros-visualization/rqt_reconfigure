@@ -53,16 +53,16 @@ class ParamClient(object):
         self._node = node
         self._remote_node_name = remote_node_name
         self._get_params_client = self._node.create_client(
-            GetParameters, '{remote_node_name}/get_parameters'.format_map(locals())
+            GetParameters, f'{remote_node_name}/get_parameters'
         )
         self._set_params_client = self._node.create_client(
-            SetParameters, '{remote_node_name}/set_parameters'.format_map(locals())
+            SetParameters, f'{remote_node_name}/set_parameters'
         )
         self._list_params_client = self._node.create_client(
-            ListParameters, '{remote_node_name}/list_parameters'.format_map(locals())
+            ListParameters, f'{remote_node_name}/list_parameters'
         )
         self._describe_params_client = self._node.create_client(
-            DescribeParameters, '{remote_node_name}/describe_parameters'.format_map(locals())
+            DescribeParameters, f'{remote_node_name}/describe_parameters'
         )
         self._param_events_subscription = self._node.create_subscription(
             ParameterEvent, '/parameter_events', self._on_parameter_event,

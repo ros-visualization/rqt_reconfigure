@@ -61,7 +61,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
     sig_filtered = Signal(int)
 
     def __init__(self, parent):
-        super(FilterChildrenModel, self).__init__(parent)
+        super().__init__(parent)
 
         # :Key: Internal ID of QModelIndex of each treenode.
         # :Value: TreenodeStatus
@@ -98,7 +98,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
             # If selectable ROS Node, get GRN name
             nodename_fullpath = curr_qitem.get_raw_param_name()
             text_filter_target = nodename_fullpath
-            logging.debug('   Nodename full={} '.format(nodename_fullpath))
+            logging.debug(f'   Nodename full={nodename_fullpath} ')
         else:
             # If ReadonlyItem, this means items are the parameters, not a part
             # of node name. So, get param name.
@@ -111,16 +111,15 @@ class FilterChildrenModel(QSortFilterProxyModel):
             regex = self.filterRegExp()
             pos_hit = regex.indexIn(text_filter_target)
         if pos_hit >= 0:  # Query hit.
-            logging.debug('curr data={} row={} col={}'.format(
-                curr_qmindex.data(), curr_qmindex.row(), curr_qmindex.column()
-            ))
+            logging.debug(
+                f'curr data={curr_qmindex.data()} row={curr_qmindex.row()} '
+                f'col={curr_qmindex.column()}')
 
             # Set all subsequent treenodes True
             logging.debug(
                 ' FCModel.filterAcceptsRow'
-                ' src_row={} parent row={} data={} filterRegExp={}'.format(
-                    src_row, src_parent_qmindex.row(),
-                    src_parent_qmindex.data(), regex))
+                f' src_row={src_row} parent row={src_parent_qmindex.row()}'
+                f' data={src_parent_qmindex.data()} filterRegExp={regex}')
 
             # If the index is the terminal treenode, parameters that hit
             # the query are displayed at the root tree.
@@ -144,7 +143,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
         # Evaluate children recursively.
         row_child = 0
         while True:
-            child_qmindex = curr_qmindex.child(row_child, 0)
+            child_qmindex = curr_qmindex.model().index(row_child, 0, curr_qmindex)
             if child_qmindex.isValid():
                 flag = self._filter_row_recur(row_child, curr_qmindex)
                 if flag:
@@ -155,9 +154,8 @@ class FilterChildrenModel(QSortFilterProxyModel):
         return False
 
     def _show_params_view(self, src_row, curr_qitem):
-        logging.debug('_show_params_view data={}'.format(
-            curr_qitem.data(Qt.ItemDataRole.DisplayRole)
-        ))
+        logging.debug(
+            f'_show_params_view data={curr_qitem.data(Qt.ItemDataRole.DisplayRole)}')
         curr_qitem.enable_param_items()
 
     def _get_toplevel_parent_recur(self, qmindex):
@@ -175,10 +173,10 @@ class FilterChildrenModel(QSortFilterProxyModel):
         :type source_column: int
         :type source_parent: QModelIndex
         """
-        logging.debug('FCModel.filterAcceptsCol source_col={} '.format(
-            source_column) + 'parent col={} row={} data={}'.format(
-                source_parent.column(), source_parent.row(),
-                source_parent.data()))
+        logging.debug(
+            f'FCModel.filterAcceptsCol source_col={source_column} '
+            f'parent col={source_parent.column()} row={source_parent.row()} '
+            f'data={source_parent.data()}')
         return True
 
     def set_filter(self, filter_):
@@ -186,7 +184,7 @@ class FilterChildrenModel(QSortFilterProxyModel):
 
         # If filtered text is '' (0-length str), invalidate current
         # filtering, in the hope of making filtering process faster.
-        if filter_.get_text == '':
+        if filter_.get_text() == '':
             self.invalidate()
             logging.info('filter invalidated.')
 
