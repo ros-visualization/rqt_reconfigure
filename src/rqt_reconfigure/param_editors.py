@@ -61,7 +61,7 @@ class EditorWidget(QWidget):
     """
 
     def __init__(self, param_client, parameter, descriptor):
-        super(EditorWidget, self).__init__()
+        super().__init__()
 
         self._param_client = param_client
         self.parameter = parameter
@@ -75,10 +75,10 @@ class EditorWidget(QWidget):
             result = self._param_client.set_parameters([self.parameter])
             for res in result.results:
                 if not res.successful:
-                    logging.warn('Failed to set parameters for node: ' + res.reason)
+                    logging.warning('Failed to set parameters for node: ' + res.reason)
                     return False
         except Exception as e:
-            logging.warn('Failed to set parameters for node: ' + str(e))
+            logging.warning('Failed to set parameters for node: ' + str(e))
             return False
         return True
 
@@ -133,7 +133,7 @@ class BooleanEditor(EditorWidget):
     _update_signal = Signal(bool)
 
     def __init__(self, *args, **kwargs):
-        super(BooleanEditor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         ui_bool = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
             'editor_bool.ui')
@@ -154,7 +154,7 @@ class BooleanEditor(EditorWidget):
         self.update(bool(value))
 
     def update_local(self, value):
-        super(BooleanEditor, self).update_local(value)
+        super().update_local(value)
         self._update_signal.emit(value)
 
 
@@ -162,7 +162,7 @@ class StringEditor(EditorWidget):
     _update_signal = Signal(str)
 
     def __init__(self, *args, **kwargs):
-        super(StringEditor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         ui_str = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
             'editor_string.ui')
@@ -186,13 +186,12 @@ class StringEditor(EditorWidget):
             self.cmenu.setEnabled(False)
 
     def update_local(self, value):
-        super(StringEditor, self).update_local(value)
-        logging.debug('StringEditor update_local={}'.format(value))
+        super().update_local(value)
+        logging.debug(f'StringEditor update_local={value}')
         self._update_signal.emit(value)
 
     def edit_finished(self):
-        logging.debug('StringEditor edit_finished val={}'.format(
-            self._paramval_lineedit.text()))
+        logging.debug(f'StringEditor edit_finished val={self._paramval_lineedit.text()}')
         self.update(self._paramval_lineedit.text())
 
     def _set_to_empty(self):
@@ -202,7 +201,7 @@ class StringEditor(EditorWidget):
 class IntegerEditor(EditorWidget):
 
     def __init__(self, *args, **kwargs):
-        super(IntegerEditor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         ui_int = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
             'editor_number.ui')
@@ -217,7 +216,7 @@ class IntegerEditor(EditorWidget):
 
             if self._max > 2**31-1 or self._min < -2**31:
                 self.scale = (2**31-1) / (self._max - self._min)
-                logging.warn(
+                logging.warning(
                     f'The range of this parameter ({self._min} to {self._max}) is too large '
                     f'for the slider to handle. '
                     f'Scaling down to fit within 32 bits with factor {self.scale}.'
@@ -281,7 +280,7 @@ class IntegerEditor(EditorWidget):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.Wheel and not obj.hasFocus():
             return True
-        return super(EditorWidget, self).eventFilter(obj, event)
+        return super().eventFilter(obj, event)
 
     def _clamp_int(self, value):
         return max(-2**31, min(2**31 - 1, value))
@@ -294,22 +293,22 @@ class IntegerEditor(EditorWidget):
     def _text_changed(self):
         # This is a final change - update param server
         # No need to update slider... update() will
-        logging.debug('_text_changed called with text: {}'.format(self._paramval_lineEdit.text()))
+        logging.debug(f'_text_changed called with text: {self._paramval_lineEdit.text()}')
         self.update(int(self._paramval_lineEdit.text()))
 
     def _slider_changed(self):
         # This is a final change - update param server
         # No need to update text... update() will
-        logging.debug('_slider_changed called with value: {}'.format(self._get_value_textfield()))
+        logging.debug(f'_slider_changed called with value: {self._get_value_textfield()}')
         self.update(int(self._get_value_textfield()))
 
     def update_local(self, value):
-        logging.debug('update_local called with value: {}'.format(value))
-        super(IntegerEditor, self).update_local(value)
+        logging.debug(f'update_local called with value: {value}')
+        super().update_local(value)
         self._update_gui(int(value))
 
     def _update_gui(self, value):
-        logging.debug('_update_gui called with value: {}'.format(value))
+        logging.debug(f'_update_gui called with value: {value}')
         # Block all signals so we don't loop
         self._slider_horizontal.blockSignals(True)
         # Update the slider value
@@ -329,7 +328,9 @@ class DoubleEditor(EditorWidget):
     _update_signal = Signal(float)
 
     def __init__(self, *args, **kwargs):
-        super(DoubleEditor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        # Remember the initial value to fall back on when asked to display NaN
+        self.param_default = self.parameter.value
         ui_num = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
             'editor_number.ui'
@@ -414,7 +415,7 @@ class DoubleEditor(EditorWidget):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.Wheel and not obj.hasFocus():
             return True
-        return super(EditorWidget, self).eventFilter(obj, event)
+        return super().eventFilter(obj, event)
 
     def _slider_moved(self):
         # This is a "local" edit - only change the text
@@ -446,7 +447,7 @@ class DoubleEditor(EditorWidget):
         return 0
 
     def update_local(self, value):
-        super(DoubleEditor, self).update_local(value)
+        super().update_local(value)
         self._update_gui(value)
         self._update_signal.emit(value)
 
@@ -477,7 +478,7 @@ class ArrayEditor(EditorWidget):
     _update_signal = Signal(list)
 
     def __init__(self, *args, **kwargs):
-        super(ArrayEditor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         ui_str = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
             'editor_string.ui')
@@ -504,8 +505,8 @@ class ArrayEditor(EditorWidget):
             self.cmenu.setEnabled(False)
 
     def update_local(self, value):
-        super(ArrayEditor, self).update_local(value)
-        logging.debug('DoubleArrayEditor update_local={}'.format(value))
+        super().update_local(value)
+        logging.debug(f'DoubleArrayEditor update_local={value}')
         if isinstance(self.parameter.value, array.array):
             self._update_signal.emit(value.tolist())
         else:
@@ -515,8 +516,7 @@ class ArrayEditor(EditorWidget):
         self._paramval_lineedit.setText(str(value))
 
     def edit_finished(self):
-        logging.debug('ArrayEditor edit_finished val={}'.format(
-            self._paramval_lineedit.text()))
+        logging.debug(f'ArrayEditor edit_finished val={self._paramval_lineedit.text()}')
         params_string = self._paramval_lineedit.text()
         if self.parameter.from_parameter_msg:
             params_string = params_string.replace("'", '"')

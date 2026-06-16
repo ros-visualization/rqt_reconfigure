@@ -37,3 +37,4 @@ error = logger.error
 fatal = logger.fatal
 info = logger.info
 warn = logger.warning
+warning = logger.warning

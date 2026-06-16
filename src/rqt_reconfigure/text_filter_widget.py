@@ -53,7 +53,7 @@ class TextFilterWidget(QWidget):
         :param parentfilter: buddy filter were data is stored, ''TimeFilter''
         :param display_list_args: empty list, ''list''
         """
-        super(TextFilterWidget, self).__init__()
+        super().__init__()
         _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(
             package_path, 'share', 'rqt_reconfigure', 'resource',
