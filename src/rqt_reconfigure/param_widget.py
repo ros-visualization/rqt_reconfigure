@@ -68,7 +68,7 @@ class ParamWidget(QWidget):
         reflect the available functionality, file & class names remain
         'param', expecting all the parameters will become handle-able.
         """
-        super(ParamWidget, self).__init__()
+        super().__init__()
         self.setObjectName(self._TITLE_PLUGIN)
         self.setWindowTitle(self._TITLE_PLUGIN)
 
@@ -122,7 +122,7 @@ class ParamWidget(QWidget):
         if not node:
             title = self._TITLE_PLUGIN
         else:
-            title = self._TITLE_PLUGIN + ' %s' % node
+            title = self._TITLE_PLUGIN + f' {node}'
         self.setObjectName(title)
 
         # Connect filter signal-slots.
@@ -167,9 +167,9 @@ class ParamWidget(QWidget):
             if rn in self._nodesel_widget.get_nodeitems():
                 self.sig_selected.emit(rn, explicit)
             elif explicit:
-                logging.warn(
+                logging.warning(
                     'Could not find a dynamic reconfigure client'
-                    " named '{}'".format(str(rn))
+                    f" named '{str(rn)}'"
                 )
 
     def get_filter_text(self):

@@ -71,7 +71,7 @@ class ParamClientWidget(QWidget):
 
         :type node_name: str
         """
-        super(ParamClientWidget, self).__init__()
+        super().__init__()
         self._node_grn = node_name
         self._toplevel_treenode_name = node_name
 
@@ -130,7 +130,7 @@ class ParamClientWidget(QWidget):
                 self._param_client.describe_parameters(param_names)
             )
         except Exception as e:
-            logging.warn(
+            logging.warning(
                 f'Failed to retrieve parameters from node {self._node_grn}: {e}')
 
         # Save and load buttons
@@ -170,7 +170,7 @@ class ParamClientWidget(QWidget):
                 )
                 self.add_editor_widgets(new_parameters, new_descriptors)
             except Exception as e:
-                logging.warn(
+                logging.warning(
                     'Failed to get information about parameters: ' + str(e))
 
         if changed_parameters:
@@ -200,7 +200,7 @@ class ParamClientWidget(QWidget):
                 )
                 yaml.dump({p.name: p.value for p in parameters}, f)
             except Exception as e:
-                logging.warn(
+                logging.warning(
                     "Parameter saving wasn't successful because: " + str(e)
                 )
 
@@ -215,9 +215,9 @@ class ParamClientWidget(QWidget):
         try:
             self._param_client.set_parameters(parameters)
         except Exception as e:
-            logging.warn(
+            logging.warning(
                 "Parameter loading wasn't successful"
-                ' because: {}'.format(e)
+                f' because: {e}'
             )
 
     def collect_paramnames(self, config):
@@ -227,8 +227,7 @@ class ParamClientWidget(QWidget):
         for parameter in parameters:
             if parameter.name not in self._editor_widgets:
                 continue
-            logging.debug('Removing editor widget for {}'.format(
-                parameter.name))
+            logging.debug(f'Removing editor widget for {parameter.name}')
             self._editor_widgets[parameter.name].hide(self.grid)
             self._editor_widgets[parameter.name].close()
             del self._editor_widgets[parameter.name]
@@ -237,15 +236,14 @@ class ParamClientWidget(QWidget):
         for parameter in parameters:
             if parameter.name not in self._editor_widgets:
                 continue
-            logging.debug('Updating editor widget for {}'.format(
-                parameter.name))
+            logging.debug(f'Updating editor widget for {parameter.name}')
             self._editor_widgets[parameter.name].update_local(parameter.value)
 
     def add_editor_widgets(self, parameters, descriptors):
         for parameter, descriptor in zip(parameters, descriptors):
             if Parameter.Type(descriptor.type) not in EDITOR_TYPES:
                 continue
-            logging.debug('Adding editor widget for {}'.format(parameter.name))
+            logging.debug(f'Adding editor widget for {parameter.name}')
             editor_widget = EDITOR_TYPES[Parameter.Type(descriptor.type)](
                 self._param_client, parameter, descriptor
             )
@@ -292,4 +290,4 @@ class ParamClientWidget(QWidget):
                 client_params_desc
             )
         except Exception as e:
-            logging.warn('Failed to retrieve parameters from node: ' + str(e))
+            logging.warning('Failed to retrieve parameters from node: ' + str(e))

@@ -54,7 +54,7 @@ class ParameditWidget(QWidget):
     sig_node_disabled_selected = Signal(str)
 
     def __init__(self):
-        super(ParameditWidget, self).__init__()
+        super().__init__()
 
         _, package_path = get_resource('packages', 'rqt_reconfigure')
         ui_file = os.path.join(package_path, 'share', 'rqt_reconfigure',
@@ -81,7 +81,7 @@ class ParameditWidget(QWidget):
         # Callback when user chooses a node.
         node_grn = param_client_widget.get_node_grn()
         logging.debug('ParameditWidget.show'
-                      ' str(node_grn)={}'.format(str(node_grn)))
+                      f' str(node_grn)={str(node_grn)}')
 
         if node_grn not in self._param_client_widgets:
             self._param_client_widgets[node_grn] = param_client_widget
@@ -106,7 +106,7 @@ class ParameditWidget(QWidget):
              self.palette().window().color().darker(125)])
 
     def close(self):
-        for w in self._param_client_widgets:
+        for w in self._param_client_widgets.values():
             w.close()
         self._param_client_widgets.clear()
         self._paramedit_scrollarea.deleteLater()
@@ -141,12 +141,11 @@ class ParameditWidget(QWidget):
             item.widget().close()
         w = self._param_client_widgets.pop(node_grn)
 
-        logging.debug('popped={} Len of left clients={}'.format(
-            w, len(self._param_client_widgets)
-        ))
+        logging.debug(
+            f'popped={w} Len of left clients={len(self._param_client_widgets)}')
 
     def _node_disabled(self, node_grn):
-        logging.debug('paramedit_w _node_disabled grn={}'.format(node_grn))
+        logging.debug(f'paramedit_w _node_disabled grn={node_grn}')
 
         """
          Signal to notify other GUI components (eg. nodes tree pane) that

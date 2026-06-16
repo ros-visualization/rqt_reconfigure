@@ -39,13 +39,8 @@ import time
 from ament_index_python import get_resource
 
 from python_qt_binding import loadUi
+from python_qt_binding.QtCore import QItemSelectionModel, QModelIndex
 from python_qt_binding.QtCore import Qt, Signal
-try:
-    from python_qt_binding.QtCore import (  # Qt 5
-        QItemSelectionModel, QModelIndex)
-except ImportError:
-    from python_qt_binding.QtGui import (  # Qt 4
-        QItemSelectionModel, QModelIndex)
 from python_qt_binding.QtWidgets import QHeaderView, QWidget
 
 from rqt_py_common.rqt_ros_graph import RqtRosGraph
@@ -71,7 +66,7 @@ class NodeSelectorWidget(QWidget):
         @param signal_msg: Signal to carry a system msg that is shown on GUI.
         @type signal_msg: QtCore.Signal
         """
-        super(NodeSelectorWidget, self).__init__()
+        super().__init__()
         self._parent = parent
         self.stretch = None
         self._signal_msg = signal_msg
@@ -145,8 +140,8 @@ class NodeSelectorWidget(QWidget):
         indexes_selected = self.selectionModel.selectedIndexes()
         for index in indexes_selected:
             grn_from_selectedindex = RqtRosGraph.get_upper_grn(index, '')
-            logging.debug(' Compare given grn={} from selected={}'.format(
-                grn, grn_from_selectedindex))
+            logging.debug(
+                f' Compare given grn={grn} from selected={grn_from_selectedindex}')
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_selectedindex:
                 # Deselect the index.
@@ -163,8 +158,8 @@ class NodeSelectorWidget(QWidget):
         # Iterate over all of the indexes
         for index in self._enumerate_indexes():
             grn_from_index = RqtRosGraph.get_upper_grn(index, '')
-            logging.debug(' Compare given grn={} from selected={}'.format(
-                grn, grn_from_index))
+            logging.debug(
+                f' Compare given grn={grn} from selected={grn_from_index}')
             # If GRN retrieved from selected index matches the given one.
             if grn == grn_from_index:
                 # Select the index.
@@ -195,9 +190,10 @@ class NodeSelectorWidget(QWidget):
 
     def _selection_selected(self, index_current, rosnode_name_selected):
         # Intended to be called from _selection_changed_slot.
-        logging.debug('_selection_changed_slot row={} col={} data={}'.format(
-            index_current.row(), index_current.column(),
-            index_current.data(Qt.ItemDataRole.DisplayRole)))
+        logging.debug(
+            f'_selection_changed_slot row={index_current.row()} '
+            f'col={index_current.column()} '
+            f'data={index_current.data(Qt.ItemDataRole.DisplayRole)}')
 
         # Determine if it's terminal treenode.
         found_node = False
@@ -213,8 +209,8 @@ class NodeSelectorWidget(QWidget):
                     name_nodeitem.rfind(RqtRosGraph.DELIM_GRN) + 1:] ==
                     name_rosnode_leaf)):
 
-                logging.debug('terminal str {} MATCH {}'.format(
-                    name_nodeitem, name_rosnode_leaf))
+                logging.debug(
+                    f'terminal str {name_nodeitem} MATCH {name_rosnode_leaf}')
                 found_node = True
                 break
         if not found_node:  # Only when it's NOT a terminal we deselect it.
@@ -226,8 +222,8 @@ class NodeSelectorWidget(QWidget):
 
         item_child = self._nodeitems[rosnode_name_selected]
         item_widget = item_child.get_param_client_widget()
-        logging.debug('item_selected={} child={} widget={}'.format(
-                      index_current, item_child, item_widget))
+        logging.debug(
+            f'item_selected={index_current} child={item_child} widget={item_widget}')
         self.sig_node_selected.emit(item_widget)
 
         # Show the node as selected.
@@ -260,7 +256,7 @@ class NodeSelectorWidget(QWidget):
             # permanent solution is asked here http://goo.gl/V4DT1
             index_current = deselected.indexes()[0]
 
-        logging.debug('  - - - index_current={}'.format(index_current))
+        logging.debug(f'  - - - index_current={index_current}')
 
         rosnode_name_selected = RqtRosGraph.get_upper_grn(index_current, '')
 
@@ -276,9 +272,7 @@ class NodeSelectorWidget(QWidget):
                 self._selection_selected(index_current, rosnode_name_selected)
             except Exception as e:
                 # TODO: print to sysmsg pane
-                err_msg = 'Connection to node={} failed:\n{}'.format(
-                    rosnode_name_selected, e
-                )
+                err_msg = f'Connection to node={rosnode_name_selected} failed:\n{e}'
                 import traceback
                 traceback.print_exc()
                 self._signal_msg.emit(err_msg)
@@ -350,10 +344,9 @@ class NodeSelectorWidget(QWidget):
                 elapsedtime_overall += time_siglenode_loop
 
                 _str_progress = 'reconf ' + \
-                    'loading #{}/{} {} / {}sec node={}'.format(
-                        i_node_curr, num_nodes, round(time_siglenode_loop, 2),
-                        round(elapsedtime_overall, 2), node_name_grn
-                    )
+                    f'loading #{i_node_curr}/{num_nodes} ' \
+                    f'{round(time_siglenode_loop, 2)} / ' \
+                    f'{round(elapsedtime_overall, 2)}sec node={node_name_grn}'
 
                 # NOT a debug print - please DO NOT remove. This print works
                 # as progress notification when loading takes long time.
