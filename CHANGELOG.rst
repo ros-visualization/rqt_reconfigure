@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.2 (2026-06-17)
+------------------
+* Use logger.warning(), f-string and super() (`#171 <https://github.com/ros-visualization/rqt_reconfigure/issues/171>`_)
+* Removed Python2 references (`#170 <https://github.com/ros-visualization/rqt_reconfigure/issues/170>`_)
+* Contributors: Alejandro Hernández Cordero
+
 2.0.1 (2026-06-05)
 ------------------
 * Improve qt5/qt6 support (`#168 <https://github.com/ros-visualization/rqt_reconfigure/issues/168>`_)
