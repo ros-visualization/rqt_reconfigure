@@ -106,7 +106,7 @@ class ParameditWidget(QWidget):
              self.palette().window().color().darker(125)])
 
     def close(self):
-        for w in self._param_client_widgets:
+        for w in self._param_client_widgets.values():
             w.close()
         self._param_client_widgets.clear()
         self._paramedit_scrollarea.deleteLater()
