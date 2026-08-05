@@ -64,6 +64,8 @@ class ParamClientWidget(QWidget):
 
     sig_node_disabled_selected = Signal(str)
     sig_node_state_change = Signal(bool)
+    # Carries (new_parameters, changed_parameters, deleted_parameters).
+    sig_param_event = Signal(object, object, object)
 
     def __init__(self, context, node_name):
         """
@@ -77,8 +79,16 @@ class ParamClientWidget(QWidget):
 
         self._editor_widgets = {}
 
+        # Parameter events arrive on the executor thread of the node shared by
+        # all rqt plugins. Route them through a signal so _handle_param_event()
+        # runs on the GUI thread instead: this widget was created there, so Qt
+        # turns the cross-thread emission into a queued connection. That keeps
+        # both the widget manipulation and the blocking describe_parameters()
+        # call out of the executor thread, where they would otherwise corrupt Qt
+        # state and stall every other callback on the shared node.
+        self.sig_param_event.connect(self._handle_param_event)
         self._param_client = create_param_client(
-            context.node, node_name, self._handle_param_event
+            context.node, node_name, self.sig_param_event.emit
         )
 
         verticalLayout = QVBoxLayout(self)
@@ -125,9 +135,13 @@ class ParamClientWidget(QWidget):
         # Again, these UI operation above needs to happen in .ui file.
         try:
             param_names = self._param_client.list_parameters()
+            # Describe only the parameters that could actually be read:
+            # get_parameters() drops the ones the node refuses to serve, and
+            # add_editor_widgets() pairs the two lists positionally.
+            parameters = self._param_client.get_parameters(param_names)
             self.add_editor_widgets(
-                self._param_client.get_parameters(param_names),
-                self._param_client.describe_parameters(param_names)
+                parameters,
+                self._param_client.describe_parameters([p.name for p in parameters])
             )
         except Exception as e:
             logging.warn(
@@ -162,7 +176,6 @@ class ParamClientWidget(QWidget):
     def _handle_param_event(
         self, new_parameters, changed_parameters, deleted_parameters
     ):
-        # TODO: Think about replacing callback architecture with signals.
         if new_parameters:
             try:
                 new_descriptors = self._param_client.describe_parameters(
@@ -224,14 +237,16 @@ class ParamClientWidget(QWidget):
         pass
 
     def remove_editor_widgets(self, parameters):
-        for parameter in parameters:
-            if parameter.name not in self._editor_widgets:
+        self.remove_editor_widgets_by_name([p.name for p in parameters])
+
+    def remove_editor_widgets_by_name(self, names):
+        for name in names:
+            if name not in self._editor_widgets:
                 continue
-            logging.debug('Removing editor widget for {}'.format(
-                parameter.name))
-            self._editor_widgets[parameter.name].hide(self.grid)
-            self._editor_widgets[parameter.name].close()
-            del self._editor_widgets[parameter.name]
+            logging.debug('Removing editor widget for {}'.format(name))
+            self._editor_widgets[name].hide(self.grid)
+            self._editor_widgets[name].close()
+            del self._editor_widgets[name]
 
     def update_editor_widgets(self, parameters):
         for parameter in parameters:
@@ -263,6 +278,14 @@ class ParamClientWidget(QWidget):
         self.sig_node_disabled_selected.emit(self._toplevel_treenode_name)
 
     def close(self):
+        # Drop the connection first: an event emitted from the executor thread
+        # may already be queued, and it must not reach the editor widgets that
+        # are torn down below.
+        try:
+            self.sig_param_event.disconnect(self._handle_param_event)
+        except (RuntimeError, TypeError):
+            pass
+
         self._param_client.close()
 
         for w in self._editor_widgets.values():
@@ -278,14 +301,15 @@ class ParamClientWidget(QWidget):
             param_names = self._param_client.list_parameters()
             param_names_filtered = \
                 list(filter(lambda p: filter_key in p, param_names)) if filter_key else param_names
-            client_params_remove = self._param_client.get_parameters(
-                list(self._editor_widgets.keys()))
-            self.remove_editor_widgets(client_params_remove)
+            # Remove by name rather than reading the values back first: the
+            # values are unused here, and parameters the node refuses to serve
+            # would otherwise keep their editor widget and then be added again.
+            self.remove_editor_widgets_by_name(list(self._editor_widgets.keys()))
             client_params_filtered = self._param_client.get_parameters(
                 param_names_filtered
             )
             client_params_desc = self._param_client.describe_parameters(
-                param_names_filtered
+                [p.name for p in client_params_filtered]
             )
             self.add_editor_widgets(
                 client_params_filtered,

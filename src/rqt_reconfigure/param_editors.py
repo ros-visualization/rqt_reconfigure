@@ -83,8 +83,9 @@ class EditorWidget(QWidget):
         Update the value that's displayed on the arbitrary GUI component
         based on user's input.
 
-        This method is not called from the GUI thread, so any changes to
-        QObjects will need to be done through a signal.
+        This method is called from the GUI thread: parameter events coming from
+        the executor thread are marshalled onto it by
+        ParamClientWidget.sig_param_event before this is reached.
         """
         self.parameter = Parameter(
             name=self.parameter.name,
