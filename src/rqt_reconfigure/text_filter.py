@@ -28,13 +28,7 @@
 #
 # Author: Isaac Saito
 
-from packaging.version import Version
-from python_qt_binding import QT_BINDING_VERSION
-if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-    from python_qt_binding.QtCore import QRegularExpression  # noqa: F401
-else:
-    from python_qt_binding.QtCore import QRegExp  # noqa: F401
-from python_qt_binding.QtCore import Qt
+from python_qt_binding.QtCore import QRegularExpression
 
 from rqt_console.filters.message_filter import MessageFilter
 
@@ -66,10 +60,7 @@ class TextFilter(MessageFilter):
                 self._regexp is not None    # If None, init process isn't done
                                             # yet and we can ignore the call to
         ):                                  # this method.
-            if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-                _hit = self._regexp.match(text).hasMatch()
-            else:
-                _hit = self._regexp.indexIn(text) >= 0
+            _hit = self._regexp.match(text).hasMatch()
         return _hit
 
     def get_regexp(self):
@@ -84,12 +75,7 @@ class TextFilter(MessageFilter):
         """
         super().set_text(text)
 
-        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-            self._regexp = QRegularExpression(text)
-        else:
-            syntax_nr = QRegExp.RegExp
-            syntax = QRegExp.PatternSyntax(syntax_nr)
-            self._regexp = QRegExp(text, Qt.CaseSensitivity.CaseSensitive, syntax)
+        self._regexp = QRegularExpression(text)
         self.set_regex(self._regexp)
 
     def get_text(self):

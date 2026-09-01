@@ -28,14 +28,8 @@
 #
 # Author: Isaac Saito
 
-from packaging.version import Version
-from python_qt_binding import QT_BINDING_VERSION
 
-from python_qt_binding.QtCore import Qt, Signal
-try:
-    from python_qt_binding.QtCore import QSortFilterProxyModel  # Qt 5
-except ImportError:
-    from python_qt_binding.QtGui import QSortFilterProxyModel  # Qt 4
+from python_qt_binding.QtCore import QSortFilterProxyModel, Qt, Signal
 
 from rqt_reconfigure import logging
 from rqt_reconfigure.treenode_qstditem import TreenodeQstdItem
@@ -104,13 +98,8 @@ class FilterChildrenModel(QSortFilterProxyModel):
             # of node name. So, get param name.
             text_filter_target = curr_qitem.data(Qt.ItemDataRole.DisplayRole)
 
-        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-            regex = self.filterRegularExpression()
-            pos_hit = regex.match(text_filter_target).hasMatch()
-        else:
-            regex = self.filterRegExp()
-            pos_hit = regex.indexIn(text_filter_target)
-        if pos_hit >= 0:  # Query hit.
+        regex = self.filterRegularExpression()
+        if regex.match(text_filter_target).hasMatch():  # Query hit.
             logging.debug(
                 f'curr data={curr_qmindex.data()} row={curr_qmindex.row()} '
                 f'col={curr_qmindex.column()}')
@@ -119,14 +108,11 @@ class FilterChildrenModel(QSortFilterProxyModel):
             logging.debug(
                 ' FCModel.filterAcceptsRow'
                 f' src_row={src_row} parent row={src_parent_qmindex.row()}'
-                f' data={src_parent_qmindex.data()} filterRegExp={regex}')
+                f' data={src_parent_qmindex.data()} filterRegularExpression={regex}')
 
             # If the index is the terminal treenode, parameters that hit
             # the query are displayed at the root tree.
-            if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-                _child_index = curr_qmindex.model().index(0, 0)
-            else:
-                _child_index = curr_qmindex.child(0, 0)
+            _child_index = curr_qmindex.model().index(0, 0)
             if ((not _child_index.isValid()) and
                     (isinstance(curr_qitem, TreenodeQstdItem))):
                 self._show_params_view(src_row, curr_qitem)
@@ -189,7 +175,4 @@ class FilterChildrenModel(QSortFilterProxyModel):
             logging.info('filter invalidated.')
 
         # By calling setFilterRegExp, filterAccepts* methods get kicked.
-        if Version(QT_BINDING_VERSION) >= Version('6.0.0'):
-            self.setFilterRegularExpression(self._filter.get_regexp())
-        else:
-            self.setFilterRegExp(self._filter.get_regexp())
+        self.setFilterRegularExpression(self._filter.get_regexp())
