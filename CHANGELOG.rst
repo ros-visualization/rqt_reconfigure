@@ -2,6 +2,11 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.3 (2026-09-04)
+------------------
+* Removed Qt5 support (`#174 <https://github.com/ros-visualization/rqt_reconfigure/issues/174>`_)
+* Contributors: Alejandro Hernández Cordero
+
 2.0.2 (2026-06-17)
 ------------------
 * Use logger.warning(), f-string and super() (`#171 <https://github.com/ros-visualization/rqt_reconfigure/issues/171>`_)
