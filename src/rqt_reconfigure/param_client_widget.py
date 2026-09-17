@@ -30,7 +30,7 @@
 
 from python_qt_binding.QtCore import QMargins, QSize, Qt, Signal
 from python_qt_binding.QtGui import QFont, QIcon
-from python_qt_binding.QtWidgets import (QFileDialog, QFormLayout,
+from python_qt_binding.QtWidgets import (QCheckBox, QFileDialog, QFormLayout,
                                          QHBoxLayout, QLabel,
                                          QPushButton, QVBoxLayout,
                                          QWidget)
@@ -117,10 +117,25 @@ class ParamClientWidget(QWidget):
         filter_h_layout.addWidget(self.text_filter_widget)
         filter_widget.setLayout(filter_h_layout)
 
+        show_read_only_widget = QWidget(self)
+        show_read_only_h_layout = QHBoxLayout()
+        self.show_read_only_check_box = QCheckBox()
+        self.show_read_only_check_box.setChecked(False)
+        self.show_read_only_check_box.stateChanged.connect(
+            self._filter_key_changed
+        )
+        self.show_read_only_label = QLabel('&Show read-only:')
+        self.show_read_only_label.setBuddy(self.show_read_only_check_box)
+        show_read_only_h_layout.addWidget(self.show_read_only_label)
+        show_read_only_h_layout.addWidget(self.show_read_only_check_box)
+        show_read_only_h_layout.addStretch()
+        show_read_only_widget.setLayout(show_read_only_h_layout)
+
         grid_widget = QWidget(self)
         self.grid = QFormLayout(grid_widget)
         verticalLayout.addWidget(widget_nodeheader)
         verticalLayout.addWidget(filter_widget)
+        verticalLayout.addWidget(show_read_only_widget)
         verticalLayout.addWidget(grid_widget, 1)
         # Again, these UI operation above needs to happen in .ui file.
         try:
@@ -242,6 +257,8 @@ class ParamClientWidget(QWidget):
     def add_editor_widgets(self, parameters, descriptors):
         for parameter, descriptor in zip(parameters, descriptors):
             if Parameter.Type(descriptor.type) not in EDITOR_TYPES:
+                continue
+            if descriptor.read_only and not self.show_read_only_check_box.isChecked():
                 continue
             logging.debug(f'Adding editor widget for {parameter.name}')
             editor_widget = EDITOR_TYPES[Parameter.Type(descriptor.type)](
