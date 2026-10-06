@@ -144,6 +144,8 @@ class ParamWidget(QWidget):
         self._nodesel_widget.save_settings(instance_settings)
         instance_settings.set_value(
             'selected_nodes', list(self._param_edit_widget.get_active_grns()))
+        instance_settings.set_value(
+            'show_read_only', self._param_edit_widget.get_show_read_only())
 
     def restore_settings(self, plugin_settings, instance_settings):
         if instance_settings.contains('splitter'):
@@ -152,6 +154,8 @@ class ParamWidget(QWidget):
             self._splitter.setSizes([100, 100, 200])
         self.filter_lineedit.restore_settings(instance_settings)
         self._nodesel_widget.restore_settings(instance_settings)
+        self._param_edit_widget.set_show_read_only(
+            instance_settings.value('show_read_only') in [True, 'true'])
 
         # Ignore previously open nodes if we were given an explicit list
         if self._explicit_nodes_to_select:

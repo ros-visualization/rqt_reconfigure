@@ -64,6 +64,11 @@ class ParamClientWidget(QWidget):
 
     sig_node_disabled_selected = Signal(str)
     sig_node_state_change = Signal(bool)
+    sig_show_read_only_changed = Signal(bool)
+
+    # Editor widgets are also added and removed from the executor thread (see
+    # _handle_param_event), so the checkbox text is updated through a signal.
+    _sig_read_only_count_changed = Signal(int)
 
     def __init__(self, context, node_name):
         """
@@ -76,6 +81,7 @@ class ParamClientWidget(QWidget):
         self._toplevel_treenode_name = node_name
 
         self._editor_widgets = {}
+        self._show_read_only = False
 
         self._param_client = create_param_client(
             context.node, node_name, self._handle_param_event
@@ -113,29 +119,23 @@ class ParamClientWidget(QWidget):
         self.text_filter_widget = TextFilterWidget(self.text_filter)
         self.filter_label = QLabel('&Filter param:')
         self.filter_label.setBuddy(self.text_filter_widget)
+        self.show_read_only_check_box = QCheckBox()
+        self._update_read_only_count(0)
+        self.show_read_only_check_box.toggled.connect(
+            self._show_read_only_toggled
+        )
+        self._sig_read_only_count_changed.connect(
+            self._update_read_only_count
+        )
         filter_h_layout.addWidget(self.filter_label)
         filter_h_layout.addWidget(self.text_filter_widget)
+        filter_h_layout.addWidget(self.show_read_only_check_box)
         filter_widget.setLayout(filter_h_layout)
-
-        show_read_only_widget = QWidget(self)
-        show_read_only_h_layout = QHBoxLayout()
-        self.show_read_only_check_box = QCheckBox()
-        self.show_read_only_check_box.setChecked(False)
-        self.show_read_only_check_box.stateChanged.connect(
-            self._filter_key_changed
-        )
-        self.show_read_only_label = QLabel('&Show read-only:')
-        self.show_read_only_label.setBuddy(self.show_read_only_check_box)
-        show_read_only_h_layout.addWidget(self.show_read_only_label)
-        show_read_only_h_layout.addWidget(self.show_read_only_check_box)
-        show_read_only_h_layout.addStretch()
-        show_read_only_widget.setLayout(show_read_only_h_layout)
 
         grid_widget = QWidget(self)
         self.grid = QFormLayout(grid_widget)
         verticalLayout.addWidget(widget_nodeheader)
         verticalLayout.addWidget(filter_widget)
-        verticalLayout.addWidget(show_read_only_widget)
         verticalLayout.addWidget(grid_widget, 1)
         # Again, these UI operation above needs to happen in .ui file.
         try:
@@ -246,6 +246,7 @@ class ParamClientWidget(QWidget):
             self._editor_widgets[parameter.name].hide(self.grid)
             self._editor_widgets[parameter.name].close()
             del self._editor_widgets[parameter.name]
+        self._sig_read_only_count_changed.emit(self._read_only_count())
 
     def update_editor_widgets(self, parameters):
         for parameter in parameters:
@@ -258,14 +259,15 @@ class ParamClientWidget(QWidget):
         for parameter, descriptor in zip(parameters, descriptors):
             if Parameter.Type(descriptor.type) not in EDITOR_TYPES:
                 continue
-            if descriptor.read_only and not self.show_read_only_check_box.isChecked():
-                continue
             logging.debug(f'Adding editor widget for {parameter.name}')
             editor_widget = EDITOR_TYPES[Parameter.Type(descriptor.type)](
                 self._param_client, parameter, descriptor
             )
             self._editor_widgets[parameter.name] = editor_widget
             editor_widget.display(self.grid)
+            if descriptor.read_only and not self._show_read_only:
+                self.grid.setRowVisible(editor_widget, False)
+        self._sig_read_only_count_changed.emit(self._read_only_count())
 
     def display(self, grid):
         grid.addRow(self)
@@ -284,6 +286,23 @@ class ParamClientWidget(QWidget):
             w.close()
 
         self.deleteLater()
+
+    def set_show_read_only(self, show):
+        self.show_read_only_check_box.setChecked(show)
+
+    def _show_read_only_toggled(self, checked):
+        self._show_read_only = checked
+        for editor_widget in list(self._editor_widgets.values()):
+            if editor_widget.descriptor.read_only:
+                self.grid.setRowVisible(editor_widget, checked)
+        self.sig_show_read_only_changed.emit(checked)
+
+    def _read_only_count(self):
+        return sum(
+            w.descriptor.read_only for w in list(self._editor_widgets.values()))
+
+    def _update_read_only_count(self, count):
+        self.show_read_only_check_box.setText(f'Show read-only ({count})')
 
     def _filter_key_changed(self):
         self._filter_param(self.text_filter.get_text())

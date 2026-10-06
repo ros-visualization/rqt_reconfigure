@@ -62,6 +62,7 @@ class ParameditWidget(QWidget):
         loadUi(ui_file, self, {'ParameditWidget': ParameditWidget})
 
         self._param_client_widgets = OrderedDict()
+        self._show_read_only = False
 
         # Adding the list of Items
         self._vlayout = QVBoxLayout(self.scrollarea_holder_widget)
@@ -88,6 +89,9 @@ class ParameditWidget(QWidget):
             self._vlayout.addWidget(param_client_widget)
             param_client_widget.sig_node_disabled_selected.connect(
                 self._node_disabled)
+            param_client_widget.set_show_read_only(self._show_read_only)
+            param_client_widget.sig_show_read_only_changed.connect(
+                self.set_show_read_only)
         else:  # If there has one already existed, remove it.
             self._remove_node(node_grn)
             # LayoutUtil.clear_layout(self.vlayout)
@@ -113,6 +117,15 @@ class ParameditWidget(QWidget):
 
     def get_active_grns(self):
         return self._param_client_widgets.keys()
+
+    def get_show_read_only(self):
+        return self._show_read_only
+
+    def set_show_read_only(self, show):
+        # The choice is shared by all the node widgets.
+        self._show_read_only = show
+        for w in self._param_client_widgets.values():
+            w.set_show_read_only(show)
 
     def filter_param(self, filter_key):
         # TODO Pick nodes that match filter_key.
