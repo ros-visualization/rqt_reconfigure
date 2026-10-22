@@ -2,6 +2,12 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use the SPDX identifier Apache-2.0 in license declarations (`#177 <https://github.com/ros-visualization/rqt_reconfigure/issues/177>`_)
+* Added missing depencencies to package.xml (`#175 <https://github.com/ros-visualization/rqt_reconfigure/issues/175>`_)
+* Contributors: Alejandro Hernández Cordero, Michael Carroll
+
 2.0.3 (2026-09-04)
 ------------------
 * Removed Qt5 support (`#174 <https://github.com/ros-visualization/rqt_reconfigure/issues/174>`_)
