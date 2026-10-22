@@ -2,8 +2,8 @@
 Changelog for package rqt_reconfigure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2026-10-22)
+------------------
 * Use the SPDX identifier Apache-2.0 in license declarations (`#177 <https://github.com/ros-visualization/rqt_reconfigure/issues/177>`_)
 * Added missing depencencies to package.xml (`#175 <https://github.com/ros-visualization/rqt_reconfigure/issues/175>`_)
 * Contributors: Alejandro Hernández Cordero, Michael Carroll
